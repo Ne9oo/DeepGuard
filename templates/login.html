@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepGuard | Log In</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <script>
+        tailwind.config = { 
+            darkMode: 'class', 
+            theme: { 
+                extend: { 
+                    colors: { primary: '#3b82f6', alert: '#ef4444', safe: '#10b981', safeHover: '#0d9468' },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        tech: ['Orbitron', 'sans-serif'],
+                        mono: ['Space Mono', 'monospace']
+                    }
+                } 
+            } 
+        }
+        
+        // INSTANT THEME & FONT LOAD
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        const savedFont = localStorage.getItem('font') || 'sans';
+        
+        if (savedTheme === 'light') document.documentElement.classList.remove('dark');
+        else document.documentElement.classList.add('dark');
+        
+        document.documentElement.classList.add(`font-${savedFont}`);
+    </script>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-300 antialiased h-screen flex items-center justify-center p-6 transition-colors duration-300">
+
+    <!-- UPSCALED CONTAINER: Changed from max-w-md to max-w-[550px] -->
+    <div class="w-full max-w-[550px]">
+        
+        <!-- Logo / Header -->
+        <div class="flex flex-col items-center mb-10">
+            <div class="w-16 h-16 bg-slate-900 dark:bg-white rounded-2xl flex items-center justify-center mb-6 shadow-xl">
+                <i class="fa-solid fa-shield-halved text-3xl text-white dark:text-slate-900"></i>
+            </div>
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white tracking-wide">Log in to DeepGuard</h2>
+        </div>
+
+        <!-- Login Card -->
+        <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-700 p-10 md:p-12">
+            
+            <!-- Error Message Display -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="mb-6 p-4 rounded-xl text-base font-medium {% if category == 'error' %}bg-alert/10 text-alert border border-alert/20{% else %}bg-safe/10 text-safe border border-safe/20{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form action="{{ url_for('login') }}" method="POST" class="space-y-6">
+                <!-- Email Input (Larger Padding & Text) -->
+                <div>
+                    <input type="email" name="email" placeholder="Email" required 
+                        class="w-full px-5 py-4 text-lg bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-safe focus:border-safe dark:focus:ring-safe dark:focus:border-safe text-slate-900 dark:text-white placeholder-slate-400 outline-none transition-all">
+                </div>
+
+                <!-- Password Input (Larger Padding & Text) -->
+                <div class="relative">
+                    <input type="password" id="password" name="password" placeholder="Password" required 
+                        class="w-full px-5 py-4 pr-14 text-lg bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-safe focus:border-safe dark:focus:ring-safe dark:focus:border-safe text-slate-900 dark:text-white placeholder-slate-400 outline-none transition-all">
+                    <button type="button" onclick="togglePassword()" class="absolute inset-y-0 right-0 pr-5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+                        <i id="eye-icon" class="fa-solid fa-eye-slash text-xl"></i>
+                    </button>
+                </div>
+
+                <!-- Forgot Password -->
+                <div class="flex justify-end">
+                    <a href="#" class="text-base text-primary hover:underline font-medium">Forgot password?</a>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="w-full py-4 px-6 mt-2 text-lg bg-safe hover:bg-safeHover text-white rounded-xl font-semibold transition-colors shadow-lg shadow-safe/30">
+                    Log in
+                </button>
+            </form>
+
+            <!-- Sign Up Link -->
+            <div class="mt-8 text-center">
+                <a href="#" class="text-base text-primary hover:underline font-medium">Don't have an account?</a>
+            </div>
+        </div>
+
+        <!-- Footer Terms -->
+        <p class="text-sm text-center text-slate-500 dark:text-slate-400 mt-10 leading-relaxed max-w-md mx-auto">
+            By continuing, you agree to <a href="#" class="text-primary hover:underline">Terms of Service</a> and have read our <a href="#" class="text-primary hover:underline">Privacy Policy</a>.
+        </p>
+    </div>
+
+    <!-- Password Toggle Script -->
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eye-icon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            }
+        }
+    </script>
+</body>
+</html>
