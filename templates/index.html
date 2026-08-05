@@ -34,136 +34,136 @@
 <body class="bg-darkbg text-slate-300 antialiased overflow-x-hidden selection:bg-primary/30">
 
     <!-- Glowing Background Orbs -->
-    <div class="bg-glow w-[800px] h-[800px] bg-primary top-[-300px] left-[-300px] animate-pulse-slow"></div>
-    <div class="bg-glow w-[700px] h-[700px] bg-purple-600 top-[20%] right-[-200px] animate-pulse-slow" style="animation-delay: 2s;"></div>
+    <div class="bg-glow w-[600px] h-[600px] bg-primary top-[-200px] left-[-200px] animate-pulse-slow"></div>
+    <div class="bg-glow w-[500px] h-[500px] bg-purple-600 top-[20%] right-[-150px] animate-pulse-slow" style="animation-delay: 2s;"></div>
 
-    <!-- UPSCALED Sticky Glass Navbar -->
+    <!-- Sticky Glass Navbar -->
     <nav class="fixed w-full z-50 bg-darkbg/80 backdrop-blur-lg border-b border-white/5 transition-all duration-300">
-        <div class="max-w-[1600px] mx-auto px-8 h-28 flex items-center justify-between">
-            <div class="flex items-center space-x-4 cursor-pointer" onclick="window.scrollTo(0,0)">
-                <i class="fa-solid fa-shield-halved text-primary text-4xl lg:text-5xl"></i>
-                <span class="text-3xl lg:text-4xl font-bold text-white tracking-wider font-tech">DeepGuard</span>
+        <div class="max-w-[1400px] mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="window.scrollTo(0,0)">
+                <i class="fa-solid fa-shield-halved text-primary text-3xl"></i>
+                <span class="text-2xl font-bold text-white tracking-wider font-tech">DeepGuard</span>
             </div>
-            <div class="hidden md:flex space-x-10 text-lg lg:text-xl font-medium text-slate-300">
+            <div class="hidden md:flex space-x-8 text-sm font-medium text-slate-300">
                 <a href="#features" class="hover:text-white transition-colors">Features</a>
-                <a href="#how-it-works" class="hover:text-white transition-colors">How it Works</a>
-                <a href="#team" class="hover:text-white transition-colors">The Team</a>
                 <a href="#pricing" class="hover:text-white transition-colors">Pricing</a>
+                <a href="#team" class="hover:text-white transition-colors">The Team</a>
             </div>
-            <div class="flex items-center space-x-6">
-                <a href="/login" class="text-lg lg:text-xl font-medium hover:text-white transition-colors hidden sm:block">Log in</a>
-                <a href="/signup" class="bg-primary hover:bg-blue-600 text-white px-8 py-3.5 rounded-full text-lg lg:text-xl font-semibold transition-all shadow-[0_0_20px_rgba(59,130,246,0.4)] hover:shadow-[0_0_30px_rgba(59,130,246,0.6)]">
+            <div class="flex items-center space-x-4">
+                <a href="/login" class="text-sm font-medium hover:text-white transition-colors hidden sm:block">Log in</a>
+                <a href="/signup" class="bg-primary hover:bg-blue-600 text-white px-6 py-2.5 rounded-full text-sm font-semibold transition-all shadow-[0_0_20px_rgba(59,130,246,0.4)] hover:shadow-[0_0_30px_rgba(59,130,246,0.6)]">
                     Get Started
                 </a>
             </div>
         </div>
     </nav>
 
-    <!-- UPSCALED Hero Section -->
-    <section class="relative pt-48 pb-24 lg:pt-64 lg:pb-40 px-6 overflow-hidden flex flex-col items-center text-center max-w-[1500px] mx-auto min-h-screen">
-        <div class="inline-block bg-primary/10 border border-primary/20 text-primary px-6 py-3 rounded-full text-lg font-semibold tracking-wide mb-10 reveal">
+    <!-- Hero Section -->
+    <section class="relative pt-40 pb-20 lg:pt-56 lg:pb-32 px-6 overflow-hidden flex flex-col items-center text-center max-w-[1200px] mx-auto min-h-screen">
+        <div class="inline-block bg-primary/10 border border-primary/20 text-primary px-5 py-2 rounded-full text-sm font-semibold tracking-wide mb-8 reveal">
             <i class="fa-solid fa-bolt mr-2 text-yellow-400"></i> Deepfake Audio Forensics
         </div>
         
-        <h1 class="text-6xl md:text-8xl lg:text-[7.5rem] font-extrabold text-white leading-[1.1] tracking-tight mb-10 reveal delay-100">
+        <h1 class="text-5xl md:text-7xl lg:text-[6rem] font-extrabold text-white leading-[1.1] tracking-tight mb-8 reveal delay-100">
             Detect AI Voices. <br>
             <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-purple-400">Prevent Vishing Scams.</span>
         </h1>
         
-        <p class="text-2xl md:text-3xl lg:text-4xl text-slate-400 leading-relaxed max-w-5xl mb-16 reveal delay-200">
+        <p class="text-xl md:text-2xl text-slate-400 leading-relaxed max-w-3xl mb-12 reveal delay-200">
             Don't trust the voice on the other end of the line. DeepGuard utilizes an advanced CNN model and Librosa feature extraction to identify synthetic vocal patterns in milliseconds.
         </p>
         
-        <div class="flex flex-col sm:flex-row items-center gap-6 reveal delay-300">
-            <a href="/signup" class="bg-primary hover:bg-blue-600 text-white px-12 py-5 rounded-full text-xl lg:text-2xl font-bold transition-all shadow-[0_0_30px_rgba(59,130,246,0.3)] hover:shadow-[0_0_40px_rgba(59,130,246,0.5)] flex items-center">
-                Start Scanning Free <i class="fa-solid fa-arrow-right ml-4"></i>
+        <div class="flex flex-col sm:flex-row items-center gap-5 reveal delay-300">
+            <a href="/signup" class="bg-primary hover:bg-blue-600 text-white px-10 py-4 rounded-full text-lg font-semibold transition-all shadow-[0_0_30px_rgba(59,130,246,0.3)] hover:shadow-[0_0_40px_rgba(59,130,246,0.5)] flex items-center">
+                Start Scanning Free <i class="fa-solid fa-arrow-right ml-3"></i>
             </a>
-            <a href="#how-it-works" class="text-white px-12 py-5 rounded-full text-xl lg:text-2xl font-bold border border-slate-700 hover:bg-slate-800 transition-colors">
+            <a href="#features" class="text-white px-10 py-4 rounded-full text-lg font-semibold border border-slate-700 hover:bg-slate-800 transition-colors">
                 Learn More
             </a>
         </div>
     </section>
 
-    <!-- UPSCALED Features Section -->
-    <section id="features" class="py-32 px-6 border-t border-white/5 bg-darkcard/30">
-        <div class="max-w-[1600px] mx-auto">
-            <div class="text-center mb-20 reveal">
-                <h2 class="text-5xl lg:text-6xl font-bold text-white mb-6">Powerful Defense Mechanisms</h2>
-                <p class="text-xl lg:text-2xl text-slate-400">Built with cutting-edge machine learning to keep your organization secure.</p>
+    <!-- Features Section -->
+    <section id="features" class="py-24 px-6 border-t border-white/5 bg-darkcard/30">
+        <div class="max-w-[1400px] mx-auto">
+            <div class="text-center mb-16 reveal">
+                <h2 class="text-4xl font-bold text-white mb-4">Powerful Defense Mechanisms</h2>
+                <p class="text-lg text-slate-400">Built with cutting-edge machine learning to keep your organization secure.</p>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <!-- Feature 1 -->
-                <div class="bg-darkcard border border-slate-800 p-12 rounded-[2.5rem] hover:border-primary/50 transition-colors reveal delay-100 group">
-                    <div class="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center mb-10 group-hover:scale-110 transition-transform">
-                        <i class="fa-solid fa-microchip text-4xl text-primary"></i>
+                <div class="bg-darkcard border border-slate-800 p-10 rounded-3xl hover:border-primary/50 transition-colors reveal delay-100 group">
+                    <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-microchip text-3xl text-primary"></i>
                     </div>
-                    <h3 class="text-3xl font-semibold text-white mb-5">CNN Architecture</h3>
-                    <p class="text-lg lg:text-xl text-slate-400 leading-relaxed">Our Convolutional Neural Network analyzes complex spectrograms to detect the microscopic artifacts left behind by AI voice generators.</p>
+                    <h3 class="text-2xl font-semibold text-white mb-4">CNN Architecture</h3>
+                    <p class="text-slate-400 leading-relaxed">Our Convolutional Neural Network analyzes complex spectrograms to detect the microscopic artifacts left behind by AI voice generators.</p>
                 </div>
                 
                 <!-- Feature 2 -->
-                <div class="bg-darkcard border border-slate-800 p-12 rounded-[2.5rem] hover:border-purple-500/50 transition-colors reveal delay-200 group">
-                    <div class="w-20 h-20 bg-purple-500/10 rounded-2xl flex items-center justify-center mb-10 group-hover:scale-110 transition-transform">
-                        <i class="fa-solid fa-wave-square text-4xl text-purple-400"></i>
+                <div class="bg-darkcard border border-slate-800 p-10 rounded-3xl hover:border-purple-500/50 transition-colors reveal delay-200 group">
+                    <div class="w-16 h-16 bg-purple-500/10 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-wave-square text-3xl text-purple-400"></i>
                     </div>
-                    <h3 class="text-3xl font-semibold text-white mb-5">Librosa Extraction</h3>
-                    <p class="text-lg lg:text-xl text-slate-400 leading-relaxed">Utilizes advanced Librosa audio analysis to extract MFCCs, chroma features, and spectral contrast for highly accurate threat scoring.</p>
+                    <h3 class="text-2xl font-semibold text-white mb-4">Librosa Extraction</h3>
+                    <p class="text-slate-400 leading-relaxed">Utilizes advanced Librosa audio analysis to extract MFCCs, chroma features, and spectral contrast for highly accurate threat scoring.</p>
                 </div>
                 
                 <!-- Feature 3 -->
-                <div class="bg-darkcard border border-slate-800 p-12 rounded-[2.5rem] hover:border-safe/50 transition-colors reveal delay-300 group">
-                    <div class="w-20 h-20 bg-safe/10 rounded-2xl flex items-center justify-center mb-10 group-hover:scale-110 transition-transform">
-                        <i class="fa-solid fa-shield-virus text-4xl text-safe"></i>
+                <div class="bg-darkcard border border-slate-800 p-10 rounded-3xl hover:border-safe/50 transition-colors reveal delay-300 group">
+                    <div class="w-16 h-16 bg-safe/10 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-shield-virus text-3xl text-safe"></i>
                     </div>
-                    <h3 class="text-3xl font-semibold text-white mb-5">Vishing Prevention</h3>
-                    <p class="text-lg lg:text-xl text-slate-400 leading-relaxed">Specifically engineered to defend against Voice Phishing (Vishing) attacks targeting corporate help desks and financial institutions.</p>
+                    <h3 class="text-2xl font-semibold text-white mb-4">Vishing Prevention</h3>
+                    <p class="text-slate-400 leading-relaxed">Specifically engineered to defend against Voice Phishing (Vishing) attacks targeting corporate help desks and financial institutions.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- UPSCALED Pricing Section -->
-    <section id="pricing" class="py-32 px-6 border-t border-white/5 relative">
-        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[600px] bg-primary/10 blur-[150px] rounded-full z-0 pointer-events-none"></div>
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-24 px-6 border-t border-white/5 relative">
+        <!-- Background Glow -->
+        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-primary/20 blur-[120px] rounded-full z-0 pointer-events-none"></div>
 
-        <div class="max-w-[1400px] mx-auto relative z-10">
-            <div class="text-center mb-20 reveal">
-                <h2 class="text-5xl lg:text-6xl font-bold text-white mb-6">Choose Your Protection Level</h2>
-                <p class="text-xl lg:text-2xl text-slate-400">Start scanning for free, or upgrade for enterprise-grade accuracy.</p>
+        <div class="max-w-[1200px] mx-auto relative z-10">
+            <div class="text-center mb-16 reveal">
+                <h2 class="text-4xl font-bold text-white mb-4">Choose Your Protection Level</h2>
+                <p class="text-lg text-slate-400">Start scanning for free, or upgrade for enterprise-grade accuracy.</p>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-5xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
                 <!-- Free Tier -->
-                <div class="bg-darkcard border border-slate-800 p-12 rounded-[2.5rem] flex flex-col reveal delay-100">
-                    <h3 class="text-3xl font-semibold text-white mb-3">Basic Tier</h3>
-                    <div class="text-6xl font-bold text-white mb-8">Free</div>
-                    <p class="text-lg text-slate-400 mb-10 border-b border-slate-800 pb-10">Perfect for individuals wanting to verify suspicious voicemails.</p>
-                    <ul class="space-y-6 mb-12 flex-1 text-lg">
-                        <li class="flex items-center text-slate-300"><i class="fa-solid fa-check text-safe mr-4 text-xl"></i> 5 Scans per day limit</li>
-                        <li class="flex items-center text-slate-300"><i class="fa-solid fa-check text-safe mr-4 text-xl"></i> Standard CNN Accuracy</li>
-                        <li class="flex items-center text-slate-300"><i class="fa-solid fa-check text-safe mr-4 text-xl"></i> Support for MP3 & WAV</li>
+                <div class="bg-darkcard border border-slate-800 p-10 rounded-3xl flex flex-col reveal delay-100">
+                    <h3 class="text-2xl font-semibold text-white mb-2">Basic Tier</h3>
+                    <div class="text-4xl font-bold text-white mb-6">Free</div>
+                    <p class="text-slate-400 mb-8 border-b border-slate-800 pb-8">Perfect for individuals wanting to verify suspicious voicemails.</p>
+                    <ul class="space-y-4 mb-10 flex-1">
+                        <li class="flex items-center text-slate-300"><i class="fa-solid fa-check text-safe mr-3"></i> 5 Scans per day limit</li>
+                        <li class="flex items-center text-slate-300"><i class="fa-solid fa-check text-safe mr-3"></i> Standard CNN Accuracy</li>
+                        <li class="flex items-center text-slate-300"><i class="fa-solid fa-check text-safe mr-3"></i> Support for MP3 & WAV</li>
                     </ul>
-                    <a href="/signup" class="w-full text-center bg-slate-800 hover:bg-slate-700 text-white py-5 rounded-2xl font-bold text-xl transition-colors">
+                    <a href="/signup" class="w-full text-center bg-slate-800 hover:bg-slate-700 text-white py-4 rounded-xl font-semibold transition-colors">
                         Create Free Account
                     </a>
                 </div>
 
                 <!-- Pro Tier -->
-                <div class="bg-gradient-to-b from-darkcard to-darkbg border border-primary/50 p-12 rounded-[2.5rem] flex flex-col relative reveal delay-200 shadow-[0_0_50px_rgba(59,130,246,0.15)] transform md:-translate-y-6">
-                    <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-white px-6 py-2 rounded-full text-base font-bold tracking-widest">
+                <div class="bg-gradient-to-b from-darkcard to-darkbg border border-primary/50 p-10 rounded-3xl flex flex-col relative reveal delay-200 shadow-[0_0_40px_rgba(59,130,246,0.15)] transform md:-translate-y-4">
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-white px-4 py-1 rounded-full text-sm font-bold tracking-wide">
                         RECOMMENDED
                     </div>
-                    <h3 class="text-3xl font-semibold text-white mb-3">DeepGuard Pro</h3>
-                    <div class="text-6xl font-bold text-white mb-8">$15<span class="text-2xl text-slate-400 font-normal">/mo</span></div>
-                    <p class="text-lg text-slate-400 mb-10 border-b border-slate-700 pb-10">For businesses requiring maximum security and unlimited analysis.</p>
-                    <ul class="space-y-6 mb-12 flex-1 text-lg">
-                        <li class="flex items-center text-white"><i class="fa-solid fa-check text-primary mr-4 text-xl"></i> <strong>Unlimited</strong> Audio Scans</li>
-                        <li class="flex items-center text-white"><i class="fa-solid fa-check text-primary mr-4 text-xl"></i> Maximum Accuracy Analysis</li>
-                        <li class="flex items-center text-white"><i class="fa-solid fa-check text-primary mr-4 text-xl"></i> Save & Export Scan History</li>
-                        <li class="flex items-center text-white"><i class="fa-solid fa-check text-primary mr-4 text-xl"></i> Multi-Factor Auth (MFA)</li>
+                    <h3 class="text-2xl font-semibold text-white mb-2">DeepGuard Pro</h3>
+                    <div class="text-4xl font-bold text-white mb-6">$15<span class="text-xl text-slate-400 font-normal">/mo</span></div>
+                    <p class="text-slate-400 mb-8 border-b border-slate-700 pb-8">For businesses requiring maximum security and unlimited analysis.</p>
+                    <ul class="space-y-4 mb-10 flex-1">
+                        <li class="flex items-center text-white"><i class="fa-solid fa-check text-primary mr-3"></i> <strong>Unlimited</strong> Audio Scans</li>
+                        <li class="flex items-center text-white"><i class="fa-solid fa-check text-primary mr-3"></i> Maximum Accuracy Analysis</li>
+                        <li class="flex items-center text-white"><i class="fa-solid fa-check text-primary mr-3"></i> Save & Export Scan History</li>
+                        <li class="flex items-center text-white"><i class="fa-solid fa-check text-primary mr-3"></i> Multi-Factor Auth (MFA)</li>
                     </ul>
-                    <a href="/signup" class="w-full text-center bg-primary hover:bg-blue-600 text-white py-5 rounded-2xl font-bold text-xl transition-colors shadow-lg shadow-primary/30">
+                    <a href="/signup" class="w-full text-center bg-primary hover:bg-blue-600 text-white py-4 rounded-xl font-semibold transition-colors shadow-lg shadow-primary/30">
                         Subscribe to Pro
                     </a>
                 </div>
@@ -171,58 +171,58 @@
         </div>
     </section>
 
-    <!-- UPSCALED The Team Section -->
-    <section id="team" class="py-32 px-6 border-t border-white/5 bg-darkcard/30">
-        <div class="max-w-[1600px] mx-auto">
-            <div class="text-center mb-20 reveal">
-                <h2 class="text-5xl lg:text-6xl font-bold text-white mb-6">Meet the Developers</h2>
-                <p class="text-xl lg:text-2xl text-slate-400">The cybersecurity minds behind the DeepGuard engine.</p>
+    <!-- The Team Section -->
+    <section id="team" class="py-24 px-6 border-t border-white/5 bg-darkcard/30">
+        <div class="max-w-[1400px] mx-auto">
+            <div class="text-center mb-16 reveal">
+                <h2 class="text-4xl font-bold text-white mb-4">Meet the Developers</h2>
+                <p class="text-lg text-slate-400">The cybersecurity minds behind the DeepGuard engine.</p>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <!-- Team Member 1 -->
-                <div class="bg-darkbg border border-slate-800 p-12 rounded-[2.5rem] text-center hover:border-slate-600 transition-colors reveal delay-100">
-                    <div class="w-32 h-32 bg-slate-800 rounded-full mx-auto mb-8 flex items-center justify-center border-2 border-primary/30">
-                        <i class="fa-solid fa-user-shield text-5xl text-slate-400"></i>
+                <div class="bg-darkbg border border-slate-800 p-8 rounded-3xl text-center hover:border-slate-600 transition-colors reveal delay-100">
+                    <div class="w-24 h-24 bg-slate-800 rounded-full mx-auto mb-6 flex items-center justify-center border-2 border-primary/30">
+                        <i class="fa-solid fa-user-shield text-3xl text-slate-400"></i>
                     </div>
-                    <h3 class="text-3xl font-bold text-white mb-2">Afiq Danish</h3>
-                    <p class="text-primary text-lg font-medium mb-5">Lead Developer</p>
-                    <p class="text-slate-500 text-base lg:text-lg leading-relaxed">Specializing in machine learning integration, full-stack architecture, and cybersecurity protocols.</p>
+                    <h3 class="text-xl font-bold text-white mb-1">Afiq Danish</h3>
+                    <p class="text-primary text-sm font-medium mb-4">Lead Developer</p>
+                    <p class="text-slate-500 text-sm">Specializing in machine learning integration, full-stack architecture, and cybersecurity protocols.</p>
                 </div>
                 
                 <!-- Team Member 2 -->
-                <div class="bg-darkbg border border-slate-800 p-12 rounded-[2.5rem] text-center hover:border-slate-600 transition-colors reveal delay-200">
-                    <div class="w-32 h-32 bg-slate-800 rounded-full mx-auto mb-8 flex items-center justify-center border-2 border-primary/30">
-                        <i class="fa-solid fa-user-lock text-5xl text-slate-400"></i>
+                <div class="bg-darkbg border border-slate-800 p-8 rounded-3xl text-center hover:border-slate-600 transition-colors reveal delay-200">
+                    <div class="w-24 h-24 bg-slate-800 rounded-full mx-auto mb-6 flex items-center justify-center border-2 border-primary/30">
+                        <i class="fa-solid fa-user-lock text-3xl text-slate-400"></i>
                     </div>
-                    <h3 class="text-3xl font-bold text-white mb-2">Haris Iskandar</h3>
-                    <p class="text-primary text-lg font-medium mb-5">Security Engineer</p>
-                    <p class="text-slate-500 text-base lg:text-lg leading-relaxed">Focused on data forensics, neural network training datasets, and threat detection algorithms.</p>
+                    <h3 class="text-xl font-bold text-white mb-1">Haris Iskandar</h3>
+                    <p class="text-primary text-sm font-medium mb-4">Security Engineer</p>
+                    <p class="text-slate-500 text-sm">Focused on data forensics, neural network training datasets, and threat detection algorithms.</p>
                 </div>
                 
                 <!-- Team Member 3 -->
-                <div class="bg-darkbg border border-slate-800 p-12 rounded-[2.5rem] text-center hover:border-slate-600 transition-colors reveal delay-300">
-                    <div class="w-32 h-32 bg-slate-800 rounded-full mx-auto mb-8 flex items-center justify-center border-2 border-primary/30">
-                        <i class="fa-solid fa-server text-5xl text-slate-400"></i>
+                <div class="bg-darkbg border border-slate-800 p-8 rounded-3xl text-center hover:border-slate-600 transition-colors reveal delay-300">
+                    <div class="w-24 h-24 bg-slate-800 rounded-full mx-auto mb-6 flex items-center justify-center border-2 border-primary/30">
+                        <i class="fa-solid fa-server text-3xl text-slate-400"></i>
                     </div>
-                    <h3 class="text-3xl font-bold text-white mb-2">Megat Daniel</h3>
-                    <p class="text-primary text-lg font-medium mb-5">Systems Architect</p>
-                    <p class="text-slate-500 text-base lg:text-lg leading-relaxed">Managing cloud infrastructure, model deployment pipelines, and database optimization.</p>
+                    <h3 class="text-xl font-bold text-white mb-1">Megat Daniel</h3>
+                    <p class="text-primary text-sm font-medium mb-4">Systems Architect</p>
+                    <p class="text-slate-500 text-sm">Managing cloud infrastructure, model deployment pipelines, and database optimization.</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="py-16 border-t border-white/5 bg-darkbg text-center text-slate-500 text-base lg:text-lg">
+    <footer class="py-12 border-t border-white/5 bg-darkbg text-center text-slate-500 text-sm">
         <p>&copy; 2026 DeepGuard Audio Forensics. All rights reserved.</p>
     </footer>
 
-    <!-- Scroll Animation Logic -->
+    <!-- Scroll Animation Logic & Smooth Scroll Interceptor -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Scroll Reveal Animation
             const reveals = document.querySelectorAll('.reveal');
-            
             const revealOptions = {
                 threshold: 0.15,
                 rootMargin: "0px 0px -50px 0px" 
@@ -241,6 +241,21 @@
 
             reveals.forEach(reveal => {
                 revealOnScroll.observe(reveal);
+            });
+
+            // Hide URL Hash on Click
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    
+                    if (targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    }
+                });
             });
         });
     </script>
