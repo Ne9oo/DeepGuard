@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepGuard | User Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = { 
+            darkMode: 'class', 
+            theme: { 
+                extend: { 
+                    colors: { primary: '#3b82f6', alert: '#ef4444', safe: '#10b981', darkbg: '#0a0f1c', darkcard: '#111827' }, 
+                    fontFamily: { sans: ['Inter', 'sans-serif'], tech: ['Orbitron', 'sans-serif'] },
+                    animation: { 'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite', 'spin-slow': 'spin 8s linear infinite' }
+                } 
+            } 
+        }
+    </script>
+</head>
+<body class="bg-darkbg text-slate-300 antialiased h-screen overflow-hidden flex flex-col selection:bg-primary/30 relative">
+
+    <!-- Ambient Background -->
+    <div class="absolute w-[800px] h-[800px] bg-primary/10 rounded-full blur-[150px] top-[-300px] right-[-100px] pointer-events-none z-0"></div>
+    <div class="absolute w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[150px] bottom-[-200px] left-[-200px] pointer-events-none z-0"></div>
+
+    <!-- Top Navigation -->
+    <nav class="h-20 border-b border-white/5 bg-darkcard/50 backdrop-blur-xl relative z-20 flex items-center justify-between px-8">
+        <div class="flex items-center space-x-3">
+            <i class="fa-solid fa-shield-halved text-primary text-3xl"></i>
+            <span class="text-2xl font-bold text-white tracking-wider font-tech">DeepGuard</span>
+        </div>
+        
+        <div class="flex items-center space-x-6">
+            <div class="text-right hidden md:block">
+                <p class="text-sm font-semibold text-white">{{ current_user.username | default('User') }}</p>
+                <p class="text-xs text-primary">Basic Tier</p>
+            </div>
+            <div class="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center cursor-pointer hover:border-primary transition-colors">
+                <i class="fa-solid fa-user text-slate-400"></i>
+            </div>
+            <a href="/logout" class="text-slate-500 hover:text-alert transition-colors" title="Log Out">
+                <i class="fa-solid fa-arrow-right-from-bracket text-xl"></i>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Workspace -->
+    <div class="flex-1 flex overflow-hidden relative z-10 p-6 gap-6 max-w-[1600px] w-full mx-auto">
+        
+        <!-- Floating Glass Sidebar -->
+        <aside class="w-72 flex-shrink-0 bg-darkcard/40 backdrop-blur-xl border border-white/10 rounded-[2rem] p-6 flex flex-col justify-between hidden lg:flex shadow-2xl">
+            <div class="space-y-2">
+                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 px-4">Menu</p>
+                
+                <a href="/dashboard" class="flex items-center space-x-4 px-4 py-3 bg-primary/10 text-primary rounded-xl font-medium border border-primary/20 transition-all">
+                    <i class="fa-solid fa-radar w-5"></i>
+                    <span>Audio Scanner</span>
+                </a>
+                
+                <a href="#" class="flex items-center space-x-4 px-4 py-3 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
+                    <i class="fa-solid fa-clock-rotate-left w-5"></i>
+                    <span>Scan History</span>
+                </a>
+                
+                <a href="#" class="flex items-center space-x-4 px-4 py-3 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
+                    <i class="fa-solid fa-crown w-5"></i>
+                    <span>Subscription</span>
+                </a>
+                
+                <a href="#" class="flex items-center space-x-4 px-4 py-3 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
+                    <i class="fa-regular fa-id-badge w-5"></i>
+                    <span>Profile</span>
+                </a>
+                
+                <a href="#" class="flex items-center space-x-4 px-4 py-3 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
+                    <i class="fa-solid fa-gear w-5"></i>
+                    <span>Settings</span>
+                </a>
+            </div>
+
+            <!-- Usage Widget -->
+            <div class="bg-darkbg/50 border border-white/5 rounded-2xl p-5 mt-auto">
+                <div class="flex justify-between items-end mb-2">
+                    <span class="text-sm font-medium text-slate-300">Daily Scans</span>
+                    <span class="text-xs text-primary font-bold">0 / 5</span>
+                </div>
+                <div class="w-full bg-slate-800 rounded-full h-2 mb-3">
+                    <div class="bg-primary h-2 rounded-full" style="width: 0%"></div>
+                </div>
+                <a href="#" class="text-xs text-slate-400 hover:text-white transition-colors flex items-center">
+                    Upgrade to Pro <i class="fa-solid fa-arrow-right ml-2"></i>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Scanner Area -->
+        <main class="flex-1 flex flex-col bg-darkcard/40 backdrop-blur-xl border border-white/10 rounded-[2rem] p-8 lg:p-12 shadow-2xl overflow-y-auto">
+            
+            <header class="mb-10 flex justify-between items-center">
+                <div>
+                    <h1 class="text-3xl font-bold text-white mb-2">Voice Forensics Engine</h1>
+                    <p class="text-slate-400">Upload a suspicious audio file for real-time CNN analysis.</p>
+                </div>
+                <div class="px-4 py-2 bg-safe/10 border border-safe/20 rounded-full flex items-center text-safe text-sm font-semibold shadow-[0_0_15px_rgba(16,185,129,0.15)]">
+                    <div class="w-2 h-2 bg-safe rounded-full mr-2 animate-pulse"></div> Engine Online
+                </div>
+            </header>
+
+            <!-- Drag & Drop Zone -->
+            <div class="flex-1 border-2 border-dashed border-slate-700 hover:border-primary/50 bg-darkbg/30 hover:bg-darkbg/50 rounded-3xl transition-all flex flex-col items-center justify-center p-10 cursor-pointer group relative overflow-hidden">
+                
+                <!-- Background Pulse Effect -->
+                <div class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                
+                <div class="w-24 h-24 bg-slate-800 border border-slate-700 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 relative z-10">
+                    <i class="fa-solid fa-cloud-arrow-up text-4xl text-primary group-hover:text-white transition-colors"></i>
+                </div>
+                
+                <h3 class="text-2xl font-semibold text-white mb-3 relative z-10">Drag & Drop Audio Here</h3>
+                <p class="text-slate-400 mb-8 text-center max-w-md relative z-10">Supported formats: .WAV, .MP3 (Max file size: 10MB)</p>
+                
+                <button class="bg-slate-800 hover:bg-primary text-white border border-slate-700 hover:border-transparent px-8 py-3 rounded-xl font-medium transition-all shadow-lg relative z-10">
+                    Browse Files
+                </button>
+            </div>
+
+            <!-- Analysis Status Box (Hidden by default, shown during scan) -->
+            <div class="mt-8 bg-darkbg/50 border border-white/5 rounded-2xl p-6 hidden">
+                <h4 class="text-white font-medium mb-4 flex items-center">
+                    <i class="fa-solid fa-microchip text-primary mr-3"></i> Analyzing Spectrogram Data...
+                </h4>
+                <div class="w-full bg-slate-800 rounded-full h-1.5">
+                    <div class="bg-gradient-to-r from-primary to-purple-500 h-1.5 rounded-full w-2/3 animate-pulse"></div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+</body>
+</html>

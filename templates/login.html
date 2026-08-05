@@ -39,14 +39,21 @@
                 <p class="text-slate-400">Sign in to access the forensic dashboard.</p>
             </div>
 
-            <!-- Flash Messages (For invalid login errors) -->
+            <!-- Flash Messages -->
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     {% for category, message in messages %}
-                        <div class="bg-alert/10 border border-alert/30 text-alert px-4 py-3 rounded-xl mb-6 text-sm flex items-center">
-                            <i class="fa-solid fa-triangle-exclamation mr-3"></i>
-                            {{ message }}
-                        </div>
+                        {% if category == 'safe' %}
+                            <div class="bg-safe/10 border border-safe/30 text-safe px-4 py-3 rounded-xl mb-6 text-sm flex items-center">
+                                <i class="fa-solid fa-circle-check mr-3"></i>
+                                {{ message }}
+                            </div>
+                        {% else %}
+                            <div class="bg-alert/10 border border-alert/30 text-alert px-4 py-3 rounded-xl mb-6 text-sm flex items-center">
+                                <i class="fa-solid fa-triangle-exclamation mr-3"></i>
+                                {{ message }}
+                            </div>
+                        {% endif %}
                     {% endfor %}
                 {% endif %}
             {% endwith %}
