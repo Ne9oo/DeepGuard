@@ -69,6 +69,14 @@ def login():
             
     return render_template('login.html')
 
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+        # We will add the database logic to create the user here later
+        pass
+    
+    return render_template('signup.html')
+
 @app.route('/logout')
 @login_required
 def logout():

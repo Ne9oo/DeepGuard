@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DeepGuard | Secure Login</title>
+    <title>DeepGuard | Create Account</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -20,26 +20,26 @@
         }
     </script>
 </head>
-<body class="bg-darkbg text-slate-300 antialiased min-h-screen flex items-center justify-center relative overflow-hidden selection:bg-primary/30">
+<body class="bg-darkbg text-slate-300 antialiased min-h-screen flex items-center justify-center relative overflow-hidden selection:bg-primary/30 py-10">
 
     <!-- Glowing Background Orbs -->
-    <div class="absolute w-[600px] h-[600px] bg-primary rounded-full blur-[120px] top-[-200px] left-[-100px] opacity-30 animate-pulse-slow z-0"></div>
-    <div class="absolute w-[500px] h-[500px] bg-purple-600 rounded-full blur-[120px] bottom-[-150px] right-[-100px] opacity-30 animate-pulse-slow z-0" style="animation-delay: 2s;"></div>
+    <div class="absolute w-[600px] h-[600px] bg-primary rounded-full blur-[120px] top-[-200px] left-[-100px] opacity-30 animate-pulse-slow z-0 fixed"></div>
+    <div class="absolute w-[500px] h-[500px] bg-purple-600 rounded-full blur-[120px] bottom-[-150px] right-[-100px] opacity-30 animate-pulse-slow z-0 fixed" style="animation-delay: 2s;"></div>
 
     <div class="w-full max-w-md p-6 relative z-10">
-        <!-- Glassmorphism Login Card -->
+        <!-- Glassmorphism Signup Card -->
         <div class="bg-darkcard/60 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-10 md:p-12 shadow-2xl">
             
             <!-- Logo & Header -->
-            <div class="text-center mb-10">
+            <div class="text-center mb-8">
                 <a href="/" class="inline-flex items-center space-x-3 cursor-pointer mb-4 hover:opacity-80 transition-opacity">
                     <i class="fa-solid fa-shield-halved text-primary text-4xl"></i>
                     <span class="text-3xl font-bold text-white tracking-wider font-tech">DeepGuard</span>
                 </a>
-                <p class="text-slate-400">Sign in to access the forensic dashboard.</p>
+                <p class="text-slate-400">Create an account to start scanning.</p>
             </div>
 
-            <!-- Flash Messages (For invalid login errors) -->
+            <!-- Flash Messages -->
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     {% for category, message in messages %}
@@ -52,7 +52,20 @@
             {% endwith %}
 
             <!-- Form -->
-            <form action="{{ url_for('login') }}" method="POST" class="space-y-6">
+            <form action="{{ url_for('signup') }}" method="POST" class="space-y-5">
+                
+                <!-- Username Input -->
+                <div>
+                    <label for="username" class="block text-sm font-medium text-slate-300 mb-2">Username</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i class="fa-solid fa-user text-slate-500"></i>
+                        </div>
+                        <input type="text" name="username" id="username" required 
+                            class="block w-full pl-11 pr-4 py-3.5 bg-darkbg border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
+                    </div>
+                </div>
+
                 <!-- Email Input -->
                 <div>
                     <label for="email" class="block text-sm font-medium text-slate-300 mb-2">Email Address</label>
@@ -67,10 +80,7 @@
 
                 <!-- Password Input -->
                 <div>
-                    <div class="flex items-center justify-between mb-2">
-                        <label for="password" class="block text-sm font-medium text-slate-300">Password</label>
-                        <a href="#" class="text-xs font-medium text-primary hover:text-blue-400 transition-colors">Forgot password?</a>
-                    </div>
+                    <label for="password" class="block text-sm font-medium text-slate-300 mb-2">Password</label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                             <i class="fa-solid fa-lock text-slate-500"></i>
@@ -80,16 +90,28 @@
                     </div>
                 </div>
 
+                <!-- Confirm Password Input -->
+                <div>
+                    <label for="confirm_password" class="block text-sm font-medium text-slate-300 mb-2">Confirm Password</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i class="fa-solid fa-circle-check text-slate-500"></i>
+                        </div>
+                        <input type="password" name="confirm_password" id="confirm_password" required 
+                            class="block w-full pl-11 pr-4 py-3.5 bg-darkbg border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
+                    </div>
+                </div>
+
                 <!-- Submit Button -->
-                <button type="submit" class="w-full bg-primary hover:bg-blue-600 text-white py-4 rounded-xl font-bold text-lg transition-all shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:shadow-[0_0_30px_rgba(59,130,246,0.5)] flex items-center justify-center mt-4">
-                    Sign In <i class="fa-solid fa-arrow-right-to-bracket ml-3"></i>
+                <button type="submit" class="w-full bg-primary hover:bg-blue-600 text-white py-4 rounded-xl font-bold text-lg transition-all shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:shadow-[0_0_30px_rgba(59,130,246,0.5)] flex items-center justify-center mt-6">
+                    Create Account <i class="fa-solid fa-user-plus ml-3"></i>
                 </button>
             </form>
 
-            <!-- Sign Up Link -->
+            <!-- Log In Link -->
             <div class="mt-8 text-center text-sm text-slate-400">
-                Don't have an account? 
-                <a href="/signup" class="text-primary font-semibold hover:text-blue-400 transition-colors ml-1">Sign up here</a>
+                Already have an account? 
+                <a href="/login" class="text-primary font-semibold hover:text-blue-400 transition-colors ml-1">Sign in here</a>
             </div>
         </div>
         
