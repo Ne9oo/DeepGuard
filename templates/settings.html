@@ -4,344 +4,215 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DeepGuard | Settings</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style> .no-scrollbar::-webkit-scrollbar { display: none; } .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; } </style>
     <script>
-        tailwind.config = { darkMode: 'class', theme: { extend: { colors: { primary: '#3b82f6', alert: '#ef4444', safe: '#10b981' }, fontFamily: { sans: ['Inter', 'sans-serif'], tech: ['Orbitron', 'sans-serif'], mono: ['Space Mono', 'monospace'] } } } }
-        const savedTheme = localStorage.getItem('theme') || 'dark'; const savedFont = localStorage.getItem('font') || 'sans';
-        if (savedTheme === 'light') document.documentElement.classList.remove('dark'); else document.documentElement.classList.add('dark');
-        document.documentElement.classList.add(`font-${savedFont}`);
+        tailwind.config = { 
+            darkMode: 'class', 
+            theme: { 
+                extend: { 
+                    colors: { primary: '#3b82f6', alert: '#ef4444', safe: '#10b981', darkbg: '#0a0f1c', darkcard: '#111827', lightbg: '#f8fafc', lightcard: '#ffffff' }, 
+                    fontFamily: { sans: ['Inter', 'sans-serif'], tech: ['Orbitron', 'sans-serif'] },
+                    animation: { 'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite', 'spin-slow': 'spin 8s linear infinite' }
+                } 
+            } 
+        }
     </script>
 </head>
-<body class="bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-300 antialiased h-screen flex overflow-hidden transition-colors duration-300">
+<body class="bg-darkbg text-slate-300 dark:text-slate-300 text-slate-800 antialiased h-screen overflow-hidden flex flex-col selection:bg-primary/30 relative transition-colors duration-300">
 
-    <aside class="w-80 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col justify-between hidden md:flex transition-colors duration-300">
-        <div>
-            <div class="h-24 shrink-0 flex items-center px-8 border-b border-slate-200 dark:border-slate-700">
-                <i class="fa-solid fa-shield-halved text-primary text-4xl mr-4"></i>
-                <h1 class="text-3xl font-bold text-slate-900 dark:text-white tracking-wider">DeepGuard</h1>
-            </div>
-            <nav class="p-6 space-y-4">
-                <a href="{{ '/admin' if current_user.is_authenticated else '/' }}" class="flex items-center px-6 py-4 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50 hover:text-slate-900 dark:hover:text-white rounded-xl transition-colors">
-                    <i class="fa-solid fa-chart-line text-2xl w-10"></i>
-                    <span class="font-medium text-xl" data-translate="nav_dashboard">Dashboard</span>
-                </a>
-                <a href="#" class="flex items-center px-6 py-4 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50 hover:text-slate-900 dark:hover:text-white rounded-xl transition-colors">
-                    <i class="fa-solid fa-folder-open text-2xl w-10"></i>
-                    <span class="font-medium text-xl" data-translate="nav_history">Scan History</span>
-                </a>
-                <a href="/settings" class="flex items-center px-6 py-4 bg-primary/10 text-primary rounded-xl transition-colors">
-                    <i class="fa-solid fa-gear text-2xl w-10"></i>
-                    <span class="font-medium text-xl" data-translate="nav_settings">Settings</span>
-                </a>
-            </nav>
-        </div>
-        <div class="p-8 border-t border-slate-200 dark:border-slate-700 text-lg text-slate-500 dark:text-slate-400 shrink-0">
-            <p><span data-translate="sys_status">System Status:</span> <span class="text-safe flex items-center inline-flex"><span class="w-3 h-3 rounded-full bg-safe mr-2"></span> <span data-translate="sys_ready">Ready</span></span></p>
-        </div>
-    </aside>
+    <!-- Ambient Background -->
+    <div class="absolute w-[800px] h-[800px] bg-primary/10 rounded-full blur-[150px] top-[-300px] right-[-100px] pointer-events-none z-0"></div>
+    <div class="absolute w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[150px] bottom-[-200px] left-[-200px] pointer-events-none z-0"></div>
 
-    <main class="flex-1 flex flex-col h-full overflow-y-auto relative no-scrollbar">
+    <!-- Top Navigation -->
+    <nav class="h-20 border-b border-white/5 dark:border-white/5 border-slate-200 bg-white/50 dark:bg-darkcard/50 backdrop-blur-xl relative z-20 flex items-center justify-between px-8 transition-colors duration-300">
+        <div class="flex items-center space-x-3">
+            <i class="fa-solid fa-shield-halved text-primary text-3xl"></i>
+            <span class="text-2xl font-bold dark:text-white text-slate-900 tracking-wider font-tech">DeepGuard</span>
+        </div>
         
-        <header class="h-24 shrink-0 sticky top-0 z-50 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-700 flex items-center justify-between px-10 transition-colors duration-300">
-            <h2 class="text-3xl font-semibold text-slate-900 dark:text-white" data-translate="set_title">System Settings</h2>
-            
-            <div class="relative">
-                {% if current_user.is_authenticated %}
-                    <button id="user-menu-button" onclick="toggleDropdown()" class="flex items-center space-x-3 bg-slate-100 dark:bg-slate-700/50 hover:bg-slate-200 dark:hover:bg-slate-600 px-6 py-3 rounded-full transition-colors focus:outline-none border border-slate-200 dark:border-slate-700">
-                        <i class="fa-solid fa-user text-base text-slate-500 dark:text-slate-300"></i>
-                        <span class="text-lg font-medium text-slate-700 dark:text-slate-200">Admin</span>
-                    </button>
-                {% else %}
-                    <button id="user-menu-button" onclick="toggleDropdown()" class="flex items-center space-x-3 bg-slate-100 dark:bg-slate-700/50 hover:bg-slate-200 dark:hover:bg-slate-600 pl-4 pr-6 py-3 rounded-full transition-colors focus:outline-none border border-slate-200 dark:border-slate-700">
-                        <div class="w-12 h-12 rounded-full bg-slate-300 dark:bg-slate-600 flex items-center justify-center text-slate-500 dark:text-slate-300">
-                            <i class="fa-regular fa-user text-xl"></i>
-                        </div>
-                        <i class="fa-solid fa-chevron-down text-base text-slate-400"></i>
-                    </button>
-                {% endif %}
-
-                <div id="user-dropdown" class="hidden absolute right-0 mt-3 w-80 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 py-3 z-50">
-                    
-                    {% if current_user.is_authenticated %}
-                        <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-700/50 text-lg text-slate-700 dark:text-slate-300 font-medium truncate">
-                            {{ current_user.email }}
-                        </div>
-                        <button class="w-full flex items-center px-6 py-4 text-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors mt-2">
-                            <i class="fa-regular fa-user w-8 text-slate-400 mr-2"></i>
-                            <span data-translate="menu_account">Account details</span>
-                        </button>
-                        <div class="border-t border-slate-100 dark:border-slate-700/50 my-2"></div>
-                    {% else %}
-                        <a href="{{ url_for('login') }}" class="w-full flex items-center px-6 py-4 text-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-                            <i class="fa-solid fa-arrow-right-to-bracket w-8 text-slate-400 mr-2"></i>
-                            <span data-translate="menu_login">Log in / Sign Up</span>
-                        </a>
-                        <div class="border-t border-slate-100 dark:border-slate-700/50 my-2"></div>
-                    {% endif %}
-                    
-                    <div class="relative group/lang">
-                        <button class="w-full flex items-center justify-between px-6 py-4 text-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-                            <div class="flex items-center">
-                                <i class="fa-solid fa-globe w-8 text-slate-400 mr-2"></i>
-                                <span id="current-lang-display">English</span>
-                            </div>
-                            <i class="fa-solid fa-chevron-right text-sm text-slate-400"></i>
-                        </button>
-                        
-                        <div class="hidden group-hover/lang:block absolute right-[96%] top-0 w-64 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 py-2 z-50">
-                            <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-700/50 flex justify-between items-center relative group/tooltip cursor-default">
-                                <span class="text-base font-medium text-slate-500 dark:text-slate-400" data-translate="menu_site_lang">Site language</span>
-                            </div>
-                            <div id="language-list" class="py-1"></div>
-                        </div>
-                    </div>
-                    
-                    <button onclick="toggleThemeFromMenu()" class="w-full flex items-center justify-between px-6 py-4 text-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-                        <div class="flex items-center">
-                            <i class="fa-solid fa-moon w-8 text-slate-400 mr-2"></i>
-                            <span data-translate="menu_darkmode">Dark mode</span>
-                        </div>
-                        <div id="menu-theme-toggle" class="w-12 h-6 rounded-full relative transition-colors duration-200">
-                            <div id="menu-theme-knob" class="w-5 h-5 bg-white rounded-full absolute top-0.5 transition-all duration-200"></div>
-                        </div>
-                    </button>
-                    
-                    <div class="border-t border-slate-100 dark:border-slate-700/50 my-2"></div>
-                    
-                    <button class="w-full flex items-center px-6 py-4 text-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-                        <i class="fa-regular fa-circle-question w-8 text-slate-400 mr-2"></i>
-                        <span data-translate="menu_help">Help Center</span>
-                    </button>
-                    <button class="w-full flex items-center px-6 py-4 text-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-                        <i class="fa-regular fa-envelope w-8 text-slate-400 mr-2"></i>
-                        <span data-translate="menu_contact">Contact us</span>
-                    </button>
-                    <button class="w-full flex items-center justify-between px-6 py-4 text-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-                        <div class="flex items-center">
-                            <i class="fa-solid fa-circle-info w-8 text-slate-400 mr-2"></i>
-                            <span data-translate="menu_legal">Legal</span>
-                        </div>
-                        <i class="fa-solid fa-chevron-right text-sm text-slate-400"></i>
-                    </button>
-
-                    {% if current_user.is_authenticated %}
-                        <div class="border-t border-slate-100 dark:border-slate-700/50 my-2"></div>
-                        <a href="/logout" class="w-full flex items-center px-6 py-4 text-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-                            <i class="fa-solid fa-arrow-right-from-bracket w-8 text-slate-400 mr-2"></i>
-                            <span data-translate="menu_logout">Log out</span>
-                        </a>
-                    {% endif %}
-                </div>
+        <div class="flex items-center space-x-6">
+            <div class="text-right hidden md:block">
+                <p class="text-sm font-semibold dark:text-white text-slate-900">{{ current_user.username }}</p>
+                <p class="text-xs text-primary">{% if current_user.is_pro %}Pro Tier{% else %}Basic Tier{% endif %}</p>
             </div>
-        </header>
+            <a href="/profile" class="w-10 h-10 rounded-full dark:bg-slate-800 bg-slate-200 border dark:border-slate-700 border-slate-300 flex items-center justify-center cursor-pointer hover:border-primary transition-colors">
+                <i class="fa-solid fa-user dark:text-slate-400 text-slate-600"></i>
+            </a>
+            <a href="/logout" class="dark:text-slate-500 text-slate-400 hover:text-alert transition-colors" title="Log Out">
+                <i class="fa-solid fa-arrow-right-from-bracket text-xl"></i>
+            </a>
+        </div>
+    </nav>
 
-        <div class="p-10 lg:p-16 max-w-[1400px] mx-auto w-full space-y-12 flex-1">
+    <!-- Main Workspace -->
+    <div class="flex-1 flex overflow-hidden relative z-10 p-6 gap-6 max-w-[1600px] w-full mx-auto">
+        
+        <!-- Floating Glass Sidebar -->
+        <aside class="w-72 flex-shrink-0 dark:bg-darkcard/40 bg-white/60 backdrop-blur-xl border border-white/10 dark:border-white/10 border-slate-200 rounded-[2rem] p-6 flex flex-col justify-between hidden lg:flex shadow-2xl transition-colors duration-300">
+            <div class="space-y-2">
+                <p class="text-xs font-bold dark:text-slate-500 text-slate-400 uppercase tracking-wider mb-4 px-4">Menu</p>
+                
+                <a href="/dashboard" class="flex items-center space-x-4 px-4 py-3 dark:text-slate-400 text-slate-600 hover:text-primary dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl font-medium transition-all">
+                    <i class="fa-solid fa-radar w-5"></i>
+                    <span>Audio Scanner</span>
+                </a>
+                
+                <a href="#" class="flex items-center space-x-4 px-4 py-3 dark:text-slate-400 text-slate-600 hover:text-primary dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl font-medium transition-all">
+                    <i class="fa-solid fa-clock-rotate-left w-5"></i>
+                    <span>Scan History</span>
+                </a>
+                
+                <a href="#" class="flex items-center space-x-4 px-4 py-3 dark:text-slate-400 text-slate-600 hover:text-primary dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl font-medium transition-all">
+                    <i class="fa-solid fa-crown w-5"></i>
+                    <span>Subscription</span>
+                </a>
+                
+                <a href="/profile" class="flex items-center space-x-4 px-4 py-3 dark:text-slate-400 text-slate-600 hover:text-primary dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl font-medium transition-all">
+                    <i class="fa-regular fa-id-badge w-5"></i>
+                    <span>Profile</span>
+                </a>
+                
+                <!-- Active Link -->
+                <a href="/settings" class="flex items-center space-x-4 px-4 py-3 bg-primary/10 text-primary rounded-xl font-medium border border-primary/20 transition-all">
+                    <i class="fa-solid fa-gear w-5"></i>
+                    <span>Settings</span>
+                </a>
+            </div>
+
+            <!-- Usage Widget -->
+            <div class="dark:bg-darkbg/50 bg-slate-100/50 border border-white/5 dark:border-white/5 border-slate-200 rounded-2xl p-5 mt-auto transition-colors duration-300">
+                <div class="flex justify-between items-end mb-2">
+                    <span class="text-sm font-medium dark:text-slate-300 text-slate-700">Daily Scans</span>
+                    <span class="text-xs text-primary font-bold">{{ current_user.scans_used }} / 5</span>
+                </div>
+                <div class="w-full dark:bg-slate-800 bg-slate-300 rounded-full h-2 mb-3">
+                    <div class="bg-primary h-2 rounded-full" style="width: {{ (current_user.scans_used / 5) * 100 }}%"></div>
+                </div>
+                <a href="#" class="text-xs dark:text-slate-400 text-slate-500 hover:text-primary dark:hover:text-white transition-colors flex items-center">
+                    Upgrade to Pro <i class="fa-solid fa-arrow-right ml-2"></i>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Settings Area -->
+        <main class="flex-1 flex flex-col dark:bg-darkcard/40 bg-white/60 backdrop-blur-xl border border-white/10 dark:border-white/10 border-slate-200 rounded-[2rem] p-8 lg:p-12 shadow-2xl overflow-y-auto transition-colors duration-300">
             
-            <section class="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-xl overflow-hidden">
-                <div class="p-10 border-b border-slate-200 dark:border-slate-700">
-                    <h3 class="text-3xl font-semibold text-slate-900 dark:text-white" data-translate="set_app_title">Appearance & Localization</h3>
-                    <p class="text-xl text-slate-500 dark:text-slate-400 mt-3" data-translate="set_app_desc">Customize how DeepGuard looks and reads on your device.</p>
-                </div>
-                <div class="p-12 space-y-12">
-                    <div>
-                        <h4 class="text-xl font-medium text-slate-900 dark:text-white mb-6 uppercase tracking-wider" data-translate="set_theme">Theme Profile</h4>
-                        <div class="grid grid-cols-2 gap-10 max-w-3xl">
-                            <button id="btn-light" onclick="previewTheme('light')" class="rounded-2xl py-10 flex flex-col items-center justify-center transition-all cursor-pointer border shadow-md">
-                                <i class="fa-solid fa-sun text-6xl mb-4"></i>
-                                <span class="font-medium text-2xl" data-translate="set_light">Light</span>
-                            </button>
-                            <button id="btn-dark" onclick="previewTheme('dark')" class="rounded-2xl py-10 flex flex-col items-center justify-center transition-all cursor-pointer border shadow-md">
-                                <i class="fa-solid fa-moon text-6xl mb-4"></i>
-                                <span class="font-medium text-2xl" data-translate="set_dark">Dark</span>
-                            </button>
-                        </div>
-                    </div>
-                    <hr class="border-slate-200 dark:border-slate-700">
-                    <div>
-                        <h4 class="text-xl font-medium text-slate-900 dark:text-white mb-6 uppercase tracking-wider" data-translate="set_typo">System Typography</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl">
-                            <button id="font-sans" onclick="previewFont('sans')" class="rounded-2xl py-10 flex flex-col items-center justify-center transition-all cursor-pointer border shadow-md font-sans">
-                                <span class="text-5xl mb-4 font-bold">Aa</span>
-                                <span class="text-xl" data-translate="set_font_default">Default (Inter)</span>
-                            </button>
-                            <button id="font-tech" onclick="previewFont('tech')" class="rounded-2xl py-10 flex flex-col items-center justify-center transition-all cursor-pointer border shadow-md font-tech tracking-wide">
-                                <span class="text-5xl mb-4 font-bold">Aa</span>
-                                <span class="text-xl" data-translate="set_font_tech">Tech (Orbitron)</span>
-                            </button>
-                            <button id="font-mono" onclick="previewFont('mono')" class="rounded-2xl py-10 flex flex-col items-center justify-center transition-all cursor-pointer border shadow-md font-mono">
-                                <span class="text-5xl mb-4 font-bold">Aa</span>
-                                <span class="text-xl" data-translate="set_font_term">Terminal (Mono)</span>
-                            </button>
-                        </div>
-                    </div>
-                    <hr class="border-slate-200 dark:border-slate-700">
-                    <div>
-                        <h4 class="text-xl font-medium text-slate-900 dark:text-white mb-6 uppercase tracking-wider" data-translate="set_syslang">System Language</h4>
-                        <select id="settings-language" onchange="previewLanguage(this.value)" class="max-w-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white text-xl rounded-2xl focus:ring-primary focus:border-primary block w-full p-5">
-                            <option value="English">English</option>
-                            <option value="Deutsch">Deutsch</option>
-                            <option value="Français">Français</option>
-                            <option value="Español">Español</option>
-                            <option value="Nederlands">Nederlands</option>
-                            <option value="Português">Português</option>
-                        </select>
-                    </div>
-                </div>
-            </section>
+            <header class="mb-10">
+                <h1 class="text-3xl font-bold dark:text-white text-slate-900 mb-2">System Settings</h1>
+                <p class="dark:text-slate-400 text-slate-600">Customize your DeepGuard interface and analysis preferences.</p>
+            </header>
 
-            <section class="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-xl overflow-hidden">
-                <div class="p-10 border-b border-slate-200 dark:border-slate-700">
-                    <h3 class="text-3xl font-semibold text-slate-900 dark:text-white" data-translate="set_pref_title">Analysis Preferences</h3>
-                    <p class="text-xl text-slate-500 dark:text-slate-400 mt-3" data-translate="set_pref_desc">Manage how the CNN model processes audio files.</p>
-                </div>
-                <div class="p-12 space-y-10">
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="bg-safe/10 border border-safe/30 text-safe px-4 py-3 rounded-xl mb-8 text-sm flex items-center max-w-3xl">
+                            <i class="fa-solid fa-circle-check mr-3"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form action="{{ url_for('settings') }}" method="POST" class="max-w-3xl space-y-8">
+                
+                <!-- Section 1: Appearance -->
+                <div class="dark:bg-darkbg/50 bg-slate-50 border border-white/5 dark:border-white/5 border-slate-200 rounded-3xl p-8 transition-colors duration-300">
+                    <h3 class="text-xl font-semibold dark:text-white text-slate-900 mb-6 border-b border-white/10 dark:border-white/10 border-slate-200 pb-4 flex items-center">
+                        <i class="fa-solid fa-palette dark:text-slate-400 text-slate-500 mr-3"></i> Appearance
+                    </h3>
+                    
                     <div class="flex items-center justify-between">
                         <div>
-                            <h4 class="font-medium text-2xl text-slate-900 dark:text-white" data-translate="set_save_hist">Save Scan History</h4>
-                            <p class="text-xl text-slate-500 dark:text-slate-400 mt-2" data-translate="set_save_desc">Automatically save analyzed files to your local database.</p>
+                            <p class="font-medium dark:text-white text-slate-800">Dark Mode</p>
+                            <p class="text-sm dark:text-slate-400 text-slate-500">Toggle the dark theme for the dashboard interface.</p>
                         </div>
                         <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" onchange="markUnsaved()" class="sr-only peer" checked>
-                            <div class="w-16 h-8 bg-slate-300 dark:bg-slate-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-7 after:w-7 after:transition-all peer-checked:bg-primary"></div>
+                            <input type="checkbox" id="theme-toggle" class="sr-only peer" checked>
+                            <div class="w-11 h-6 bg-slate-300 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                         </label>
                     </div>
-                    <hr class="border-slate-200 dark:border-slate-700">
-                    <div class="flex items-center justify-between">
+                </div>
+
+                <!-- Section 2: Analysis Engine Options -->
+                <div class="dark:bg-darkbg/50 bg-slate-50 border border-white/5 dark:border-white/5 border-slate-200 rounded-3xl p-8 transition-colors duration-300">
+                    <h3 class="text-xl font-semibold dark:text-white text-slate-900 mb-6 border-b border-white/10 dark:border-white/10 border-slate-200 pb-4 flex items-center">
+                        <i class="fa-solid fa-microchip dark:text-slate-400 text-slate-500 mr-3"></i> Analysis Preferences
+                    </h3>
+                    
+                    <div class="space-y-6">
+                        <!-- Dropdown -->
                         <div>
-                            <h4 class="font-medium text-2xl text-slate-900 dark:text-white" data-translate="set_cnn_sens">CNN Detection Sensitivity</h4>
-                            <p class="text-xl text-slate-500 dark:text-slate-400 mt-2" data-translate="set_cnn_desc">Adjust the threshold for flagging synthetic audio.</p>
+                            <label class="block font-medium dark:text-white text-slate-800 mb-1">Default Scan Strictness</label>
+                            <p class="text-sm dark:text-slate-400 text-slate-500 mb-3">Higher strictness may flag more files as synthetic.</p>
+                            <select name="scan_strictness" class="block w-full px-4 py-3 dark:bg-darkcard bg-white border border-slate-300 dark:border-slate-700 rounded-xl dark:text-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
+                                <option value="standard">Standard (Recommended)</option>
+                                <option value="high">High Sensitivity</option>
+                                <option value="low">Lenient</option>
+                            </select>
                         </div>
-                        <select onchange="markUnsaved()" class="bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white text-xl rounded-2xl focus:ring-primary focus:border-primary block p-4 min-w-[300px]">
-                            <option value="low" data-translate="opt_low">Low (Fewer False Positives)</option>
-                            <option value="balanced" selected data-translate="opt_bal">Balanced (Default)</option>
-                            <option value="high" data-translate="opt_high">High (Maximum Security)</option>
-                        </select>
+
+                        <!-- Toggle -->
+                        <div class="flex items-center justify-between pt-2">
+                            <div>
+                                <p class="font-medium dark:text-white text-slate-800">Auto-Delete Audio Files</p>
+                                <p class="text-sm dark:text-slate-400 text-slate-500">Automatically delete uploaded files 24 hours after scanning.</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" name="auto_delete" class="sr-only peer" checked>
+                                <div class="w-11 h-6 bg-slate-300 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                            </label>
+                        </div>
                     </div>
                 </div>
-            </section>
 
-            <div class="flex justify-end pt-8 pb-16">
-                <button onclick="saveSettings()" class="bg-primary hover:bg-blue-600 text-white px-14 py-4 rounded-2xl font-medium text-2xl transition-colors shadow-lg shadow-primary/30" data-translate="btn_save">
-                    Save Changes
-                </button>
-            </div>
-        </div>
-    </main>
+                <!-- Section 3: Notifications -->
+                <div class="dark:bg-darkbg/50 bg-slate-50 border border-white/5 dark:border-white/5 border-slate-200 rounded-3xl p-8 transition-colors duration-300">
+                    <h3 class="text-xl font-semibold dark:text-white text-slate-900 mb-6 border-b border-white/10 dark:border-white/10 border-slate-200 pb-4 flex items-center">
+                        <i class="fa-regular fa-bell dark:text-slate-400 text-slate-500 mr-3"></i> Notifications
+                    </h3>
+                    
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="font-medium dark:text-white text-slate-800">Scan Completion Alerts</p>
+                            <p class="text-sm dark:text-slate-400 text-slate-500">Receive an email when a long audio analysis is finished.</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" name="email_alerts" class="sr-only peer">
+                            <div class="w-11 h-6 bg-slate-300 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                        </label>
+                    </div>
+                </div>
 
+                <div class="flex justify-end pt-4">
+                    <button type="submit" class="bg-primary hover:bg-blue-600 text-white px-8 py-3 rounded-xl font-semibold transition-colors shadow-lg">
+                        Save Preferences
+                    </button>
+                </div>
+            </form>
+        </main>
+    </div>
+
+    <!-- Script for Live Dark Mode Toggle -->
     <script>
-        const translations = {
-            'English': { 'nav_dashboard': 'Dashboard', 'nav_history': 'Scan History', 'nav_settings': 'Settings', 'sys_status': 'System Status:', 'sys_ready': 'Ready', 'set_title': 'System Settings', 'menu_login': 'Log in / Sign Up', 'menu_account': 'Account details', 'menu_logout': 'Log out', 'menu_site_lang': 'Site language', 'menu_darkmode': 'Dark mode', 'menu_help': 'Help Center', 'menu_contact': 'Contact us', 'menu_legal': 'Legal', 'set_app_title': 'Appearance & Localization', 'set_app_desc': 'Customize how DeepGuard looks and reads on your device.', 'set_theme': 'Theme Profile', 'set_light': 'Light', 'set_dark': 'Dark', 'set_typo': 'System Typography', 'set_font_default': 'Default (Inter)', 'set_font_tech': 'Tech (Orbitron)', 'set_font_term': 'Terminal (Mono)', 'set_syslang': 'System Language', 'set_pref_title': 'Analysis Preferences', 'set_pref_desc': 'Manage how the CNN model processes audio files.', 'set_save_hist': 'Save Scan History', 'set_save_desc': 'Automatically save analyzed files to your local database.', 'set_cnn_sens': 'CNN Detection Sensitivity', 'set_cnn_desc': 'Adjust the threshold for flagging synthetic audio.', 'opt_low': 'Low (Fewer False Positives)', 'opt_bal': 'Balanced (Default)', 'opt_high': 'High (Maximum Security)', 'btn_save': 'Save Changes' },
-            'Deutsch': { 'nav_dashboard': 'Übersicht', 'nav_history': 'Scan-Verlauf', 'nav_settings': 'Einstellungen', 'sys_status': 'Systemstatus:', 'sys_ready': 'Bereit', 'set_title': 'Systemeinstellungen', 'menu_login': 'Anmelden / Registrieren', 'menu_account': 'Kontodetails', 'menu_logout': 'Abmelden', 'menu_site_lang': 'Sprache der Seite', 'menu_darkmode': 'Dunkelmodus', 'menu_help': 'Hilfe-Center', 'menu_contact': 'Kontakt', 'menu_legal': 'Rechtliches', 'set_app_title': 'Erscheinungsbild & Lokalisierung', 'set_app_desc': 'Passen Sie an, wie DeepGuard auf Ihrem Gerät aussieht.', 'set_theme': 'Theme-Profil', 'set_light': 'Hell', 'set_dark': 'Dunkel', 'set_typo': 'Systemtypografie', 'set_font_default': 'Standard (Inter)', 'set_font_tech': 'Tech (Orbitron)', 'set_font_term': 'Terminal (Mono)', 'set_syslang': 'Systemsprache', 'set_pref_title': 'Analysepräferenzen', 'set_pref_desc': 'Verwalten Sie, wie das CNN-Modell Dateien verarbeitet.', 'set_save_hist': 'Scan-Verlauf speichern', 'set_save_desc': 'Analysierte Dateien automatisch speichern.', 'set_cnn_sens': 'CNN-Erkennungsempfindlichkeit', 'set_cnn_desc': 'Schwellenwert für die Markierung von synthetischem Audio.', 'opt_low': 'Niedrig (Weniger Falschmeldungen)', 'opt_bal': 'Ausgewogen (Standard)', 'opt_high': 'Hoch (Maximale Sicherheit)', 'btn_save': 'Änderungen speichern' }
-        };
+        const themeToggle = document.getElementById('theme-toggle');
+        const htmlElement = document.documentElement;
+        const bodyElement = document.body;
 
-        function toggleDropdown() { document.getElementById('user-dropdown').classList.toggle('hidden'); }
-        window.addEventListener('click', function(e) {
-            if (!document.getElementById('user-menu-button').contains(e.target) && !document.getElementById('user-dropdown').contains(e.target)) {
-                document.getElementById('user-dropdown').classList.add('hidden');
+        themeToggle.addEventListener('change', function() {
+            if (this.checked) {
+                htmlElement.classList.add('dark');
+                bodyElement.classList.add('bg-darkbg');
+                bodyElement.classList.remove('bg-slate-100');
+            } else {
+                htmlElement.classList.remove('dark');
+                bodyElement.classList.remove('bg-darkbg');
+                bodyElement.classList.add('bg-slate-100');
             }
         });
-
-        let hasUnsavedChanges = false;
-        let pendingTheme = localStorage.getItem('theme') || 'dark';
-        let pendingFont = localStorage.getItem('font') || 'sans';
-        let pendingLang = localStorage.getItem('language') || 'English';
-
-        document.getElementById('settings-language').value = pendingLang;
-        const languagesList = ['English', 'Deutsch', 'Français', 'Español', 'Nederlands', 'Português'];
-        
-        const activeClass = "border-primary bg-primary/10 ring-2 ring-primary ring-offset-2 dark:ring-offset-slate-800 text-primary";
-        const inactiveClass = "border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700/50 hover:border-slate-400 dark:hover:border-slate-500 text-slate-600 dark:text-slate-400";
-        const baseClass = "rounded-2xl py-10 flex flex-col items-center justify-center transition-all cursor-pointer border shadow-md";
-
-        function applyTranslations(lang) {
-            if (!translations[lang]) return;
-            document.querySelectorAll('[data-translate]').forEach(el => {
-                const key = el.getAttribute('data-translate');
-                if (translations[lang][key]) el.innerHTML = translations[lang][key];
-            });
-        }
-
-        function initMenuUI() {
-            const isDark = document.documentElement.classList.contains('dark');
-            const toggle = document.getElementById('menu-theme-toggle');
-            const knob = document.getElementById('menu-theme-knob');
-            
-            if (isDark) { toggle.classList.add('bg-primary'); toggle.classList.remove('bg-slate-300', 'dark:bg-slate-600'); knob.classList.add('right-1'); knob.classList.remove('left-1'); } 
-            else { toggle.classList.remove('bg-primary'); toggle.classList.add('bg-slate-300'); knob.classList.remove('right-1'); knob.classList.add('left-1'); }
-
-            const currentLang = pendingLang;
-            document.getElementById('current-lang-display').innerText = currentLang;
-            
-            const langContainer = document.getElementById('language-list');
-            langContainer.innerHTML = '';
-            
-            languagesList.forEach(lang => {
-                const isSelected = lang === currentLang;
-                const btnClass = isSelected ? 'w-full flex items-center justify-between px-6 py-4 text-lg bg-safe/10 text-safe font-medium transition-colors' : 'w-full flex items-center justify-between px-6 py-4 text-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors';
-                langContainer.innerHTML += `<button onclick="setMenuLanguage('${lang}')" class="${btnClass}"><span>${lang}</span> ${isSelected ? '<i class="fa-solid fa-check"></i>' : ''}</button>`;
-            });
-
-            applyTranslations(currentLang);
-        }
-
-        function updateButtonStyles() {
-            const btnLight = document.getElementById('btn-light'); const btnDark = document.getElementById('btn-dark');
-            if (pendingTheme === 'light') {
-                btnLight.className = `${baseClass} ${activeClass}`; btnDark.className = `${baseClass} ${inactiveClass}`;
-                btnLight.querySelector('i').classList.replace('text-slate-500', 'text-primary'); btnLight.querySelector('i').classList.replace('dark:text-slate-400', 'text-primary'); btnDark.querySelector('i').classList.replace('text-primary', 'text-slate-500');
-            } else {
-                btnDark.className = `${baseClass} ${activeClass}`; btnLight.className = `${baseClass} ${inactiveClass}`;
-                btnDark.querySelector('i').classList.replace('text-slate-500', 'text-primary'); btnDark.querySelector('i').classList.replace('dark:text-slate-400', 'text-primary'); btnLight.querySelector('i').classList.replace('text-primary', 'text-slate-500');
-            }
-            ['sans', 'tech', 'mono'].forEach(f => {
-                const btn = document.getElementById(`font-${f}`);
-                if (pendingFont === f) btn.className = `${baseClass} font-${f} ${activeClass}`;
-                else btn.className = `${baseClass} font-${f} ${inactiveClass}`;
-            });
-        }
-
-        function toggleThemeFromMenu() {
-            pendingTheme = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
-            localStorage.setItem('theme', pendingTheme);
-            if (pendingTheme === 'light') document.documentElement.classList.remove('dark'); else document.documentElement.classList.add('dark');
-            initMenuUI(); updateButtonStyles(); 
-        }
-
-        function setMenuLanguage(lang) {
-            pendingLang = lang; localStorage.setItem('language', lang);
-            document.getElementById('settings-language').value = lang; initMenuUI();
-        }
-
-        function previewTheme(theme) {
-            pendingTheme = theme; hasUnsavedChanges = true; updateButtonStyles();
-            if (theme === 'light') document.documentElement.classList.remove('dark'); else document.documentElement.classList.add('dark');
-            initMenuUI();
-        }
-
-        function previewFont(font) {
-            pendingFont = font; hasUnsavedChanges = true; updateButtonStyles();
-            document.documentElement.classList.remove('font-sans', 'font-tech', 'font-mono');
-            document.documentElement.classList.add(`font-${font}`);
-        }
-        
-        function previewLanguage(lang) { pendingLang = lang; hasUnsavedChanges = true; }
-        function markUnsaved() { hasUnsavedChanges = true; }
-
-        function saveSettings() {
-            localStorage.setItem('theme', pendingTheme); localStorage.setItem('font', pendingFont); localStorage.setItem('language', pendingLang);
-            hasUnsavedChanges = false; initMenuUI(); 
-            const btn = document.querySelector('button[onclick="saveSettings()"]');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i>Saved!'; btn.classList.add('bg-safe', 'hover:bg-green-600', 'shadow-safe/30');
-            setTimeout(() => { btn.innerHTML = originalText; btn.classList.remove('bg-safe', 'hover:bg-green-600', 'shadow-safe/30'); }, 2000);
-        }
-
-        window.addEventListener('beforeunload', (e) => { if (hasUnsavedChanges) { e.preventDefault(); e.returnValue = ''; } });
-
-        updateButtonStyles(); initMenuUI();
     </script>
 </body>
 </html>

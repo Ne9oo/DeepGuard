@@ -38,9 +38,10 @@
                 <p class="text-sm font-semibold text-white">{{ current_user.username | default('User') }}</p>
                 <p class="text-xs text-primary">Basic Tier</p>
             </div>
-            <div class="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center cursor-pointer hover:border-primary transition-colors">
+            <!-- Clickable Profile Picture -->
+            <a href="/profile" class="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center cursor-pointer hover:border-primary transition-colors">
                 <i class="fa-solid fa-user text-slate-400"></i>
-            </div>
+            </a>
             <a href="/logout" class="text-slate-500 hover:text-alert transition-colors" title="Log Out">
                 <i class="fa-solid fa-arrow-right-from-bracket text-xl"></i>
             </a>
@@ -70,12 +71,12 @@
                     <span>Subscription</span>
                 </a>
                 
-                <a href="#" class="flex items-center space-x-4 px-4 py-3 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
+                <a href="/profile" class="flex items-center space-x-4 px-4 py-3 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
                     <i class="fa-regular fa-id-badge w-5"></i>
                     <span>Profile</span>
                 </a>
                 
-                <a href="#" class="flex items-center space-x-4 px-4 py-3 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
+                <a href="/settings" class="flex items-center space-x-4 px-4 py-3 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
                     <i class="fa-solid fa-gear w-5"></i>
                     <span>Settings</span>
                 </a>

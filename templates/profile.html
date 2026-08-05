@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepGuard | Profile & Settings</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = { 
+            darkMode: 'class', 
+            theme: { 
+                extend: { 
+                    colors: { primary: '#3b82f6', alert: '#ef4444', safe: '#10b981', darkbg: '#0a0f1c', darkcard: '#111827' }, 
+                    fontFamily: { sans: ['Inter', 'sans-serif'], tech: ['Orbitron', 'sans-serif'] },
+                    animation: { 'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite', 'spin-slow': 'spin 8s linear infinite' }
+                } 
+            } 
+        }
+    </script>
+</head>
+<body class="bg-darkbg text-slate-300 antialiased h-screen overflow-hidden flex flex-col selection:bg-primary/30 relative">
+
+    <!-- Ambient Background -->
+    <div class="absolute w-[800px] h-[800px] bg-primary/10 rounded-full blur-[150px] top-[-300px] right-[-100px] pointer-events-none z-0"></div>
+    <div class="absolute w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[150px] bottom-[-200px] left-[-200px] pointer-events-none z-0"></div>
+
+    <!-- Top Navigation -->
+    <nav class="h-20 border-b border-white/5 bg-darkcard/50 backdrop-blur-xl relative z-20 flex items-center justify-between px-8">
+        <div class="flex items-center space-x-3">
+            <i class="fa-solid fa-shield-halved text-primary text-3xl"></i>
+            <span class="text-2xl font-bold text-white tracking-wider font-tech">DeepGuard</span>
+        </div>
+        
+        <div class="flex items-center space-x-6">
+            <div class="text-right hidden md:block">
+                <p class="text-sm font-semibold text-white">{{ current_user.username }}</p>
+                <p class="text-xs text-primary">{% if current_user.is_pro %}Pro Tier{% else %}Basic Tier{% endif %}</p>
+            </div>
+            <!-- Clickable Profile Picture -->
+            <a href="/profile" class="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center cursor-pointer hover:border-primary transition-colors">
+                <i class="fa-solid fa-user text-slate-400"></i>
+            </a>
+            <a href="/logout" class="text-slate-500 hover:text-alert transition-colors" title="Log Out">
+                <i class="fa-solid fa-arrow-right-from-bracket text-xl"></i>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Workspace -->
+    <div class="flex-1 flex overflow-hidden relative z-10 p-6 gap-6 max-w-[1600px] w-full mx-auto">
+        
+        <!-- Floating Glass Sidebar -->
+        <aside class="w-72 flex-shrink-0 bg-darkcard/40 backdrop-blur-xl border border-white/10 rounded-[2rem] p-6 flex flex-col justify-between hidden lg:flex shadow-2xl">
+            <div class="space-y-2">
+                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 px-4">Menu</p>
+                
+                <a href="/dashboard" class="flex items-center space-x-4 px-4 py-3 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
+                    <i class="fa-solid fa-radar w-5"></i>
+                    <span>Audio Scanner</span>
+                </a>
+                
+                <a href="#" class="flex items-center space-x-4 px-4 py-3 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
+                    <i class="fa-solid fa-clock-rotate-left w-5"></i>
+                    <span>Scan History</span>
+                </a>
+                
+                <a href="#" class="flex items-center space-x-4 px-4 py-3 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
+                    <i class="fa-solid fa-crown w-5"></i>
+                    <span>Subscription</span>
+                </a>
+                
+                <!-- Active Link -->
+                <a href="/profile" class="flex items-center space-x-4 px-4 py-3 bg-primary/10 text-primary rounded-xl font-medium border border-primary/20 transition-all">
+                    <i class="fa-regular fa-id-badge w-5"></i>
+                    <span>Profile</span>
+                </a>
+                
+                <a href="/settings" class="flex items-center space-x-4 px-4 py-3 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
+                    <i class="fa-solid fa-gear w-5"></i>
+                    <span>Settings</span>
+                </a>
+            </div>
+
+            <!-- Usage Widget -->
+            <div class="bg-darkbg/50 border border-white/5 rounded-2xl p-5 mt-auto">
+                <div class="flex justify-between items-end mb-2">
+                    <span class="text-sm font-medium text-slate-300">Daily Scans</span>
+                    <span class="text-xs text-primary font-bold">{{ current_user.scans_used }} / 5</span>
+                </div>
+                <div class="w-full bg-slate-800 rounded-full h-2 mb-3">
+                    <div class="bg-primary h-2 rounded-full" style="width: {{ (current_user.scans_used / 5) * 100 }}%"></div>
+                </div>
+                <a href="#" class="text-xs text-slate-400 hover:text-white transition-colors flex items-center">
+                    Upgrade to Pro <i class="fa-solid fa-arrow-right ml-2"></i>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Profile Area -->
+        <main class="flex-1 flex flex-col bg-darkcard/40 backdrop-blur-xl border border-white/10 rounded-[2rem] p-8 lg:p-12 shadow-2xl overflow-y-auto">
+            
+            <header class="mb-10">
+                <h1 class="text-3xl font-bold text-white mb-2">Account Profile</h1>
+                <p class="text-slate-400">Manage your personal information and security settings.</p>
+            </header>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        {% if category == 'safe' %}
+                            <div class="bg-safe/10 border border-safe/30 text-safe px-4 py-3 rounded-xl mb-8 text-sm flex items-center max-w-2xl">
+                                <i class="fa-solid fa-circle-check mr-3"></i>
+                                {{ message }}
+                            </div>
+                        {% else %}
+                            <div class="bg-alert/10 border border-alert/30 text-alert px-4 py-3 rounded-xl mb-8 text-sm flex items-center max-w-2xl">
+                                <i class="fa-solid fa-triangle-exclamation mr-3"></i>
+                                {{ message }}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <div class="grid grid-cols-1 xl:grid-cols-2 gap-8 max-w-6xl">
+                
+                <!-- Left Column: Details & Subscription -->
+                <div class="space-y-8">
+                    
+                    <!-- Profile Details Card -->
+                    <div class="bg-darkbg/50 border border-white/5 rounded-3xl p-8">
+                        <h3 class="text-xl font-semibold text-white mb-6 border-b border-white/10 pb-4">Personal Details</h3>
+                        
+                        <div class="flex items-center space-x-6 mb-8">
+                            <div class="w-20 h-20 rounded-full bg-slate-800 border-2 border-primary/50 flex items-center justify-center">
+                                <span class="text-2xl font-bold text-white">{{ current_user.username[0] | upper }}</span>
+                            </div>
+                            <div>
+                                <p class="text-white font-medium text-lg">{{ current_user.username }}</p>
+                                <p class="text-slate-400 text-sm mb-1">{{ current_user.email }}</p>
+                                <p class="text-xs text-primary bg-primary/10 inline-block px-2 py-1 rounded-md mt-2">
+                                    Joined {{ current_user.created_at.strftime('%B %Y') }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <button class="bg-slate-800 hover:bg-slate-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-colors border border-slate-700">
+                            Edit Profile
+                        </button>
+                    </div>
+
+                    <!-- Subscription Card -->
+                    <div class="bg-darkbg/50 border border-white/5 rounded-3xl p-8 relative overflow-hidden">
+                        <!-- Glow effect -->
+                        <div class="absolute right-0 top-0 w-32 h-32 bg-primary/20 blur-[50px] rounded-full"></div>
+                        
+                        <h3 class="text-xl font-semibold text-white mb-6 border-b border-white/10 pb-4">Current Plan</h3>
+                        
+                        <div class="flex justify-between items-center mb-6">
+                            <div>
+                                <p class="text-2xl font-bold text-white">{% if current_user.is_pro %}Pro Tier{% else %}Basic Tier{% endif %}</p>
+                                <p class="text-slate-400 text-sm mt-1">{% if current_user.is_pro %}Unlimited Scans{% else %}5 Scans per day limit{% endif %}</p>
+                            </div>
+                            <div class="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center">
+                                <i class="fa-solid fa-crown text-xl text-primary"></i>
+                            </div>
+                        </div>
+
+                        {% if not current_user.is_pro %}
+                        <button class="w-full bg-primary hover:bg-blue-600 text-white py-3 rounded-xl font-semibold transition-all shadow-[0_0_15px_rgba(59,130,246,0.3)] flex justify-center items-center">
+                            Upgrade to Pro <i class="fa-solid fa-arrow-right ml-2"></i>
+                        </button>
+                        {% else %}
+                        <button class="w-full bg-slate-800 text-white py-3 rounded-xl font-semibold transition-all border border-slate-700">
+                            Manage Billing
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Right Column: Security -->
+                <div>
+                    <!-- Change Password Card -->
+                    <div class="bg-darkbg/50 border border-white/5 rounded-3xl p-8 h-full">
+                        <h3 class="text-xl font-semibold text-white mb-6 border-b border-white/10 pb-4 flex items-center">
+                            <i class="fa-solid fa-lock text-slate-400 mr-3"></i> Security Settings
+                        </h3>
+                        
+                        <form action="{{ url_for('profile') }}" method="POST" class="space-y-5">
+                            
+                            <!-- Current Password -->
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">Current Password</label>
+                                <input type="password" name="current_password" required 
+                                    class="block w-full px-4 py-3 bg-darkcard border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
+                            </div>
+
+                            <!-- New Password -->
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">New Password</label>
+                                <input type="password" name="new_password" required 
+                                    class="block w-full px-4 py-3 bg-darkcard border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
+                            </div>
+
+                            <!-- Confirm New Password -->
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">Confirm New Password</label>
+                                <input type="password" name="confirm_new_password" required 
+                                    class="block w-full px-4 py-3 bg-darkcard border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
+                            </div>
+
+                            <button type="submit" class="w-full bg-slate-800 hover:bg-slate-700 text-white py-3 rounded-xl font-semibold transition-colors mt-4 border border-slate-700">
+                                Update Password
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>
