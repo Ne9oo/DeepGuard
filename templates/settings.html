@@ -17,7 +17,6 @@
 </head>
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-300 antialiased h-screen flex overflow-hidden transition-colors duration-300">
 
-    <!-- UPSCALED SIDEBAR -->
     <aside class="w-80 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col justify-between hidden md:flex transition-colors duration-300">
         <div>
             <div class="h-24 shrink-0 flex items-center px-8 border-b border-slate-200 dark:border-slate-700">
@@ -46,7 +45,6 @@
 
     <main class="flex-1 flex flex-col h-full overflow-y-auto relative no-scrollbar">
         
-        <!-- STICKY HEADER WITH BLUR EFFECT -->
         <header class="h-24 shrink-0 sticky top-0 z-50 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-700 flex items-center justify-between px-10 transition-colors duration-300">
             <h2 class="text-3xl font-semibold text-slate-900 dark:text-white" data-translate="set_title">System Settings</h2>
             
@@ -79,7 +77,7 @@
                     {% else %}
                         <a href="{{ url_for('login') }}" class="w-full flex items-center px-6 py-4 text-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
                             <i class="fa-solid fa-arrow-right-to-bracket w-8 text-slate-400 mr-2"></i>
-                            <span data-translate="menu_login">Admin Log in</span>
+                            <span data-translate="menu_login">Log in / Sign Up</span>
                         </a>
                         <div class="border-t border-slate-100 dark:border-slate-700/50 my-2"></div>
                     {% endif %}
@@ -140,7 +138,6 @@
             </div>
         </header>
 
-        <!-- UPSCALED SETTINGS CONTENT -->
         <div class="p-10 lg:p-16 max-w-[1400px] mx-auto w-full space-y-12 flex-1">
             
             <section class="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-xl overflow-hidden">
@@ -208,7 +205,6 @@
                         </div>
                         <label class="relative inline-flex items-center cursor-pointer">
                             <input type="checkbox" onchange="markUnsaved()" class="sr-only peer" checked>
-                            <!-- Enlarged Checkbox Toggle -->
                             <div class="w-16 h-8 bg-slate-300 dark:bg-slate-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-7 after:w-7 after:transition-all peer-checked:bg-primary"></div>
                         </label>
                     </div>
@@ -237,8 +233,8 @@
 
     <script>
         const translations = {
-            'English': { 'nav_dashboard': 'Dashboard', 'nav_history': 'Scan History', 'nav_settings': 'Settings', 'sys_status': 'System Status:', 'sys_ready': 'Ready', 'set_title': 'System Settings', 'menu_login': 'Admin Log in', 'menu_account': 'Account details', 'menu_logout': 'Log out', 'menu_site_lang': 'Site language', 'menu_darkmode': 'Dark mode', 'menu_help': 'Help Center', 'menu_contact': 'Contact us', 'menu_legal': 'Legal', 'set_app_title': 'Appearance & Localization', 'set_app_desc': 'Customize how DeepGuard looks and reads on your device.', 'set_theme': 'Theme Profile', 'set_light': 'Light', 'set_dark': 'Dark', 'set_typo': 'System Typography', 'set_font_default': 'Default (Inter)', 'set_font_tech': 'Tech (Orbitron)', 'set_font_term': 'Terminal (Mono)', 'set_syslang': 'System Language', 'set_pref_title': 'Analysis Preferences', 'set_pref_desc': 'Manage how the CNN model processes audio files.', 'set_save_hist': 'Save Scan History', 'set_save_desc': 'Automatically save analyzed files to your local database.', 'set_cnn_sens': 'CNN Detection Sensitivity', 'set_cnn_desc': 'Adjust the threshold for flagging synthetic audio.', 'opt_low': 'Low (Fewer False Positives)', 'opt_bal': 'Balanced (Default)', 'opt_high': 'High (Maximum Security)', 'btn_save': 'Save Changes' },
-            'Deutsch': { 'nav_dashboard': 'Übersicht', 'nav_history': 'Scan-Verlauf', 'nav_settings': 'Einstellungen', 'sys_status': 'Systemstatus:', 'sys_ready': 'Bereit', 'set_title': 'Systemeinstellungen', 'menu_login': 'Admin-Anmeldung', 'menu_account': 'Kontodetails', 'menu_logout': 'Abmelden', 'menu_site_lang': 'Sprache der Seite', 'menu_darkmode': 'Dunkelmodus', 'menu_help': 'Hilfe-Center', 'menu_contact': 'Kontakt', 'menu_legal': 'Rechtliches', 'set_app_title': 'Erscheinungsbild & Lokalisierung', 'set_app_desc': 'Passen Sie an, wie DeepGuard auf Ihrem Gerät aussieht.', 'set_theme': 'Theme-Profil', 'set_light': 'Hell', 'set_dark': 'Dunkel', 'set_typo': 'Systemtypografie', 'set_font_default': 'Standard (Inter)', 'set_font_tech': 'Tech (Orbitron)', 'set_font_term': 'Terminal (Mono)', 'set_syslang': 'Systemsprache', 'set_pref_title': 'Analysepräferenzen', 'set_pref_desc': 'Verwalten Sie, wie das CNN-Modell Dateien verarbeitet.', 'set_save_hist': 'Scan-Verlauf speichern', 'set_save_desc': 'Analysierte Dateien automatisch speichern.', 'set_cnn_sens': 'CNN-Erkennungsempfindlichkeit', 'set_cnn_desc': 'Schwellenwert für die Markierung von synthetischem Audio.', 'opt_low': 'Niedrig (Weniger Falschmeldungen)', 'opt_bal': 'Ausgewogen (Standard)', 'opt_high': 'Hoch (Maximale Sicherheit)', 'btn_save': 'Änderungen speichern' }
+            'English': { 'nav_dashboard': 'Dashboard', 'nav_history': 'Scan History', 'nav_settings': 'Settings', 'sys_status': 'System Status:', 'sys_ready': 'Ready', 'set_title': 'System Settings', 'menu_login': 'Log in / Sign Up', 'menu_account': 'Account details', 'menu_logout': 'Log out', 'menu_site_lang': 'Site language', 'menu_darkmode': 'Dark mode', 'menu_help': 'Help Center', 'menu_contact': 'Contact us', 'menu_legal': 'Legal', 'set_app_title': 'Appearance & Localization', 'set_app_desc': 'Customize how DeepGuard looks and reads on your device.', 'set_theme': 'Theme Profile', 'set_light': 'Light', 'set_dark': 'Dark', 'set_typo': 'System Typography', 'set_font_default': 'Default (Inter)', 'set_font_tech': 'Tech (Orbitron)', 'set_font_term': 'Terminal (Mono)', 'set_syslang': 'System Language', 'set_pref_title': 'Analysis Preferences', 'set_pref_desc': 'Manage how the CNN model processes audio files.', 'set_save_hist': 'Save Scan History', 'set_save_desc': 'Automatically save analyzed files to your local database.', 'set_cnn_sens': 'CNN Detection Sensitivity', 'set_cnn_desc': 'Adjust the threshold for flagging synthetic audio.', 'opt_low': 'Low (Fewer False Positives)', 'opt_bal': 'Balanced (Default)', 'opt_high': 'High (Maximum Security)', 'btn_save': 'Save Changes' },
+            'Deutsch': { 'nav_dashboard': 'Übersicht', 'nav_history': 'Scan-Verlauf', 'nav_settings': 'Einstellungen', 'sys_status': 'Systemstatus:', 'sys_ready': 'Bereit', 'set_title': 'Systemeinstellungen', 'menu_login': 'Anmelden / Registrieren', 'menu_account': 'Kontodetails', 'menu_logout': 'Abmelden', 'menu_site_lang': 'Sprache der Seite', 'menu_darkmode': 'Dunkelmodus', 'menu_help': 'Hilfe-Center', 'menu_contact': 'Kontakt', 'menu_legal': 'Rechtliches', 'set_app_title': 'Erscheinungsbild & Lokalisierung', 'set_app_desc': 'Passen Sie an, wie DeepGuard auf Ihrem Gerät aussieht.', 'set_theme': 'Theme-Profil', 'set_light': 'Hell', 'set_dark': 'Dunkel', 'set_typo': 'Systemtypografie', 'set_font_default': 'Standard (Inter)', 'set_font_tech': 'Tech (Orbitron)', 'set_font_term': 'Terminal (Mono)', 'set_syslang': 'Systemsprache', 'set_pref_title': 'Analysepräferenzen', 'set_pref_desc': 'Verwalten Sie, wie das CNN-Modell Dateien verarbeitet.', 'set_save_hist': 'Scan-Verlauf speichern', 'set_save_desc': 'Analysierte Dateien automatisch speichern.', 'set_cnn_sens': 'CNN-Erkennungsempfindlichkeit', 'set_cnn_desc': 'Schwellenwert für die Markierung von synthetischem Audio.', 'opt_low': 'Niedrig (Weniger Falschmeldungen)', 'opt_bal': 'Ausgewogen (Standard)', 'opt_high': 'Hoch (Maximale Sicherheit)', 'btn_save': 'Änderungen speichern' }
         };
 
         function toggleDropdown() { document.getElementById('user-dropdown').classList.toggle('hidden'); }
@@ -258,7 +254,6 @@
         
         const activeClass = "border-primary bg-primary/10 ring-2 ring-primary ring-offset-2 dark:ring-offset-slate-800 text-primary";
         const inactiveClass = "border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700/50 hover:border-slate-400 dark:hover:border-slate-500 text-slate-600 dark:text-slate-400";
-        // Updated JS Base Class to match new upscaled buttons
         const baseClass = "rounded-2xl py-10 flex flex-col items-center justify-center transition-all cursor-pointer border shadow-md";
 
         function applyTranslations(lang) {
