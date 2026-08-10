@@ -32,6 +32,18 @@ class User(db.Model, UserMixin):
     scans_used = db.Column(db.Integer, default=0) # Tracks daily limit
     is_pro = db.Column(db.Boolean, default=False) # Tracks subscription status
     created_at = db.Column(db.DateTime, default=datetime.utcnow) # Tracks when user joined
+    
+    # Relationship: One User can have Many ScanRecords
+    scans = db.relationship('ScanRecord', backref='user', lazy=True)
+
+class ScanRecord(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    filename = db.Column(db.String(100), nullable=False)
+    scan_date = db.Column(db.DateTime, default=datetime.utcnow)
+    result = db.Column(db.String(20), nullable=False) # e.g., 'Deepfake', 'Authentic'
+    confidence = db.Column(db.Float, nullable=True) # e.g., 98.5
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -122,6 +134,15 @@ def logout():
 @login_required
 def dashboard():
     return render_template('dashboard.html')
+
+
+# Scan History Page
+@app.route('/history')
+@login_required
+def history():
+    # Fetch all scans for the current user, newest first
+    user_scans = ScanRecord.query.filter_by(user_id=current_user.id).order_by(ScanRecord.scan_date.desc()).all()
+    return render_template('history.html', scans=user_scans)
 
 
 # User Profile

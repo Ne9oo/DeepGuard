@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepGuard | Scan History</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = { 
+            darkMode: 'class', 
+            theme: { 
+                extend: { 
+                    colors: { primary: '#3b82f6', alert: '#ef4444', safe: '#10b981', darkbg: '#0a0f1c', darkcard: '#111827' }, 
+                    fontFamily: { sans: ['Inter', 'sans-serif'], tech: ['Orbitron', 'sans-serif'] },
+                    animation: { 'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite', 'spin-slow': 'spin 8s linear infinite' }
+                } 
+            } 
+        }
+    </script>
+    <!-- Theme Check Script -->
+    <script>
+        if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.classList.remove('dark');
+        } else {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+</head>
+<body class="bg-slate-100 dark:bg-darkbg text-slate-800 dark:text-slate-300 antialiased h-screen overflow-hidden flex flex-col selection:bg-primary/30 relative transition-colors duration-300">
+
+    <!-- Ambient Background -->
+    <div class="absolute w-[800px] h-[800px] bg-primary/10 rounded-full blur-[150px] top-[-300px] right-[-100px] pointer-events-none z-0"></div>
+    <div class="absolute w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[150px] bottom-[-200px] left-[-200px] pointer-events-none z-0"></div>
+
+    <!-- Top Navigation -->
+    <nav class="h-20 border-b border-slate-200 dark:border-white/5 bg-white/50 dark:bg-darkcard/50 backdrop-blur-xl relative z-20 flex items-center justify-between px-8 transition-colors duration-300">
+        <div class="flex items-center space-x-3">
+            <i class="fa-solid fa-shield-halved text-primary text-3xl"></i>
+            <span class="text-2xl font-bold text-slate-900 dark:text-white tracking-wider font-tech">DeepGuard</span>
+        </div>
+        
+        <div class="flex items-center space-x-6">
+            <div class="text-right hidden md:block">
+                <p class="text-sm font-semibold text-slate-900 dark:text-white">{{ current_user.username }}</p>
+                <p class="text-xs text-primary">{% if current_user.is_pro %}Pro Tier{% else %}Basic Tier{% endif %}</p>
+            </div>
+            <a href="/profile" class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 flex items-center justify-center cursor-pointer hover:border-primary transition-colors">
+                <i class="fa-solid fa-user text-slate-600 dark:text-slate-400"></i>
+            </a>
+            <a href="/logout" class="text-slate-400 dark:text-slate-500 hover:text-alert transition-colors" title="Log Out">
+                <i class="fa-solid fa-arrow-right-from-bracket text-xl"></i>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Workspace -->
+    <div class="flex-1 flex overflow-hidden relative z-10 p-6 gap-6 max-w-[1600px] w-full mx-auto">
+        
+        <!-- Floating Glass Sidebar -->
+        <aside class="w-72 flex-shrink-0 bg-white/60 dark:bg-darkcard/40 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] p-6 flex flex-col justify-between hidden lg:flex shadow-2xl transition-colors duration-300">
+            <div class="space-y-2">
+                <p class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-4 px-4">Menu</p>
+                
+                <a href="/dashboard" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl font-medium transition-all">
+                    <i class="fa-solid fa-radar w-5"></i>
+                    <span>Audio Scanner</span>
+                </a>
+                
+                <!-- Active Link -->
+                <a href="/history" class="flex items-center space-x-4 px-4 py-3 bg-primary/10 text-primary rounded-xl font-medium border border-primary/20 transition-all">
+                    <i class="fa-solid fa-clock-rotate-left w-5"></i>
+                    <span>Scan History</span>
+                </a>
+                
+                <a href="/subscription" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl font-medium transition-all">
+                    <i class="fa-solid fa-crown w-5"></i>
+                    <span>Subscription</span>
+                </a>
+                
+                <a href="/profile" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl font-medium transition-all">
+                    <i class="fa-regular fa-id-badge w-5"></i>
+                    <span>Profile</span>
+                </a>
+                
+                <a href="/settings" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl font-medium transition-all">
+                    <i class="fa-solid fa-gear w-5"></i>
+                    <span>Settings</span>
+                </a>
+            </div>
+
+            <!-- Usage Widget -->
+            <div class="bg-slate-100/50 dark:bg-darkbg/50 border border-slate-200 dark:border-white/5 rounded-2xl p-5 mt-auto transition-colors duration-300">
+                <div class="flex justify-between items-end mb-2">
+                    <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Daily Scans</span>
+                    <span class="text-xs text-primary font-bold">{{ current_user.scans_used }} / 5</span>
+                </div>
+                <div class="w-full bg-slate-300 dark:bg-slate-800 rounded-full h-2 mb-3">
+                    <div class="bg-primary h-2 rounded-full" style="width: {{ (current_user.scans_used / 5) * 100 }}%"></div>
+                </div>
+                {% if not current_user.is_pro %}
+                <a href="/subscription" class="text-xs text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-white transition-colors flex items-center">
+                    Upgrade to Pro <i class="fa-solid fa-arrow-right ml-2"></i>
+                </a>
+                {% endif %}
+            </div>
+        </aside>
+
+        <!-- History Area -->
+        <main class="flex-1 flex flex-col bg-white/60 dark:bg-darkcard/40 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] p-8 lg:p-12 shadow-2xl overflow-y-auto transition-colors duration-300">
+            
+            <header class="mb-10 flex justify-between items-end">
+                <div>
+                    <h1 class="text-3xl font-bold text-slate-900 dark:text-white mb-2">Scan History</h1>
+                    <p class="text-slate-600 dark:text-slate-400">Review past analyses and download forensic reports.</p>
+                </div>
+                {% if scans %}
+                <button class="bg-slate-800 hover:bg-slate-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-colors border border-transparent shadow-lg">
+                    <i class="fa-solid fa-download mr-2"></i> Export CSV
+                </button>
+                {% endif %}
+            </header>
+
+            <!-- Data Table Container -->
+            <div class="bg-slate-50 dark:bg-darkbg/50 border border-slate-200 dark:border-white/5 rounded-3xl overflow-hidden transition-colors duration-300 flex-1 flex flex-col">
+                
+                {% if scans %}
+                <!-- Render Table if scans exist -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400 text-sm tracking-wide uppercase bg-slate-100/50 dark:bg-black/20">
+                                <th class="py-4 px-6 font-semibold">File Name</th>
+                                <th class="py-4 px-6 font-semibold">Date & Time</th>
+                                <th class="py-4 px-6 font-semibold">Detection Result</th>
+                                <th class="py-4 px-6 font-semibold">Confidence</th>
+                                <th class="py-4 px-6 font-semibold text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200 dark:divide-white/5">
+                            {% for scan in scans %}
+                            <tr class="hover:bg-white dark:hover:bg-white/5 transition-colors group">
+                                <td class="py-4 px-6">
+                                    <div class="flex items-center">
+                                        <i class="fa-solid fa-file-audio text-slate-400 dark:text-slate-500 mr-3 text-lg"></i>
+                                        <span class="font-medium text-slate-800 dark:text-white">{{ scan.filename }}</span>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-6 text-slate-600 dark:text-slate-400 text-sm">
+                                    {{ scan.scan_date.strftime('%Y-%m-%d %H:%M') }}
+                                </td>
+                                <td class="py-4 px-6">
+                                    {% if scan.result == 'Deepfake' %}
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-alert/10 text-alert border border-alert/20">
+                                        <i class="fa-solid fa-triangle-exclamation mr-1.5"></i> Synthetic
+                                    </span>
+                                    {% elif scan.result == 'Authentic' %}
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-safe/10 text-safe border border-safe/20">
+                                        <i class="fa-solid fa-check-circle mr-1.5"></i> Authentic
+                                    </span>
+                                    {% else %}
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-600">
+                                        Processing...
+                                    </span>
+                                    {% endif %}
+                                </td>
+                                <td class="py-4 px-6">
+                                    {% if scan.confidence %}
+                                        <div class="flex items-center">
+                                            <span class="text-sm font-semibold text-slate-800 dark:text-white w-12">{{ scan.confidence }}%</span>
+                                            <div class="w-24 bg-slate-200 dark:bg-slate-800 rounded-full h-1.5 ml-2">
+                                                <div class="h-1.5 rounded-full {% if scan.result == 'Deepfake' %}bg-alert{% else %}bg-safe{% endif %}" style="width: {{ scan.confidence }}%"></div>
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <span class="text-slate-500 dark:text-slate-400 text-sm">-</span>
+                                    {% endif %}
+                                </td>
+                                <td class="py-4 px-6 text-right">
+                                    <button class="text-slate-400 hover:text-primary transition-colors mr-3" title="View Report">
+                                        <i class="fa-solid fa-chart-pie"></i>
+                                    </button>
+                                    <button class="text-slate-400 hover:text-alert transition-colors" title="Delete Record">
+                                        <i class="fa-regular fa-trash-can"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <!-- Empty State -->
+                <div class="flex-1 flex flex-col items-center justify-center p-12 text-center h-full">
+                    <div class="w-24 h-24 bg-slate-100 dark:bg-darkcard border border-slate-200 dark:border-slate-800 rounded-full flex items-center justify-center mb-6">
+                        <i class="fa-solid fa-clock-rotate-left text-4xl text-slate-400 dark:text-slate-600"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold text-slate-800 dark:text-white mb-2">No scans yet</h3>
+                    <p class="text-slate-600 dark:text-slate-400 mb-8 max-w-sm">Your forensic history is currently empty. Upload an audio file to the engine to generate your first report.</p>
+                    <a href="/dashboard" class="bg-primary hover:bg-blue-600 text-white px-8 py-3 rounded-xl font-semibold transition-all shadow-lg shadow-primary/30">
+                        Scan an Audio File
+                    </a>
+                </div>
+                {% endif %}
+
+            </div>
+        </main>
+    </div>
+</body>
+</html> 
