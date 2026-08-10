@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepGuard | Subscription</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = { 
+            darkMode: 'class', 
+            theme: { 
+                extend: { 
+                    colors: { primary: '#3b82f6', alert: '#ef4444', safe: '#10b981', darkbg: '#0a0f1c', darkcard: '#111827', lightbg: '#f8fafc', lightcard: '#ffffff' }, 
+                    fontFamily: { sans: ['Inter', 'sans-serif'], tech: ['Orbitron', 'sans-serif'] },
+                    animation: { 'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite', 'spin-slow': 'spin 8s linear infinite' }
+                } 
+            } 
+        }
+    </script>
+    <!-- Theme Check Script -->
+    <script>
+        if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.classList.remove('dark');
+        } else {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+</head>
+<body class="bg-slate-100 dark:bg-darkbg text-slate-800 dark:text-slate-300 antialiased h-screen overflow-hidden flex flex-col selection:bg-primary/30 relative transition-colors duration-300">
+
+    <!-- Ambient Background -->
+    <div class="absolute w-[800px] h-[800px] bg-primary/10 rounded-full blur-[150px] top-[-300px] right-[-100px] pointer-events-none z-0"></div>
+    <div class="absolute w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[150px] bottom-[-200px] left-[-200px] pointer-events-none z-0"></div>
+
+    <!-- Top Navigation -->
+    <nav class="h-20 border-b border-slate-200 dark:border-white/5 bg-white/50 dark:bg-darkcard/50 backdrop-blur-xl relative z-20 flex items-center justify-between px-8 transition-colors duration-300">
+        <div class="flex items-center space-x-3">
+            <i class="fa-solid fa-shield-halved text-primary text-3xl"></i>
+            <span class="text-2xl font-bold text-slate-900 dark:text-white tracking-wider font-tech">DeepGuard</span>
+        </div>
+        
+        <div class="flex items-center space-x-6">
+            <div class="text-right hidden md:block">
+                <p class="text-sm font-semibold text-slate-900 dark:text-white">{{ current_user.username }}</p>
+                <p class="text-xs text-primary">{% if current_user.is_pro %}Pro Tier{% else %}Basic Tier{% endif %}</p>
+            </div>
+            <a href="/profile" class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 flex items-center justify-center cursor-pointer hover:border-primary transition-colors">
+                <i class="fa-solid fa-user text-slate-600 dark:text-slate-400"></i>
+            </a>
+            <a href="/logout" class="text-slate-400 dark:text-slate-500 hover:text-alert transition-colors" title="Log Out">
+                <i class="fa-solid fa-arrow-right-from-bracket text-xl"></i>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Workspace -->
+    <div class="flex-1 flex overflow-hidden relative z-10 p-6 gap-6 max-w-[1600px] w-full mx-auto">
+        
+        <!-- Floating Glass Sidebar -->
+        <aside class="w-72 flex-shrink-0 bg-white/60 dark:bg-darkcard/40 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] p-6 flex flex-col justify-between hidden lg:flex shadow-2xl transition-colors duration-300">
+            <div class="space-y-2">
+                <p class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-4 px-4">Menu</p>
+                
+                <a href="/dashboard" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl font-medium transition-all">
+                    <i class="fa-solid fa-radar w-5"></i>
+                    <span>Audio Scanner</span>
+                </a>
+                
+                <a href="#" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl font-medium transition-all">
+                    <i class="fa-solid fa-clock-rotate-left w-5"></i>
+                    <span>Scan History</span>
+                </a>
+                
+                <!-- Active Link -->
+                <a href="/subscription" class="flex items-center space-x-4 px-4 py-3 bg-primary/10 text-primary rounded-xl font-medium border border-primary/20 transition-all">
+                    <i class="fa-solid fa-crown w-5"></i>
+                    <span>Subscription</span>
+                </a>
+                
+                <a href="/profile" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl font-medium transition-all">
+                    <i class="fa-regular fa-id-badge w-5"></i>
+                    <span>Profile</span>
+                </a>
+                
+                <a href="/settings" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl font-medium transition-all">
+                    <i class="fa-solid fa-gear w-5"></i>
+                    <span>Settings</span>
+                </a>
+            </div>
+
+            <!-- Usage Widget -->
+            <div class="bg-slate-100/50 dark:bg-darkbg/50 border border-slate-200 dark:border-white/5 rounded-2xl p-5 mt-auto transition-colors duration-300">
+                <div class="flex justify-between items-end mb-2">
+                    <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Daily Scans</span>
+                    <span class="text-xs text-primary font-bold">{{ current_user.scans_used }} / 5</span>
+                </div>
+                <div class="w-full bg-slate-300 dark:bg-slate-800 rounded-full h-2 mb-3">
+                    <div class="bg-primary h-2 rounded-full" style="width: {{ (current_user.scans_used / 5) * 100 }}%"></div>
+                </div>
+                {% if not current_user.is_pro %}
+                <a href="/subscription" class="text-xs text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-white transition-colors flex items-center">
+                    Upgrade to Pro <i class="fa-solid fa-arrow-right ml-2"></i>
+                </a>
+                {% endif %}
+            </div>
+        </aside>
+
+        <!-- Subscription Area -->
+        <main class="flex-1 flex flex-col bg-white/60 dark:bg-darkcard/40 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] p-8 lg:p-12 shadow-2xl overflow-y-auto transition-colors duration-300">
+            
+            <header class="mb-10 text-center max-w-2xl mx-auto">
+                <h1 class="text-3xl font-bold text-slate-900 dark:text-white mb-2">Manage Subscription</h1>
+                <p class="text-slate-600 dark:text-slate-400">Unlock the full power of the DeepGuard forensics engine.</p>
+            </header>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="bg-safe/10 border border-safe/30 text-safe px-4 py-3 rounded-xl mb-8 text-sm flex items-center max-w-4xl mx-auto w-full">
+                            <i class="fa-solid fa-circle-check mr-3"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto w-full">
+                
+                <!-- Basic Tier Card -->
+                <div class="bg-slate-50 dark:bg-darkbg/50 border {% if not current_user.is_pro %}border-slate-400 dark:border-slate-500 shadow-lg scale-105{% else %}border-slate-200 dark:border-white/5 opacity-70{% endif %} rounded-3xl p-10 flex flex-col relative transition-all duration-300">
+                    {% if not current_user.is_pro %}
+                    <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                        Current Plan
+                    </div>
+                    {% endif %}
+                    
+                    <h3 class="text-2xl font-semibold text-slate-900 dark:text-white mb-2">Basic Tier</h3>
+                    <div class="text-4xl font-bold text-slate-900 dark:text-white mb-6">Free</div>
+                    <p class="text-slate-600 dark:text-slate-400 mb-8 border-b border-slate-200 dark:border-slate-800 pb-8">Perfect for checking occasional suspicious audio.</p>
+                    
+                    <ul class="space-y-4 mb-10 flex-1">
+                        <li class="flex items-center text-slate-700 dark:text-slate-300"><i class="fa-solid fa-check text-safe mr-3"></i> 5 Scans per day limit</li>
+                        <li class="flex items-center text-slate-700 dark:text-slate-300"><i class="fa-solid fa-check text-safe mr-3"></i> Standard CNN Accuracy</li>
+                        <li class="flex items-center text-slate-700 dark:text-slate-300"><i class="fa-solid fa-check text-safe mr-3"></i> Support for MP3 & WAV</li>
+                    </ul>
+
+                    {% if not current_user.is_pro %}
+                    <button disabled class="w-full text-center bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400 py-4 rounded-xl font-semibold cursor-not-allowed">
+                        Active Plan
+                    </button>
+                    {% else %}
+                    <button disabled class="w-full text-center border border-slate-300 dark:border-slate-700 text-slate-500 dark:text-slate-400 py-4 rounded-xl font-semibold opacity-50 cursor-not-allowed">
+                        Downgrade Unavailable
+                    </button>
+                    {% endif %}
+                </div>
+
+                <!-- Pro Tier Card -->
+                <div class="bg-gradient-to-b from-white to-slate-50 dark:from-darkcard dark:to-darkbg border {% if current_user.is_pro %}border-primary shadow-[0_0_30px_rgba(59,130,246,0.3)] scale-105 z-10{% else %}border-primary/30 dark:border-primary/50 shadow-[0_0_40px_rgba(59,130,246,0.1)]{% endif %} p-10 rounded-3xl flex flex-col relative transition-all duration-300">
+                    {% if current_user.is_pro %}
+                    <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow-lg shadow-primary/30">
+                        Current Plan
+                    </div>
+                    {% else %}
+                    <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                        Recommended
+                    </div>
+                    {% endif %}
+                    
+                    <h3 class="text-2xl font-semibold text-slate-900 dark:text-white mb-2">DeepGuard Pro</h3>
+                    <div class="text-4xl font-bold text-slate-900 dark:text-white mb-6">$15<span class="text-xl text-slate-500 dark:text-slate-400 font-normal">/mo</span></div>
+                    <p class="text-slate-600 dark:text-slate-400 mb-8 border-b border-slate-200 dark:border-slate-700 pb-8">For maximum security and unlimited analysis.</p>
+                    
+                    <ul class="space-y-4 mb-10 flex-1">
+                        <li class="flex items-center text-slate-900 dark:text-white"><i class="fa-solid fa-check text-primary mr-3"></i> <strong>Unlimited</strong> Audio Scans</li>
+                        <li class="flex items-center text-slate-900 dark:text-white"><i class="fa-solid fa-check text-primary mr-3"></i> Pro Deep Scan Accuracy</li>
+                        <li class="flex items-center text-slate-900 dark:text-white"><i class="fa-solid fa-check text-primary mr-3"></i> Save & Export Scan History</li>
+                        <li class="flex items-center text-slate-900 dark:text-white"><i class="fa-solid fa-check text-primary mr-3"></i> Priority Cloud Processing</li>
+                    </ul>
+                    
+                    {% if current_user.is_pro %}
+                    <button class="w-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-white py-4 rounded-xl font-semibold transition-colors border border-slate-300 dark:border-slate-700 hover:bg-slate-300 dark:hover:bg-slate-700">
+                        Manage Billing
+                    </button>
+                    {% else %}
+                    <form action="{{ url_for('subscription') }}" method="POST">
+                        <button type="submit" class="w-full bg-primary hover:bg-blue-600 text-white py-4 rounded-xl font-semibold transition-all shadow-lg shadow-primary/30">
+                            Upgrade to Pro
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+
+        </main>
+    </div>
+</body>
+</html>

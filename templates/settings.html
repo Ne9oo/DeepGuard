@@ -19,29 +19,37 @@
             } 
         }
     </script>
+    <!-- Theme Check Script -->
+    <script>
+        if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.classList.remove('dark');
+        } else {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
 </head>
-<body class="bg-darkbg text-slate-300 dark:text-slate-300 text-slate-800 antialiased h-screen overflow-hidden flex flex-col selection:bg-primary/30 relative transition-colors duration-300">
+<body class="bg-slate-100 dark:bg-darkbg text-slate-800 dark:text-slate-300 antialiased h-screen overflow-hidden flex flex-col selection:bg-primary/30 relative transition-colors duration-300">
 
     <!-- Ambient Background -->
     <div class="absolute w-[800px] h-[800px] bg-primary/10 rounded-full blur-[150px] top-[-300px] right-[-100px] pointer-events-none z-0"></div>
     <div class="absolute w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[150px] bottom-[-200px] left-[-200px] pointer-events-none z-0"></div>
 
     <!-- Top Navigation -->
-    <nav class="h-20 border-b border-white/5 dark:border-white/5 border-slate-200 bg-white/50 dark:bg-darkcard/50 backdrop-blur-xl relative z-20 flex items-center justify-between px-8 transition-colors duration-300">
+    <nav class="h-20 border-b border-slate-200 dark:border-white/5 bg-white/50 dark:bg-darkcard/50 backdrop-blur-xl relative z-20 flex items-center justify-between px-8 transition-colors duration-300">
         <div class="flex items-center space-x-3">
             <i class="fa-solid fa-shield-halved text-primary text-3xl"></i>
-            <span class="text-2xl font-bold dark:text-white text-slate-900 tracking-wider font-tech">DeepGuard</span>
+            <span class="text-2xl font-bold text-slate-900 dark:text-white tracking-wider font-tech">DeepGuard</span>
         </div>
         
         <div class="flex items-center space-x-6">
             <div class="text-right hidden md:block">
-                <p class="text-sm font-semibold dark:text-white text-slate-900">{{ current_user.username }}</p>
+                <p class="text-sm font-semibold text-slate-900 dark:text-white">{{ current_user.username }}</p>
                 <p class="text-xs text-primary">{% if current_user.is_pro %}Pro Tier{% else %}Basic Tier{% endif %}</p>
             </div>
-            <a href="/profile" class="w-10 h-10 rounded-full dark:bg-slate-800 bg-slate-200 border dark:border-slate-700 border-slate-300 flex items-center justify-center cursor-pointer hover:border-primary transition-colors">
-                <i class="fa-solid fa-user dark:text-slate-400 text-slate-600"></i>
+            <a href="/profile" class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 flex items-center justify-center cursor-pointer hover:border-primary transition-colors">
+                <i class="fa-solid fa-user text-slate-600 dark:text-slate-400"></i>
             </a>
-            <a href="/logout" class="dark:text-slate-500 text-slate-400 hover:text-alert transition-colors" title="Log Out">
+            <a href="/logout" class="text-slate-400 dark:text-slate-500 hover:text-alert transition-colors" title="Log Out">
                 <i class="fa-solid fa-arrow-right-from-bracket text-xl"></i>
             </a>
         </div>
@@ -51,26 +59,26 @@
     <div class="flex-1 flex overflow-hidden relative z-10 p-6 gap-6 max-w-[1600px] w-full mx-auto">
         
         <!-- Floating Glass Sidebar -->
-        <aside class="w-72 flex-shrink-0 dark:bg-darkcard/40 bg-white/60 backdrop-blur-xl border border-white/10 dark:border-white/10 border-slate-200 rounded-[2rem] p-6 flex flex-col justify-between hidden lg:flex shadow-2xl transition-colors duration-300">
+        <aside class="w-72 flex-shrink-0 bg-white/60 dark:bg-darkcard/40 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] p-6 flex flex-col justify-between hidden lg:flex shadow-2xl transition-colors duration-300">
             <div class="space-y-2">
-                <p class="text-xs font-bold dark:text-slate-500 text-slate-400 uppercase tracking-wider mb-4 px-4">Menu</p>
+                <p class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-4 px-4">Menu</p>
                 
-                <a href="/dashboard" class="flex items-center space-x-4 px-4 py-3 dark:text-slate-400 text-slate-600 hover:text-primary dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl font-medium transition-all">
+                <a href="/dashboard" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl font-medium transition-all">
                     <i class="fa-solid fa-radar w-5"></i>
                     <span>Audio Scanner</span>
                 </a>
                 
-                <a href="#" class="flex items-center space-x-4 px-4 py-3 dark:text-slate-400 text-slate-600 hover:text-primary dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl font-medium transition-all">
+                <a href="#" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl font-medium transition-all">
                     <i class="fa-solid fa-clock-rotate-left w-5"></i>
                     <span>Scan History</span>
                 </a>
                 
-                <a href="#" class="flex items-center space-x-4 px-4 py-3 dark:text-slate-400 text-slate-600 hover:text-primary dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl font-medium transition-all">
+                <a href="/subscription" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl font-medium transition-all">
                     <i class="fa-solid fa-crown w-5"></i>
                     <span>Subscription</span>
                 </a>
                 
-                <a href="/profile" class="flex items-center space-x-4 px-4 py-3 dark:text-slate-400 text-slate-600 hover:text-primary dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl font-medium transition-all">
+                <a href="/profile" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl font-medium transition-all">
                     <i class="fa-regular fa-id-badge w-5"></i>
                     <span>Profile</span>
                 </a>
@@ -83,83 +91,74 @@
             </div>
 
             <!-- Usage Widget -->
-            <div class="dark:bg-darkbg/50 bg-slate-100/50 border border-white/5 dark:border-white/5 border-slate-200 rounded-2xl p-5 mt-auto transition-colors duration-300">
+            <div class="bg-slate-100/50 dark:bg-darkbg/50 border border-slate-200 dark:border-white/5 rounded-2xl p-5 mt-auto transition-colors duration-300">
                 <div class="flex justify-between items-end mb-2">
-                    <span class="text-sm font-medium dark:text-slate-300 text-slate-700">Daily Scans</span>
+                    <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Daily Scans</span>
                     <span class="text-xs text-primary font-bold">{{ current_user.scans_used }} / 5</span>
                 </div>
-                <div class="w-full dark:bg-slate-800 bg-slate-300 rounded-full h-2 mb-3">
+                <div class="w-full bg-slate-300 dark:bg-slate-800 rounded-full h-2 mb-3">
                     <div class="bg-primary h-2 rounded-full" style="width: {{ (current_user.scans_used / 5) * 100 }}%"></div>
                 </div>
-                <a href="#" class="text-xs dark:text-slate-400 text-slate-500 hover:text-primary dark:hover:text-white transition-colors flex items-center">
+                {% if not current_user.is_pro %}
+                <a href="/subscription" class="text-xs text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-white transition-colors flex items-center">
                     Upgrade to Pro <i class="fa-solid fa-arrow-right ml-2"></i>
                 </a>
+                {% endif %}
             </div>
         </aside>
 
         <!-- Settings Area -->
-        <main class="flex-1 flex flex-col dark:bg-darkcard/40 bg-white/60 backdrop-blur-xl border border-white/10 dark:border-white/10 border-slate-200 rounded-[2rem] p-8 lg:p-12 shadow-2xl overflow-y-auto transition-colors duration-300">
+        <main class="flex-1 flex flex-col bg-white/60 dark:bg-darkcard/40 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] p-8 lg:p-12 shadow-2xl overflow-y-auto transition-colors duration-300">
             
             <header class="mb-10">
-                <h1 class="text-3xl font-bold dark:text-white text-slate-900 mb-2">System Settings</h1>
-                <p class="dark:text-slate-400 text-slate-600">Customize your DeepGuard interface and analysis preferences.</p>
+                <h1 class="text-3xl font-bold text-slate-900 dark:text-white mb-2">System Settings</h1>
+                <p class="text-slate-600 dark:text-slate-400">Customize your DeepGuard interface and analysis preferences.</p>
             </header>
 
-            <!-- Flash Messages -->
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="bg-safe/10 border border-safe/30 text-safe px-4 py-3 rounded-xl mb-8 text-sm flex items-center max-w-3xl">
-                            <i class="fa-solid fa-circle-check mr-3"></i>
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-
-            <form action="{{ url_for('settings') }}" method="POST" class="max-w-3xl space-y-8">
+            <div class="max-w-3xl space-y-8">
                 
                 <!-- Section 1: Appearance -->
-                <div class="dark:bg-darkbg/50 bg-slate-50 border border-white/5 dark:border-white/5 border-slate-200 rounded-3xl p-8 transition-colors duration-300">
-                    <h3 class="text-xl font-semibold dark:text-white text-slate-900 mb-6 border-b border-white/10 dark:border-white/10 border-slate-200 pb-4 flex items-center">
-                        <i class="fa-solid fa-palette dark:text-slate-400 text-slate-500 mr-3"></i> Appearance
+                <div class="bg-slate-50 dark:bg-darkbg/50 border border-slate-200 dark:border-white/5 rounded-3xl p-8 transition-colors duration-300">
+                    <h3 class="text-xl font-semibold text-slate-900 dark:text-white mb-6 border-b border-slate-200 dark:border-white/10 pb-4 flex items-center">
+                        <i class="fa-solid fa-palette text-slate-500 dark:text-slate-400 mr-3"></i> Appearance
                     </h3>
                     
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="font-medium dark:text-white text-slate-800">Dark Mode</p>
-                            <p class="text-sm dark:text-slate-400 text-slate-500">Toggle the dark theme for the dashboard interface.</p>
+                            <p class="font-medium text-slate-800 dark:text-white">Dark Mode</p>
+                            <p class="text-sm text-slate-500 dark:text-slate-400">Toggle the dark theme for the dashboard interface.</p>
                         </div>
                         <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" id="theme-toggle" class="sr-only peer" checked>
+                            <input type="checkbox" id="theme-toggle" class="sr-only peer">
                             <div class="w-11 h-6 bg-slate-300 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                         </label>
                     </div>
                 </div>
 
                 <!-- Section 2: Analysis Engine Options -->
-                <div class="dark:bg-darkbg/50 bg-slate-50 border border-white/5 dark:border-white/5 border-slate-200 rounded-3xl p-8 transition-colors duration-300">
-                    <h3 class="text-xl font-semibold dark:text-white text-slate-900 mb-6 border-b border-white/10 dark:border-white/10 border-slate-200 pb-4 flex items-center">
-                        <i class="fa-solid fa-microchip dark:text-slate-400 text-slate-500 mr-3"></i> Analysis Preferences
+                <div class="bg-slate-50 dark:bg-darkbg/50 border border-slate-200 dark:border-white/5 rounded-3xl p-8 transition-colors duration-300">
+                    <h3 class="text-xl font-semibold text-slate-900 dark:text-white mb-6 border-b border-slate-200 dark:border-white/10 pb-4 flex items-center">
+                        <i class="fa-solid fa-microchip text-slate-500 dark:text-slate-400 mr-3"></i> Analysis Preferences
                     </h3>
                     
                     <div class="space-y-6">
-                        <!-- Dropdown -->
                         <div>
-                            <label class="block font-medium dark:text-white text-slate-800 mb-1">Default Scan Strictness</label>
-                            <p class="text-sm dark:text-slate-400 text-slate-500 mb-3">Higher strictness may flag more files as synthetic.</p>
-                            <select name="scan_strictness" class="block w-full px-4 py-3 dark:bg-darkcard bg-white border border-slate-300 dark:border-slate-700 rounded-xl dark:text-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
-                                <option value="standard">Standard (Recommended)</option>
-                                <option value="high">High Sensitivity</option>
-                                <option value="low">Lenient</option>
+                            <label class="block font-medium text-slate-800 dark:text-white mb-1">Analysis Mode</label>
+                            <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">Choose the balance between scan speed and detection accuracy.</p>
+                            <select name="scan_mode" class="block w-full px-4 py-3 bg-white dark:bg-darkcard border border-slate-300 dark:border-slate-700 rounded-xl text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
+                                <option value="fast">Fast (Quicker scan, potential for lower accuracy)</option>
+                                <option value="standard" selected>Standard (Recommended balance)</option>
+                                {% if current_user.is_pro %}
+                                    <option value="pro">Pro Deep Scan (Maximum accuracy)</option>
+                                {% else %}
+                                    <option value="pro" disabled>Pro Deep Scan (Maximum accuracy) - Upgrade Required</option>
+                                {% endif %}
                             </select>
                         </div>
-
-                        <!-- Toggle -->
                         <div class="flex items-center justify-between pt-2">
                             <div>
-                                <p class="font-medium dark:text-white text-slate-800">Auto-Delete Audio Files</p>
-                                <p class="text-sm dark:text-slate-400 text-slate-500">Automatically delete uploaded files 24 hours after scanning.</p>
+                                <p class="font-medium text-slate-800 dark:text-white">Auto-Delete Audio Files</p>
+                                <p class="text-sm text-slate-500 dark:text-slate-400">Automatically delete uploaded files 24 hours after scanning.</p>
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" name="auto_delete" class="sr-only peer" checked>
@@ -170,15 +169,15 @@
                 </div>
 
                 <!-- Section 3: Notifications -->
-                <div class="dark:bg-darkbg/50 bg-slate-50 border border-white/5 dark:border-white/5 border-slate-200 rounded-3xl p-8 transition-colors duration-300">
-                    <h3 class="text-xl font-semibold dark:text-white text-slate-900 mb-6 border-b border-white/10 dark:border-white/10 border-slate-200 pb-4 flex items-center">
-                        <i class="fa-regular fa-bell dark:text-slate-400 text-slate-500 mr-3"></i> Notifications
+                <div class="bg-slate-50 dark:bg-darkbg/50 border border-slate-200 dark:border-white/5 rounded-3xl p-8 transition-colors duration-300">
+                    <h3 class="text-xl font-semibold text-slate-900 dark:text-white mb-6 border-b border-slate-200 dark:border-white/10 pb-4 flex items-center">
+                        <i class="fa-regular fa-bell text-slate-500 dark:text-slate-400 mr-3"></i> Notifications
                     </h3>
                     
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="font-medium dark:text-white text-slate-800">Scan Completion Alerts</p>
-                            <p class="text-sm dark:text-slate-400 text-slate-500">Receive an email when a long audio analysis is finished.</p>
+                            <p class="font-medium text-slate-800 dark:text-white">Scan Completion Alerts</p>
+                            <p class="text-sm text-slate-500 dark:text-slate-400">Receive an email when a long audio analysis is finished.</p>
                         </div>
                         <label class="relative inline-flex items-center cursor-pointer">
                             <input type="checkbox" name="email_alerts" class="sr-only peer">
@@ -186,31 +185,30 @@
                         </label>
                     </div>
                 </div>
-
-                <div class="flex justify-end pt-4">
-                    <button type="submit" class="bg-primary hover:bg-blue-600 text-white px-8 py-3 rounded-xl font-semibold transition-colors shadow-lg">
-                        Save Preferences
-                    </button>
-                </div>
-            </form>
+            </div>
         </main>
     </div>
 
-    <!-- Script for Live Dark Mode Toggle -->
+    <!-- Script for Live Dark Mode Toggle with LocalStorage -->
     <script>
         const themeToggle = document.getElementById('theme-toggle');
         const htmlElement = document.documentElement;
-        const bodyElement = document.body;
 
+        // Set initial state of the toggle based on localStorage
+        if (localStorage.getItem('theme') === 'light') {
+            themeToggle.checked = false;
+        } else {
+            themeToggle.checked = true;
+        }
+
+        // Save preference when toggled
         themeToggle.addEventListener('change', function() {
             if (this.checked) {
                 htmlElement.classList.add('dark');
-                bodyElement.classList.add('bg-darkbg');
-                bodyElement.classList.remove('bg-slate-100');
+                localStorage.setItem('theme', 'dark');
             } else {
                 htmlElement.classList.remove('dark');
-                bodyElement.classList.remove('bg-darkbg');
-                bodyElement.classList.add('bg-slate-100');
+                localStorage.setItem('theme', 'light');
             }
         });
     </script>

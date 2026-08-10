@@ -135,14 +135,23 @@ def profile():
     return render_template('profile.html')
 
 # User Settings
-@app.route('/settings', methods=['GET', 'POST'])
+@app.route('/settings')
 @login_required
 def settings():
-    if request.method == 'POST':
-        flash('Preferences saved successfully.', 'safe')
-        return redirect(url_for('settings'))
-        
     return render_template('settings.html')
+
+# Subscription Page
+@app.route('/subscription', methods=['GET', 'POST'])
+@login_required
+def subscription():
+    if request.method == 'POST':
+        # Upgrade the user to Pro
+        current_user.is_pro = True
+        db.session.commit()
+        flash('Successfully upgraded to DeepGuard Pro!', 'safe')
+        return redirect(url_for('subscription'))
+        
+    return render_template('subscription.html')
 
 
 # ==========================================

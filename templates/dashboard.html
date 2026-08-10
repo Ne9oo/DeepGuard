@@ -19,30 +19,37 @@
             } 
         }
     </script>
+    <!-- Theme Check Script -->
+    <script>
+        if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.classList.remove('dark');
+        } else {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
 </head>
-<body class="bg-darkbg text-slate-300 antialiased h-screen overflow-hidden flex flex-col selection:bg-primary/30 relative">
+<body class="bg-slate-100 dark:bg-darkbg text-slate-800 dark:text-slate-300 antialiased h-screen overflow-hidden flex flex-col selection:bg-primary/30 relative transition-colors duration-300">
 
     <!-- Ambient Background -->
     <div class="absolute w-[800px] h-[800px] bg-primary/10 rounded-full blur-[150px] top-[-300px] right-[-100px] pointer-events-none z-0"></div>
     <div class="absolute w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[150px] bottom-[-200px] left-[-200px] pointer-events-none z-0"></div>
 
     <!-- Top Navigation -->
-    <nav class="h-20 border-b border-white/5 bg-darkcard/50 backdrop-blur-xl relative z-20 flex items-center justify-between px-8">
+    <nav class="h-20 border-b border-slate-200 dark:border-white/5 bg-white/50 dark:bg-darkcard/50 backdrop-blur-xl relative z-20 flex items-center justify-between px-8 transition-colors duration-300">
         <div class="flex items-center space-x-3">
             <i class="fa-solid fa-shield-halved text-primary text-3xl"></i>
-            <span class="text-2xl font-bold text-white tracking-wider font-tech">DeepGuard</span>
+            <span class="text-2xl font-bold text-slate-900 dark:text-white tracking-wider font-tech">DeepGuard</span>
         </div>
         
         <div class="flex items-center space-x-6">
             <div class="text-right hidden md:block">
-                <p class="text-sm font-semibold text-white">{{ current_user.username | default('User') }}</p>
-                <p class="text-xs text-primary">Basic Tier</p>
+                <p class="text-sm font-semibold text-slate-900 dark:text-white">{{ current_user.username | default('User') }}</p>
+                <p class="text-xs text-primary">{% if current_user.is_pro %}Pro Tier{% else %}Basic Tier{% endif %}</p>
             </div>
-            <!-- Clickable Profile Picture -->
-            <a href="/profile" class="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center cursor-pointer hover:border-primary transition-colors">
-                <i class="fa-solid fa-user text-slate-400"></i>
+            <a href="/profile" class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 flex items-center justify-center cursor-pointer hover:border-primary transition-colors">
+                <i class="fa-solid fa-user text-slate-600 dark:text-slate-400"></i>
             </a>
-            <a href="/logout" class="text-slate-500 hover:text-alert transition-colors" title="Log Out">
+            <a href="/logout" class="text-slate-400 dark:text-slate-500 hover:text-alert transition-colors" title="Log Out">
                 <i class="fa-solid fa-arrow-right-from-bracket text-xl"></i>
             </a>
         </div>
@@ -52,58 +59,61 @@
     <div class="flex-1 flex overflow-hidden relative z-10 p-6 gap-6 max-w-[1600px] w-full mx-auto">
         
         <!-- Floating Glass Sidebar -->
-        <aside class="w-72 flex-shrink-0 bg-darkcard/40 backdrop-blur-xl border border-white/10 rounded-[2rem] p-6 flex flex-col justify-between hidden lg:flex shadow-2xl">
+        <aside class="w-72 flex-shrink-0 bg-white/60 dark:bg-darkcard/40 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] p-6 flex flex-col justify-between hidden lg:flex shadow-2xl transition-colors duration-300">
             <div class="space-y-2">
-                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 px-4">Menu</p>
+                <p class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-4 px-4">Menu</p>
                 
+                <!-- Active Link -->
                 <a href="/dashboard" class="flex items-center space-x-4 px-4 py-3 bg-primary/10 text-primary rounded-xl font-medium border border-primary/20 transition-all">
                     <i class="fa-solid fa-radar w-5"></i>
                     <span>Audio Scanner</span>
                 </a>
                 
-                <a href="#" class="flex items-center space-x-4 px-4 py-3 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
+                <a href="#" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl font-medium transition-all">
                     <i class="fa-solid fa-clock-rotate-left w-5"></i>
                     <span>Scan History</span>
                 </a>
                 
-                <a href="#" class="flex items-center space-x-4 px-4 py-3 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
+                <a href="/subscription" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl font-medium transition-all">
                     <i class="fa-solid fa-crown w-5"></i>
                     <span>Subscription</span>
                 </a>
                 
-                <a href="/profile" class="flex items-center space-x-4 px-4 py-3 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
+                <a href="/profile" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl font-medium transition-all">
                     <i class="fa-regular fa-id-badge w-5"></i>
                     <span>Profile</span>
                 </a>
                 
-                <a href="/settings" class="flex items-center space-x-4 px-4 py-3 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
+                <a href="/settings" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl font-medium transition-all">
                     <i class="fa-solid fa-gear w-5"></i>
                     <span>Settings</span>
                 </a>
             </div>
 
             <!-- Usage Widget -->
-            <div class="bg-darkbg/50 border border-white/5 rounded-2xl p-5 mt-auto">
+            <div class="bg-slate-100/50 dark:bg-darkbg/50 border border-slate-200 dark:border-white/5 rounded-2xl p-5 mt-auto transition-colors duration-300">
                 <div class="flex justify-between items-end mb-2">
-                    <span class="text-sm font-medium text-slate-300">Daily Scans</span>
-                    <span class="text-xs text-primary font-bold">0 / 5</span>
+                    <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Daily Scans</span>
+                    <span class="text-xs text-primary font-bold">{{ current_user.scans_used }} / 5</span>
                 </div>
-                <div class="w-full bg-slate-800 rounded-full h-2 mb-3">
-                    <div class="bg-primary h-2 rounded-full" style="width: 0%"></div>
+                <div class="w-full bg-slate-300 dark:bg-slate-800 rounded-full h-2 mb-3">
+                    <div class="bg-primary h-2 rounded-full" style="width: {{ (current_user.scans_used / 5) * 100 }}%"></div>
                 </div>
-                <a href="#" class="text-xs text-slate-400 hover:text-white transition-colors flex items-center">
+                {% if not current_user.is_pro %}
+                <a href="/subscription" class="text-xs text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-white transition-colors flex items-center">
                     Upgrade to Pro <i class="fa-solid fa-arrow-right ml-2"></i>
                 </a>
+                {% endif %}
             </div>
         </aside>
 
         <!-- Scanner Area -->
-        <main class="flex-1 flex flex-col bg-darkcard/40 backdrop-blur-xl border border-white/10 rounded-[2rem] p-8 lg:p-12 shadow-2xl overflow-y-auto">
+        <main class="flex-1 flex flex-col bg-white/60 dark:bg-darkcard/40 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] p-8 lg:p-12 shadow-2xl overflow-y-auto transition-colors duration-300">
             
             <header class="mb-10 flex justify-between items-center">
                 <div>
-                    <h1 class="text-3xl font-bold text-white mb-2">Voice Forensics Engine</h1>
-                    <p class="text-slate-400">Upload a suspicious audio file for real-time CNN analysis.</p>
+                    <h1 class="text-3xl font-bold text-slate-900 dark:text-white mb-2">Voice Forensics Engine</h1>
+                    <p class="text-slate-600 dark:text-slate-400">Upload a suspicious audio file for real-time CNN analysis.</p>
                 </div>
                 <div class="px-4 py-2 bg-safe/10 border border-safe/20 rounded-full flex items-center text-safe text-sm font-semibold shadow-[0_0_15px_rgba(16,185,129,0.15)]">
                     <div class="w-2 h-2 bg-safe rounded-full mr-2 animate-pulse"></div> Engine Online
@@ -111,35 +121,18 @@
             </header>
 
             <!-- Drag & Drop Zone -->
-            <div class="flex-1 border-2 border-dashed border-slate-700 hover:border-primary/50 bg-darkbg/30 hover:bg-darkbg/50 rounded-3xl transition-all flex flex-col items-center justify-center p-10 cursor-pointer group relative overflow-hidden">
-                
-                <!-- Background Pulse Effect -->
+            <div class="flex-1 border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-primary/50 dark:hover:border-primary/50 bg-slate-50 dark:bg-darkbg/30 hover:bg-slate-100 dark:hover:bg-darkbg/50 rounded-3xl transition-all flex flex-col items-center justify-center p-10 cursor-pointer group relative overflow-hidden">
                 <div class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                
-                <div class="w-24 h-24 bg-slate-800 border border-slate-700 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 relative z-10">
-                    <i class="fa-solid fa-cloud-arrow-up text-4xl text-primary group-hover:text-white transition-colors"></i>
+                <div class="w-24 h-24 bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 relative z-10">
+                    <i class="fa-solid fa-cloud-arrow-up text-4xl text-primary group-hover:text-slate-900 dark:group-hover:text-white transition-colors"></i>
                 </div>
-                
-                <h3 class="text-2xl font-semibold text-white mb-3 relative z-10">Drag & Drop Audio Here</h3>
-                <p class="text-slate-400 mb-8 text-center max-w-md relative z-10">Supported formats: .WAV, .MP3 (Max file size: 10MB)</p>
-                
-                <button class="bg-slate-800 hover:bg-primary text-white border border-slate-700 hover:border-transparent px-8 py-3 rounded-xl font-medium transition-all shadow-lg relative z-10">
+                <h3 class="text-2xl font-semibold text-slate-900 dark:text-white mb-3 relative z-10">Drag & Drop Audio Here</h3>
+                <p class="text-slate-600 dark:text-slate-400 mb-8 text-center max-w-md relative z-10">Supported formats: .WAV, .MP3 (Max file size: 10MB)</p>
+                <button class="bg-slate-800 dark:bg-slate-800 hover:bg-primary text-white border border-transparent px-8 py-3 rounded-xl font-medium transition-all shadow-lg relative z-10">
                     Browse Files
                 </button>
             </div>
-
-            <!-- Analysis Status Box (Hidden by default, shown during scan) -->
-            <div class="mt-8 bg-darkbg/50 border border-white/5 rounded-2xl p-6 hidden">
-                <h4 class="text-white font-medium mb-4 flex items-center">
-                    <i class="fa-solid fa-microchip text-primary mr-3"></i> Analyzing Spectrogram Data...
-                </h4>
-                <div class="w-full bg-slate-800 rounded-full h-1.5">
-                    <div class="bg-gradient-to-r from-primary to-purple-500 h-1.5 rounded-full w-2/3 animate-pulse"></div>
-                </div>
-            </div>
-
         </main>
     </div>
-
 </body>
 </html>
