@@ -174,15 +174,30 @@
                         <form action="{{ url_for('profile') }}" method="POST" class="space-y-5">
                             <div>
                                 <label class="block text-sm font-medium text-slate-800 dark:text-slate-300 mb-2">Current Password</label>
-                                <input type="password" name="current_password" required class="block w-full px-4 py-3 bg-white dark:bg-darkcard border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
+                                <div class="relative">
+                                    <input type="password" name="current_password" id="current-password" required class="block w-full px-4 py-3 bg-white dark:bg-darkcard border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all pr-12">
+                                    <button type="button" onclick="togglePassword('current-password', 'eye-current')" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition-colors focus:outline-none">
+                                        <i id="eye-current" class="fa-solid fa-eye"></i>
+                                    </button>
+                                </div>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-slate-800 dark:text-slate-300 mb-2">New Password</label>
-                                <input type="password" name="new_password" required class="block w-full px-4 py-3 bg-white dark:bg-darkcard border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
+                                <div class="relative">
+                                    <input type="password" name="new_password" id="new-password" required class="block w-full px-4 py-3 bg-white dark:bg-darkcard border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all pr-12">
+                                    <button type="button" onclick="togglePassword('new-password', 'eye-new')" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition-colors focus:outline-none">
+                                        <i id="eye-new" class="fa-solid fa-eye"></i>
+                                    </button>
+                                </div>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-slate-800 dark:text-slate-300 mb-2">Confirm New Password</label>
-                                <input type="password" name="confirm_new_password" required class="block w-full px-4 py-3 bg-white dark:bg-darkcard border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
+                                <div class="relative">
+                                    <input type="password" name="confirm_new_password" id="confirm-new-password" required class="block w-full px-4 py-3 bg-white dark:bg-darkcard border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all pr-12">
+                                    <button type="button" onclick="togglePassword('confirm-new-password', 'eye-confirm')" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition-colors focus:outline-none">
+                                        <i id="eye-confirm" class="fa-solid fa-eye"></i>
+                                    </button>
+                                </div>
                             </div>
                             <button type="submit" class="w-full bg-slate-800 hover:bg-slate-700 text-white py-3 rounded-xl font-semibold transition-colors mt-4 border border-transparent">
                                 Update Password
@@ -193,5 +208,23 @@
             </div>
         </main>
     </div>
+
+    <!-- Toggle Password Script -->
+    <script>
+        function togglePassword(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+    </script>
 </body>
 </html>

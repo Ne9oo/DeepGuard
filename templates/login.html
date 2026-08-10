@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DeepGuard | Secure Login</title>
+    <title>DeepGuard | Log In</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -13,99 +13,93 @@
             theme: { 
                 extend: { 
                     colors: { primary: '#3b82f6', alert: '#ef4444', safe: '#10b981', darkbg: '#0a0f1c', darkcard: '#111827' }, 
-                    fontFamily: { sans: ['Inter', 'sans-serif'], tech: ['Orbitron', 'sans-serif'] },
-                    animation: { 'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite', }
+                    fontFamily: { sans: ['Inter', 'sans-serif'], tech: ['Orbitron', 'sans-serif'] }
                 } 
             } 
         }
     </script>
+    <script>
+        if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.classList.remove('dark');
+        } else {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
 </head>
-<body class="bg-darkbg text-slate-300 antialiased min-h-screen flex items-center justify-center relative overflow-hidden selection:bg-primary/30">
+<body class="bg-slate-100 dark:bg-darkbg text-slate-800 dark:text-slate-300 antialiased h-screen flex items-center justify-center relative transition-colors duration-300">
 
-    <!-- Glowing Background Orbs -->
-    <div class="absolute w-[600px] h-[600px] bg-primary rounded-full blur-[120px] top-[-200px] left-[-100px] opacity-30 animate-pulse-slow z-0"></div>
-    <div class="absolute w-[500px] h-[500px] bg-purple-600 rounded-full blur-[120px] bottom-[-150px] right-[-100px] opacity-30 animate-pulse-slow z-0" style="animation-delay: 2s;"></div>
+    <!-- Ambient Background -->
+    <div class="absolute w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px] top-[-200px] left-[-100px] pointer-events-none z-0"></div>
 
-    <div class="w-full max-w-md p-6 relative z-10">
-        <!-- Glassmorphism Login Card -->
-        <div class="bg-darkcard/60 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-10 md:p-12 shadow-2xl">
-            
-            <!-- Logo & Header -->
-            <div class="text-center mb-10">
-                <a href="/" class="inline-flex items-center space-x-3 cursor-pointer mb-4 hover:opacity-80 transition-opacity">
-                    <i class="fa-solid fa-shield-halved text-primary text-4xl"></i>
-                    <span class="text-3xl font-bold text-white tracking-wider font-tech">DeepGuard</span>
-                </a>
-                <p class="text-slate-400">Sign in to access the forensic dashboard.</p>
-            </div>
-
-            <!-- Flash Messages -->
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        {% if category == 'safe' %}
-                            <div class="bg-safe/10 border border-safe/30 text-safe px-4 py-3 rounded-xl mb-6 text-sm flex items-center">
-                                <i class="fa-solid fa-circle-check mr-3"></i>
-                                {{ message }}
-                            </div>
-                        {% else %}
-                            <div class="bg-alert/10 border border-alert/30 text-alert px-4 py-3 rounded-xl mb-6 text-sm flex items-center">
-                                <i class="fa-solid fa-triangle-exclamation mr-3"></i>
-                                {{ message }}
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-
-            <!-- Form -->
-            <form action="{{ url_for('login') }}" method="POST" class="space-y-6">
-                <!-- Email Input -->
-                <div>
-                    <label for="email" class="block text-sm font-medium text-slate-300 mb-2">Email Address</label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <i class="fa-solid fa-envelope text-slate-500"></i>
-                        </div>
-                        <input type="email" name="email" id="email" required 
-                            class="block w-full pl-11 pr-4 py-3.5 bg-darkbg border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
-                    </div>
-                </div>
-
-                <!-- Password Input -->
-                <div>
-                    <div class="flex items-center justify-between mb-2">
-                        <label for="password" class="block text-sm font-medium text-slate-300">Password</label>
-                        <a href="#" class="text-xs font-medium text-primary hover:text-blue-400 transition-colors">Forgot password?</a>
-                    </div>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <i class="fa-solid fa-lock text-slate-500"></i>
-                        </div>
-                        <input type="password" name="password" id="password" required 
-                            class="block w-full pl-11 pr-4 py-3.5 bg-darkbg border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
-                    </div>
-                </div>
-
-                <!-- Submit Button -->
-                <button type="submit" class="w-full bg-primary hover:bg-blue-600 text-white py-4 rounded-xl font-bold text-lg transition-all shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:shadow-[0_0_30px_rgba(59,130,246,0.5)] flex items-center justify-center mt-4">
-                    Sign In <i class="fa-solid fa-arrow-right-to-bracket ml-3"></i>
-                </button>
-            </form>
-
-            <!-- Sign Up Link -->
-            <div class="mt-8 text-center text-sm text-slate-400">
-                Don't have an account? 
-                <a href="/signup" class="text-primary font-semibold hover:text-blue-400 transition-colors ml-1">Sign up here</a>
-            </div>
-        </div>
+    <div class="w-full max-w-md bg-white dark:bg-darkcard/80 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] p-10 shadow-2xl relative z-10">
         
-        <!-- Back to Home -->
-        <div class="mt-8 text-center">
-            <a href="/" class="text-sm text-slate-500 hover:text-white transition-colors inline-flex items-center">
-                <i class="fa-solid fa-arrow-left mr-2"></i> Back to Home
-            </a>
+        <div class="text-center mb-8">
+            <i class="fa-solid fa-shield-halved text-primary text-4xl mb-3"></i>
+            <h1 class="text-3xl font-bold text-slate-900 dark:text-white font-tech tracking-wider">DeepGuard</h1>
+            <p class="text-slate-500 dark:text-slate-400 mt-2">Welcome back to the forensics engine.</p>
         </div>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="bg-{{ category }}/10 border border-{{ category }}/30 text-{{ category }} px-4 py-3 rounded-xl mb-6 text-sm flex items-center">
+                        <i class="fa-solid fa-circle-info mr-3"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form action="{{ url_for('login') }}" method="POST" class="space-y-6">
+            
+            <div>
+                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Email Address</label>
+                <input type="email" name="email" required 
+                    class="block w-full px-4 py-3 bg-slate-50 dark:bg-darkbg border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Password</label>
+                <!-- Relative container for the eye button -->
+                <div class="relative">
+                    <input type="password" name="password" id="login-password" required 
+                        class="block w-full px-4 py-3 bg-slate-50 dark:bg-darkbg border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all pr-12">
+                    
+                    <!-- Eye Button -->
+                    <button type="button" onclick="togglePassword('login-password', 'eye-icon-login')" 
+                        class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition-colors focus:outline-none">
+                        <i id="eye-icon-login" class="fa-solid fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" class="w-full bg-primary hover:bg-blue-600 text-white py-3.5 rounded-xl font-semibold transition-all shadow-lg shadow-primary/30">
+                Log In
+            </button>
+        </form>
+
+        <p class="text-center text-sm text-slate-500 dark:text-slate-400 mt-8">
+            Don't have an account? <a href="{{ url_for('signup') }}" class="text-primary hover:text-blue-400 font-medium transition-colors">Sign up here</a>
+        </p>
     </div>
+
+    <!-- Toggle Password Script -->
+    <script>
+        function togglePassword(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+    </script>
 </body>
 </html>
