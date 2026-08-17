@@ -3,256 +3,207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DeepGuard | Admin Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <title>DeepGuard | Admin Control Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style> .no-scrollbar::-webkit-scrollbar { display: none; } .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; } </style>
     <script>
-        tailwind.config = { darkMode: 'class', theme: { extend: { colors: { primary: '#3b82f6', alert: '#ef4444', safe: '#10b981' }, fontFamily: { sans: ['Inter', 'sans-serif'], tech: ['Orbitron', 'sans-serif'], mono: ['Space Mono', 'monospace'] } } } }
-        const savedTheme = localStorage.getItem('theme') || 'dark'; const savedFont = localStorage.getItem('font') || 'sans';
-        if (savedTheme === 'light') document.documentElement.classList.remove('dark'); else document.documentElement.classList.add('dark');
-        document.documentElement.classList.add(`font-${savedFont}`);
+        tailwind.config = { 
+            darkMode: 'class', 
+            theme: { 
+                extend: { 
+                    colors: { primary: '#3b82f6', alert: '#ef4444', safe: '#10b981', darkbg: '#0a0f1c', darkcard: '#111827' }, 
+                    fontFamily: { sans: ['Inter', 'sans-serif'], tech: ['Orbitron', 'sans-serif'] },
+                    animation: { 'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite', 'spin-slow': 'spin 8s linear infinite' }
+                } 
+            } 
+        }
+    </script>
+    <!-- Theme Check Script -->
+    <script>
+        if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.classList.remove('dark');
+        } else {
+            document.documentElement.classList.add('dark');
+        }
     </script>
 </head>
-<body class="bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-300 antialiased h-screen flex overflow-hidden transition-colors duration-300">
+<body class="bg-slate-100 dark:bg-darkbg text-slate-800 dark:text-slate-300 antialiased h-screen overflow-hidden flex flex-col selection:bg-primary/30 relative transition-colors duration-300">
 
-    <!-- UPSCALED SIDEBAR -->
-    <aside class="w-80 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col justify-between hidden md:flex transition-colors duration-300">
-        <div>
-            <div class="h-24 shrink-0 flex items-center px-8 border-b border-slate-200 dark:border-slate-700">
-                <i class="fa-solid fa-shield-halved text-primary text-4xl mr-4"></i>
-                <h1 class="text-3xl font-bold text-slate-900 dark:text-white tracking-wider">DeepGuard</h1>
-            </div>
-            <nav class="p-6 space-y-4">
-                <a href="/admin" class="flex items-center px-6 py-4 bg-primary/10 text-primary rounded-xl transition-colors">
-                    <i class="fa-solid fa-chart-line text-2xl w-10"></i>
-                    <span class="font-medium text-xl" data-translate="nav_dashboard">Dashboard</span>
-                </a>
-                <a href="#" class="flex items-center px-6 py-4 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50 hover:text-slate-900 dark:hover:text-white rounded-xl transition-colors">
-                    <i class="fa-solid fa-folder-open text-2xl w-10"></i>
-                    <span class="font-medium text-xl" data-translate="nav_history">Scan History</span>
-                </a>
-                <a href="/settings" class="flex items-center px-6 py-4 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50 hover:text-slate-900 dark:hover:text-white rounded-xl transition-colors">
-                    <i class="fa-solid fa-gear text-2xl w-10"></i>
-                    <span class="font-medium text-xl" data-translate="nav_settings">Settings</span>
-                </a>
-            </nav>
-        </div>
-        <div class="p-8 border-t border-slate-200 dark:border-slate-700 text-lg text-slate-500 dark:text-slate-400 shrink-0">
-            <p><span data-translate="sys_status">System Status:</span> <span class="text-safe flex items-center inline-flex"><span class="w-3 h-3 rounded-full bg-safe mr-2"></span> <span data-translate="sys_ready">Ready</span></span></p>
-        </div>
-    </aside>
+    <!-- Ambient Background -->
+    <div class="absolute w-[800px] h-[800px] bg-primary/10 rounded-full blur-[150px] top-[-300px] right-[-100px] pointer-events-none z-0"></div>
+    <div class="absolute w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[150px] bottom-[-200px] left-[-200px] pointer-events-none z-0"></div>
 
-    <main class="flex-1 flex flex-col h-full overflow-y-auto relative no-scrollbar">
+    <!-- Top Navigation -->
+    <nav class="h-20 border-b border-slate-200 dark:border-white/5 bg-white/50 dark:bg-darkcard/50 backdrop-blur-xl relative z-20 flex items-center justify-between px-8 transition-colors duration-300">
+        <div class="flex items-center space-x-3">
+            <i class="fa-solid fa-shield-halved text-primary text-3xl"></i>
+            <span class="text-2xl font-bold text-slate-900 dark:text-white tracking-wider font-tech">DeepGuard Admin</span>
+        </div>
         
-        <!-- STICKY HEADER WITH BLUR EFFECT -->
-        <header class="h-24 shrink-0 sticky top-0 z-50 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-700 flex items-center justify-between px-10 transition-colors duration-300">
-            <h2 class="text-3xl font-semibold text-slate-900 dark:text-white" data-translate="dash_title">Deepfake Audio File Analyzer</h2>
-            
-            <div class="relative">
-                <button id="user-menu-button" onclick="toggleDropdown()" class="flex items-center space-x-3 bg-slate-100 dark:bg-slate-700/50 hover:bg-slate-200 dark:hover:bg-slate-600 px-6 py-3 rounded-full transition-colors focus:outline-none border border-slate-200 dark:border-slate-700">
-                    <i class="fa-solid fa-user text-base text-slate-500 dark:text-slate-300"></i>
-                    <span class="text-lg font-medium text-slate-700 dark:text-slate-200">Admin</span>
-                </button>
-
-                <div id="user-dropdown" class="hidden absolute right-0 mt-3 w-80 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 py-3 z-50">
-                    
-                    <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-700/50 text-lg text-slate-700 dark:text-slate-300 font-medium truncate">
-                        {{ current_user.email | default('afiq@deepguard.com') }} 
-                    </div>
-                    
-                    <button class="w-full flex items-center px-6 py-4 text-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors mt-2">
-                        <i class="fa-regular fa-user w-8 text-slate-400 mr-2"></i>
-                        <span data-translate="menu_account">Account details</span>
-                    </button>
-                    
-                    <div class="border-t border-slate-100 dark:border-slate-700/50 my-2"></div>
-                    
-                    <div class="relative group/lang">
-                        <button class="w-full flex items-center justify-between px-6 py-4 text-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-                            <div class="flex items-center">
-                                <i class="fa-solid fa-globe w-8 text-slate-400 mr-2"></i>
-                                <span id="current-lang-display">English</span>
-                            </div>
-                            <i class="fa-solid fa-chevron-right text-sm text-slate-400"></i>
-                        </button>
-                        
-                        <div class="hidden group-hover/lang:block absolute right-[96%] top-0 w-64 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 py-2 z-50">
-                            <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-700/50 flex justify-between items-center relative group/tooltip cursor-default">
-                                <span class="text-base font-medium text-slate-500 dark:text-slate-400" data-translate="menu_site_lang">Site language</span>
-                            </div>
-                            <div id="language-list" class="py-1"></div>
-                        </div>
-                    </div>
-                    
-                    <button onclick="toggleThemeFromMenu()" class="w-full flex items-center justify-between px-6 py-4 text-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-                        <div class="flex items-center">
-                            <i class="fa-solid fa-moon w-8 text-slate-400 mr-2"></i>
-                            <span data-translate="menu_darkmode">Dark mode</span>
-                        </div>
-                        <div id="menu-theme-toggle" class="w-12 h-6 rounded-full relative transition-colors duration-200">
-                            <div id="menu-theme-knob" class="w-5 h-5 bg-white rounded-full absolute top-0.5 transition-all duration-200"></div>
-                        </div>
-                    </button>
-                    
-                    <div class="border-t border-slate-100 dark:border-slate-700/50 my-2"></div>
-                    
-                    <button class="w-full flex items-center px-6 py-4 text-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-                        <i class="fa-regular fa-circle-question w-8 text-slate-400 mr-2"></i>
-                        <span data-translate="menu_help">Help Center</span>
-                    </button>
-                    <button class="w-full flex items-center px-6 py-4 text-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-                        <i class="fa-regular fa-envelope w-8 text-slate-400 mr-2"></i>
-                        <span data-translate="menu_contact">Contact us</span>
-                    </button>
-                    
-                    <div class="border-t border-slate-100 dark:border-slate-700/50 my-2"></div>
-                    
-                    <button class="w-full flex items-center justify-between px-6 py-4 text-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-                        <div class="flex items-center">
-                            <i class="fa-solid fa-circle-info w-8 text-slate-400 mr-2"></i>
-                            <span data-translate="menu_legal">Legal</span>
-                        </div>
-                        <i class="fa-solid fa-chevron-right text-sm text-slate-400"></i>
-                    </button>
-                    
-                    <div class="border-t border-slate-100 dark:border-slate-700/50 my-2"></div>
-                    
-                    <a href="/logout" class="w-full flex items-center px-6 py-4 text-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-                        <i class="fa-solid fa-arrow-right-from-bracket w-8 text-slate-400 mr-2"></i>
-                        <span data-translate="menu_logout">Log out</span>
-                    </a>
-                </div>
+        <div class="flex items-center space-x-6">
+            <div class="text-right hidden md:block">
+                <p class="text-sm font-semibold text-slate-900 dark:text-white">{{ current_user.username }}</p>
+                <p class="text-xs text-alert font-bold tracking-wide">Administrator</p>
             </div>
-        </header>
-
-        <div class="p-8 lg:p-12 space-y-8 w-full">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="bg-white dark:bg-slate-800 rounded-2xl p-8 border border-slate-200 dark:border-slate-700 shadow-lg">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-slate-500 dark:text-slate-400 font-medium text-lg" data-translate="card_analyzed">Files Analyzed</h3>
-                        <i class="fa-solid fa-file-audio text-slate-400 text-2xl"></i>
-                    </div>
-                    <p class="text-4xl font-bold text-slate-900 dark:text-white">{{ total_analyzed | default('1,284') }}</p>
-                </div>
-                <div class="bg-white dark:bg-slate-800 rounded-2xl p-8 border border-slate-200 dark:border-slate-700 shadow-lg">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-slate-500 dark:text-slate-400 font-medium text-lg" data-translate="card_detected">Deepfakes Detected</h3>
-                        <i class="fa-solid fa-robot text-alert text-2xl"></i>
-                    </div>
-                    <p class="text-4xl font-bold text-alert">{{ threats_detected | default('42') }}</p>
-                </div>
-                <div class="bg-white dark:bg-slate-800 rounded-2xl p-8 border border-slate-200 dark:border-slate-700 shadow-lg">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-slate-500 dark:text-slate-400 font-medium text-lg" data-translate="card_time">Avg. Processing Time</h3>
-                        <i class="fa-solid fa-bolt text-yellow-500 text-2xl"></i>
-                    </div>
-                    <p class="text-4xl font-bold text-slate-900 dark:text-white">1.2s</p>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div class="lg:col-span-2 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-lg flex flex-col">
-                    <div class="p-6 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
-                        <h3 class="font-semibold text-slate-900 dark:text-white text-xl" data-translate="scan_title">Audio File Scanner</h3>
-                    </div>
-                    <div class="p-12 flex-1 flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-900/30">
-                        <div class="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-2xl w-full max-w-lg p-12 text-center hover:border-primary dark:hover:border-primary hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors cursor-pointer">
-                            <i class="fa-solid fa-cloud-arrow-up text-6xl text-primary mb-6"></i>
-                            <h4 class="text-xl font-medium text-slate-900 dark:text-white mb-3" data-translate="scan_upload">Upload Audio File</h4>
-                            <p class="text-base text-slate-500 dark:text-slate-400 mb-8" data-translate="scan_desc">Drag and drop your audio file here, or click to browse supported formats.</p>
-                            <button class="bg-primary hover:bg-blue-600 text-white px-8 py-3 rounded-xl font-medium text-lg transition-colors" data-translate="scan_btn">
-                                Select File
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-lg p-8">
-                    <h3 class="font-semibold text-slate-900 dark:text-white text-xl mb-8" data-translate="pred_title">CNN Model Prediction</h3>
-                    <div class="space-y-8">
-                        <div>
-                            <div class="flex justify-between mb-3">
-                                <span class="text-base font-medium text-slate-500 dark:text-slate-400" data-translate="pred_auth">Authenticity Score</span>
-                                <span class="text-base font-bold text-alert">12%</span>
-                            </div>
-                            <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3">
-                                <div class="bg-alert h-3 rounded-full" style="width: 12%"></div>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between mb-3">
-                                <span class="text-base font-medium text-slate-500 dark:text-slate-400" data-translate="pred_deepfake">Deepfake Probability</span>
-                                <span class="text-base font-bold text-alert">88%</span>
-                            </div>
-                            <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3">
-                                <div class="bg-alert h-3 rounded-full" style="width: 88%"></div>
-                            </div>
-                        </div>
-                        <div class="mt-10 p-6 bg-alert/10 border border-alert/20 rounded-xl text-center">
-                            <i class="fa-solid fa-triangle-exclamation text-alert text-4xl mb-4"></i>
-                            <h4 class="text-alert font-bold text-lg" data-translate="alert_title">SYNTHETIC AUDIO DETECTED</h4>
-                            <p class="text-sm text-slate-600 dark:text-slate-400 mt-2" data-translate="alert_desc">File contains voice patterns matching known AI generation tools.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <a href="/profile" class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 flex items-center justify-center cursor-pointer hover:border-primary transition-colors">
+                <i class="fa-solid fa-user-shield text-slate-600 dark:text-slate-400"></i>
+            </a>
+            <a href="/logout" class="text-slate-400 dark:text-slate-500 hover:text-alert transition-colors" title="Log Out">
+                <i class="fa-solid fa-arrow-right-from-bracket text-xl"></i>
+            </a>
         </div>
-    </main>
+    </nav>
 
-    <script>
-        const translations = {
-            'English': { 'nav_dashboard': 'Dashboard', 'nav_history': 'Scan History', 'nav_settings': 'Settings', 'sys_status': 'System Status:', 'sys_ready': 'Ready', 'dash_title': 'Deepfake Audio File Analyzer', 'menu_account': 'Account details', 'menu_logout': 'Log out', 'menu_site_lang': 'Site language', 'menu_darkmode': 'Dark mode', 'menu_help': 'Help Center', 'menu_contact': 'Contact us', 'menu_legal': 'Legal', 'card_analyzed': 'Files Analyzed', 'card_detected': 'Deepfakes Detected', 'card_time': 'Avg. Processing Time', 'scan_title': 'Audio File Scanner', 'scan_upload': 'Upload Audio File', 'scan_desc': 'Drag and drop your audio file here, or click to browse supported formats.', 'scan_btn': 'Select File', 'pred_title': 'CNN Model Prediction', 'pred_auth': 'Authenticity Score', 'pred_deepfake': 'Deepfake Probability', 'alert_title': 'SYNTHETIC AUDIO DETECTED', 'alert_desc': 'File contains voice patterns matching known AI generation tools.' },
-            'Deutsch': { 'nav_dashboard': 'Übersicht', 'nav_history': 'Scan-Verlauf', 'nav_settings': 'Einstellungen', 'sys_status': 'Systemstatus:', 'sys_ready': 'Bereit', 'dash_title': 'Deepfake-Audio-Analysator', 'menu_account': 'Kontodetails', 'menu_logout': 'Abmelden', 'menu_site_lang': 'Sprache der Seite', 'menu_darkmode': 'Dunkelmodus', 'menu_help': 'Hilfe-Center', 'menu_contact': 'Kontakt', 'menu_legal': 'Rechtliches', 'card_analyzed': 'Analysierte Dateien', 'card_detected': 'Deepfakes Erkannt', 'card_time': 'Durchschn. Zeit', 'scan_title': 'Audio-Datei-Scanner', 'scan_upload': 'Audiodatei hochladen', 'scan_desc': 'Ziehen Sie Ihre Datei hierher oder klicken Sie zum Durchsuchen.', 'scan_btn': 'Datei auswählen', 'pred_title': 'CNN-Modellvorhersage', 'pred_auth': 'Authentizitätswert', 'pred_deepfake': 'Deepfake-Wahrscheinlichkeit', 'alert_title': 'SYNTHETISCHES AUDIO ERKANNT', 'alert_desc': 'Datei enthält Stimmmuster von KI-Generierungstools.' }
-        };
+    <!-- Main Workspace -->
+    <div class="flex-1 flex overflow-hidden relative z-10 p-6 gap-6 max-w-[1600px] w-full mx-auto">
+        
+        <!-- Admin Sidebar -->
+        <aside class="w-72 flex-shrink-0 bg-white/60 dark:bg-darkcard/40 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] p-6 flex flex-col hidden lg:flex shadow-2xl transition-colors duration-300">
+            <div class="space-y-2 flex-1">
+                <p class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-4 px-4">Command Center</p>
+                
+                <a href="/admin" class="flex items-center space-x-4 px-4 py-3 bg-primary/10 text-primary rounded-xl font-medium border border-primary/20 transition-all">
+                    <i class="fa-solid fa-chart-line w-5"></i>
+                    <span>System Overview</span>
+                </a>
+                
+                <a href="#" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl font-medium transition-all">
+                    <i class="fa-solid fa-users w-5"></i>
+                    <span>User Management</span>
+                </a>
+                
+                <a href="#" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl font-medium transition-all">
+                    <i class="fa-solid fa-microchip w-5"></i>
+                    <span>Engine Health</span>
+                </a>
+            </div>
 
-        function toggleDropdown() { document.getElementById('user-dropdown').classList.toggle('hidden'); }
-        window.addEventListener('click', function(e) {
-            if (!document.getElementById('user-menu-button').contains(e.target) && !document.getElementById('user-dropdown').contains(e.target)) {
-                document.getElementById('user-dropdown').classList.add('hidden');
-            }
-        });
+            <!-- View Site Button -->
+            <a href="/dashboard" class="flex items-center justify-center space-x-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 py-3 rounded-xl font-medium transition-colors border border-transparent">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>Return to App</span>
+            </a>
+        </aside>
 
-        const languagesList = ['English', 'Deutsch', 'Français', 'Español', 'Nederlands', 'Português'];
-        function applyTranslations(lang) {
-            if (!translations[lang]) return;
-            document.querySelectorAll('[data-translate]').forEach(el => {
-                const key = el.getAttribute('data-translate');
-                if (translations[lang][key]) el.innerHTML = translations[lang][key];
-            });
-        }
-
-        function initMenuUI() {
-            const isDark = document.documentElement.classList.contains('dark');
-            const toggle = document.getElementById('menu-theme-toggle');
-            const knob = document.getElementById('menu-theme-knob');
-            if (isDark) { toggle.classList.add('bg-primary'); toggle.classList.remove('bg-slate-300', 'dark:bg-slate-600'); knob.classList.add('right-1'); knob.classList.remove('left-1'); } 
-            else { toggle.classList.remove('bg-primary'); toggle.classList.add('bg-slate-300'); knob.classList.remove('right-1'); knob.classList.add('left-1'); }
-
-            const currentLang = localStorage.getItem('language') || 'English';
-            document.getElementById('current-lang-display').innerText = currentLang;
+        <!-- Admin Main Area -->
+        <main class="flex-1 flex flex-col bg-white/60 dark:bg-darkcard/40 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] p-8 shadow-2xl overflow-y-auto transition-colors duration-300">
             
-            const langContainer = document.getElementById('language-list');
-            langContainer.innerHTML = '';
-            languagesList.forEach(lang => {
-                const isSelected = lang === currentLang;
-                const btnClass = isSelected ? 'w-full flex items-center justify-between px-6 py-4 text-lg bg-safe/10 text-safe font-medium transition-colors' : 'w-full flex items-center justify-between px-6 py-4 text-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors';
-                langContainer.innerHTML += `<button onclick="setMenuLanguage('${lang}')" class="${btnClass}"><span>${lang}</span> ${isSelected ? '<i class="fa-solid fa-check"></i>' : ''}</button>`;
-            });
-            applyTranslations(currentLang);
-        }
+            <header class="mb-8">
+                <h1 class="text-3xl font-bold text-slate-900 dark:text-white mb-2">Platform Overview</h1>
+                <p class="text-slate-600 dark:text-slate-400">Monitor DeepGuard system health and user activity.</p>
+            </header>
 
-        function toggleThemeFromMenu() {
-            const newTheme = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
-            localStorage.setItem('theme', newTheme);
-            if (newTheme === 'light') document.documentElement.classList.remove('dark');
-            else document.documentElement.classList.add('dark');
-            initMenuUI();
-        }
+            <!-- Top Level Analytics Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+                <!-- Total Users -->
+                <div class="bg-slate-50 dark:bg-darkbg/50 border border-slate-200 dark:border-white/5 rounded-2xl p-6 transition-colors duration-300">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-slate-500 dark:text-slate-400 font-medium">Total Users</span>
+                        <div class="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                    </div>
+                    <div class="text-3xl font-bold text-slate-900 dark:text-white">{{ total_users }}</div>
+                </div>
 
-        function setMenuLanguage(lang) { localStorage.setItem('language', lang); initMenuUI(); }
-        initMenuUI();
-    </script>
+                <!-- Total Scans -->
+                <div class="bg-slate-50 dark:bg-darkbg/50 border border-slate-200 dark:border-white/5 rounded-2xl p-6 transition-colors duration-300">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-slate-500 dark:text-slate-400 font-medium">Scans Processed</span>
+                        <div class="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
+                            <i class="fa-solid fa-wave-square"></i>
+                        </div>
+                    </div>
+                    <div class="text-3xl font-bold text-slate-900 dark:text-white">{{ total_scans }}</div>
+                </div>
+
+                <!-- Detection Rate -->
+                <div class="bg-slate-50 dark:bg-darkbg/50 border border-slate-200 dark:border-white/5 rounded-2xl p-6 transition-colors duration-300">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-slate-500 dark:text-slate-400 font-medium">Threat Detection</span>
+                        <div class="w-10 h-10 bg-alert/10 rounded-xl flex items-center justify-center text-alert">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </div>
+                    </div>
+                    <div class="text-3xl font-bold text-slate-900 dark:text-white">{{ detection_rate }}%</div>
+                </div>
+
+                <!-- System Status -->
+                <div class="bg-slate-50 dark:bg-darkbg/50 border border-slate-200 dark:border-white/5 rounded-2xl p-6 transition-colors duration-300">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-slate-500 dark:text-slate-400 font-medium">CNN Engine Status</span>
+                        <div class="w-10 h-10 bg-safe/10 rounded-xl flex items-center justify-center text-safe">
+                            <i class="fa-solid fa-server"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-center text-safe font-bold">
+                        <div class="w-2.5 h-2.5 bg-safe rounded-full mr-2 animate-pulse"></div> Online
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Database Table -->
+            <div class="bg-slate-50 dark:bg-darkbg/50 border border-slate-200 dark:border-white/5 rounded-3xl overflow-hidden transition-colors duration-300 flex-1 flex flex-col mb-10">
+                <div class="px-6 py-5 border-b border-slate-200 dark:border-white/10 flex justify-between items-center bg-slate-100/50 dark:bg-black/20">
+                    <h3 class="font-semibold text-slate-900 dark:text-white">User Database</h3>
+                    <div class="relative">
+                        <input type="text" placeholder="Search users..." class="pl-10 pr-4 py-2 bg-white dark:bg-darkcard border border-slate-300 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:border-primary">
+                        <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400 text-xs tracking-wide uppercase bg-slate-100/50 dark:bg-black/20">
+                                <th class="py-3 px-6 font-semibold">User</th>
+                                <th class="py-3 px-6 font-semibold">Email</th>
+                                <th class="py-3 px-6 font-semibold">Plan</th>
+                                <th class="py-3 px-6 font-semibold">Joined</th>
+                                <th class="py-3 px-6 font-semibold text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200 dark:divide-white/5">
+                            {% for u in users %}
+                            <tr class="hover:bg-white dark:hover:bg-white/5 transition-colors">
+                                <td class="py-3 px-6">
+                                    <div class="flex items-center">
+                                        <div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 border border-primary/30 flex items-center justify-center mr-3 text-xs font-bold text-slate-900 dark:text-white">
+                                            {{ u.username[0] | upper }}
+                                        </div>
+                                        <span class="font-medium text-slate-800 dark:text-white">{{ u.username }}</span>
+                                        {% if u.is_admin %}
+                                            <span class="ml-2 bg-alert/10 text-alert text-[10px] px-2 py-0.5 rounded-md font-bold uppercase tracking-wider">Admin</span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td class="py-3 px-6 text-slate-600 dark:text-slate-400 text-sm">{{ u.email }}</td>
+                                <td class="py-3 px-6">
+                                    {% if u.is_pro %}
+                                        <span class="text-xs font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-md">Pro</span>
+                                    {% else %}
+                                        <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 bg-slate-200 dark:bg-slate-800 px-2.5 py-1 rounded-md">Basic</span>
+                                    {% endif %}
+                                </td>
+                                <td class="py-3 px-6 text-slate-600 dark:text-slate-400 text-sm">
+                                    {{ u.created_at.strftime('%Y-%m-%d') }}
+                                </td>
+                                <td class="py-3 px-6 text-right">
+                                    <button class="text-slate-400 hover:text-primary transition-colors mr-3" title="Edit User">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </button>
+                                    <button class="text-slate-400 hover:text-alert transition-colors" title="Delete User">
+                                        <i class="fa-regular fa-trash-can"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
 </body>
 </html>

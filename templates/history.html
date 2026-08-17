@@ -19,7 +19,6 @@
             } 
         }
     </script>
-    <!-- Theme Check Script -->
     <script>
         if (localStorage.getItem('theme') === 'light') {
             document.documentElement.classList.remove('dark');
@@ -30,11 +29,9 @@
 </head>
 <body class="bg-slate-100 dark:bg-darkbg text-slate-800 dark:text-slate-300 antialiased h-screen overflow-hidden flex flex-col selection:bg-primary/30 relative transition-colors duration-300">
 
-    <!-- Ambient Background -->
     <div class="absolute w-[800px] h-[800px] bg-primary/10 rounded-full blur-[150px] top-[-300px] right-[-100px] pointer-events-none z-0"></div>
     <div class="absolute w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[150px] bottom-[-200px] left-[-200px] pointer-events-none z-0"></div>
 
-    <!-- Top Navigation -->
     <nav class="h-20 border-b border-slate-200 dark:border-white/5 bg-white/50 dark:bg-darkcard/50 backdrop-blur-xl relative z-20 flex items-center justify-between px-8 transition-colors duration-300">
         <div class="flex items-center space-x-3">
             <i class="fa-solid fa-shield-halved text-primary text-3xl"></i>
@@ -55,20 +52,17 @@
         </div>
     </nav>
 
-    <!-- Main Workspace -->
     <div class="flex-1 flex overflow-hidden relative z-10 p-6 gap-6 max-w-[1600px] w-full mx-auto">
         
-        <!-- Floating Glass Sidebar -->
         <aside class="w-72 flex-shrink-0 bg-white/60 dark:bg-darkcard/40 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] p-6 flex flex-col justify-between hidden lg:flex shadow-2xl transition-colors duration-300">
             <div class="space-y-2">
                 <p class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-4 px-4">Menu</p>
                 
                 <a href="/dashboard" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl font-medium transition-all">
-                    <i class="fa-solid fa-radar w-5"></i>
+                    <i class="fa-solid fa-wave-square w-5"></i>
                     <span>Audio Scanner</span>
                 </a>
                 
-                <!-- Active Link -->
                 <a href="/history" class="flex items-center space-x-4 px-4 py-3 bg-primary/10 text-primary rounded-xl font-medium border border-primary/20 transition-all">
                     <i class="fa-solid fa-clock-rotate-left w-5"></i>
                     <span>Scan History</span>
@@ -88,9 +82,15 @@
                     <i class="fa-solid fa-gear w-5"></i>
                     <span>Settings</span>
                 </a>
+
+                {% if current_user.is_admin %}
+                <a href="/admin" class="flex items-center space-x-4 px-4 py-3 mt-4 bg-alert/10 text-alert rounded-xl font-bold border border-alert/20 transition-all hover:bg-alert/20">
+                    <i class="fa-solid fa-lock w-5"></i>
+                    <span>Admin Panel</span>
+                </a>
+                {% endif %}
             </div>
 
-            <!-- Usage Widget -->
             <div class="bg-slate-100/50 dark:bg-darkbg/50 border border-slate-200 dark:border-white/5 rounded-2xl p-5 mt-auto transition-colors duration-300">
                 <div class="flex justify-between items-end mb-2">
                     <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Daily Scans</span>
@@ -107,7 +107,6 @@
             </div>
         </aside>
 
-        <!-- History Area -->
         <main class="flex-1 flex flex-col bg-white/60 dark:bg-darkcard/40 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] p-8 lg:p-12 shadow-2xl overflow-y-auto transition-colors duration-300">
             
             <header class="mb-10 flex justify-between items-end">
@@ -122,11 +121,9 @@
                 {% endif %}
             </header>
 
-            <!-- Data Table Container -->
             <div class="bg-slate-50 dark:bg-darkbg/50 border border-slate-200 dark:border-white/5 rounded-3xl overflow-hidden transition-colors duration-300 flex-1 flex flex-col">
                 
                 {% if scans %}
-                <!-- Render Table if scans exist -->
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
@@ -191,7 +188,6 @@
                     </table>
                 </div>
                 {% else %}
-                <!-- Empty State -->
                 <div class="flex-1 flex flex-col items-center justify-center p-12 text-center h-full">
                     <div class="w-24 h-24 bg-slate-100 dark:bg-darkcard border border-slate-200 dark:border-slate-800 rounded-full flex items-center justify-center mb-6">
                         <i class="fa-solid fa-clock-rotate-left text-4xl text-slate-400 dark:text-slate-600"></i>
@@ -208,4 +204,4 @@
         </main>
     </div>
 </body>
-</html> 
+</html>

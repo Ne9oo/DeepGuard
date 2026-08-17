@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DeepGuard | User Dashboard</title>
+    <title>DeepGuard | Voice Forensics Engine</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -14,12 +14,11 @@
                 extend: { 
                     colors: { primary: '#3b82f6', alert: '#ef4444', safe: '#10b981', darkbg: '#0a0f1c', darkcard: '#111827' }, 
                     fontFamily: { sans: ['Inter', 'sans-serif'], tech: ['Orbitron', 'sans-serif'] },
-                    animation: { 'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite', 'spin-slow': 'spin 8s linear infinite' }
+                    animation: { 'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite' }
                 } 
             } 
         }
     </script>
-    <!-- Theme Check Script -->
     <script>
         if (localStorage.getItem('theme') === 'light') {
             document.documentElement.classList.remove('dark');
@@ -30,7 +29,7 @@
 </head>
 <body class="bg-slate-100 dark:bg-darkbg text-slate-800 dark:text-slate-300 antialiased h-screen overflow-hidden flex flex-col selection:bg-primary/30 relative transition-colors duration-300">
 
-    <!-- Ambient Background -->
+    <!-- Ambient Glow -->
     <div class="absolute w-[800px] h-[800px] bg-primary/10 rounded-full blur-[150px] top-[-300px] right-[-100px] pointer-events-none z-0"></div>
     <div class="absolute w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[150px] bottom-[-200px] left-[-200px] pointer-events-none z-0"></div>
 
@@ -43,7 +42,7 @@
         
         <div class="flex items-center space-x-6">
             <div class="text-right hidden md:block">
-                <p class="text-sm font-semibold text-slate-900 dark:text-white">{{ current_user.username | default('User') }}</p>
+                <p class="text-sm font-semibold text-slate-900 dark:text-white">{{ current_user.username }}</p>
                 <p class="text-xs text-primary">{% if current_user.is_pro %}Pro Tier{% else %}Basic Tier{% endif %}</p>
             </div>
             <a href="/profile" class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 flex items-center justify-center cursor-pointer hover:border-primary transition-colors">
@@ -55,17 +54,16 @@
         </div>
     </nav>
 
-    <!-- Main Workspace -->
+    <!-- Main Content Area -->
     <div class="flex-1 flex overflow-hidden relative z-10 p-6 gap-6 max-w-[1600px] w-full mx-auto">
         
-        <!-- Floating Glass Sidebar -->
+        <!-- Sidebar -->
         <aside class="w-72 flex-shrink-0 bg-white/60 dark:bg-darkcard/40 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] p-6 flex flex-col justify-between hidden lg:flex shadow-2xl transition-colors duration-300">
             <div class="space-y-2">
                 <p class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-4 px-4">Menu</p>
                 
-                <!-- Active Link -->
                 <a href="/dashboard" class="flex items-center space-x-4 px-4 py-3 bg-primary/10 text-primary rounded-xl font-medium border border-primary/20 transition-all">
-                    <i class="fa-solid fa-radar w-5"></i>
+                    <i class="fa-solid fa-wave-square w-5"></i>
                     <span>Audio Scanner</span>
                 </a>
                 
@@ -88,16 +86,25 @@
                     <i class="fa-solid fa-gear w-5"></i>
                     <span>Settings</span>
                 </a>
+
+                {% if current_user.is_admin %}
+                <a href="/admin" class="flex items-center space-x-4 px-4 py-3 mt-4 bg-alert/10 text-alert rounded-xl font-bold border border-alert/20 transition-all hover:bg-alert/20">
+                    <i class="fa-solid fa-lock w-5"></i>
+                    <span>Admin Panel</span>
+                </a>
+                {% endif %}
             </div>
 
             <!-- Usage Widget -->
             <div class="bg-slate-100/50 dark:bg-darkbg/50 border border-slate-200 dark:border-white/5 rounded-2xl p-5 mt-auto transition-colors duration-300">
                 <div class="flex justify-between items-end mb-2">
                     <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Daily Scans</span>
-                    <span class="text-xs text-primary font-bold">{{ current_user.scans_used }} / 5</span>
+                    <span id="scan-count-text" class="text-xs text-primary font-bold">
+                        {% if current_user.is_pro %}Unlimited{% else %}{{ current_user.scans_used }} / 5{% endif %}
+                    </span>
                 </div>
                 <div class="w-full bg-slate-300 dark:bg-slate-800 rounded-full h-2 mb-3">
-                    <div class="bg-primary h-2 rounded-full" style="width: {{ (current_user.scans_used / 5) * 100 }}%"></div>
+                    <div id="scan-progress-bar" class="bg-primary h-2 rounded-full transition-all duration-500" style="width: {% if current_user.is_pro %}100%{% else %}{{ (current_user.scans_used / 5) * 100 }}%{% endif %}"></div>
                 </div>
                 {% if not current_user.is_pro %}
                 <a href="/subscription" class="text-xs text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-white transition-colors flex items-center">
@@ -107,27 +114,230 @@
             </div>
         </aside>
 
-        <!-- Scanner Area -->
-        <main class="flex-1 flex flex-col bg-white/60 dark:bg-darkcard/40 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] p-8 lg:p-12 shadow-2xl overflow-y-auto transition-colors duration-300">
+        <!-- Scanner Main Area -->
+        <main class="flex-1 flex flex-col bg-white/60 dark:bg-darkcard/40 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] p-8 lg:p-12 shadow-2xl overflow-y-auto transition-colors duration-300 relative">
             
-            <header class="mb-10">
+            <header class="mb-8">
                 <h1 class="text-3xl font-bold text-slate-900 dark:text-white mb-2">Voice Forensics Engine</h1>
-                <p class="text-slate-600 dark:text-slate-400">Upload a suspicious audio file for real-time CNN analysis.</p>
+                <p class="text-slate-600 dark:text-slate-400">Upload a suspicious audio file for real-time CNN feature extraction and spectrogram classification.</p>
             </header>
 
-            <!-- Drag & Drop Zone -->
-            <div class="flex-1 border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-primary/50 dark:hover:border-primary/50 bg-slate-50 dark:bg-darkbg/30 hover:bg-slate-100 dark:hover:bg-darkbg/50 rounded-3xl transition-all flex flex-col items-center justify-center p-10 cursor-pointer group relative overflow-hidden">
-                <div class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <div class="w-24 h-24 bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 relative z-10">
-                    <i class="fa-solid fa-cloud-arrow-up text-4xl text-primary group-hover:text-slate-900 dark:group-hover:text-white transition-colors"></i>
+            <!-- Error Banner -->
+            <div id="error-box" class="hidden bg-alert/10 border border-alert/30 text-alert px-5 py-3 rounded-2xl mb-6 text-sm flex items-center justify-between">
+                <div class="flex items-center">
+                    <i class="fa-solid fa-circle-exclamation mr-3 text-lg"></i>
+                    <span id="error-message">Error message</span>
                 </div>
-                <h3 class="text-2xl font-semibold text-slate-900 dark:text-white mb-3 relative z-10">Drag & Drop Audio Here</h3>
-                <p class="text-slate-600 dark:text-slate-400 mb-8 text-center max-w-md relative z-10">Supported formats: .WAV, .MP3 (Max file size: 10MB)</p>
-                <button class="bg-slate-800 dark:bg-slate-800 hover:bg-primary text-white border border-transparent px-8 py-3 rounded-xl font-medium transition-all shadow-lg relative z-10">
-                    Browse Files
+                <button onclick="document.getElementById('error-box').classList.add('hidden')" class="text-alert hover:opacity-70">
+                    <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
+
+            <!-- Upload Zone -->
+            <div id="drop-zone" class="flex-1 border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-primary/60 dark:hover:border-primary/60 bg-slate-50 dark:bg-darkbg/30 hover:bg-slate-100/80 dark:hover:bg-darkbg/50 rounded-3xl transition-all flex flex-col items-center justify-center p-10 cursor-pointer group relative overflow-hidden min-h-[380px]">
+                
+                <input type="file" id="audio-input" accept=".wav, .mp3" class="hidden">
+                
+                <!-- Normal State -->
+                <div id="upload-idle" class="flex flex-col items-center justify-center text-center">
+                    <div class="w-24 h-24 bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 relative z-10 shadow-lg">
+                        <i class="fa-solid fa-cloud-arrow-up text-4xl text-primary transition-colors"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold text-slate-900 dark:text-white mb-3">Drag & Drop Audio Here</h3>
+                    <p class="text-slate-600 dark:text-slate-400 mb-8 max-w-md">Supported formats: <strong class="text-slate-800 dark:text-slate-200">.WAV, .MP3</strong> (Maximum file size: 10MB)</p>
+                    <button type="button" onclick="document.getElementById('audio-input').click()" class="bg-slate-900 dark:bg-slate-800 hover:bg-primary text-white border border-transparent px-8 py-3.5 rounded-xl font-semibold transition-all shadow-lg hover:shadow-primary/30">
+                        <i class="fa-solid fa-folder-open mr-2"></i> Browse Files
+                    </button>
+                </div>
+
+                <!-- Processing / Scanning State -->
+                <div id="upload-processing" class="hidden flex flex-col items-center justify-center text-center">
+                    <div class="relative w-28 h-28 mb-6 flex items-center justify-center">
+                        <div class="absolute inset-0 rounded-full border-4 border-primary/20 border-t-primary animate-spin"></div>
+                        <i class="fa-solid fa-wave-square text-3xl text-primary animate-pulse"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">Analyzing Acoustic Features</h3>
+                    <p id="processing-step" class="text-slate-500 dark:text-slate-400 text-sm font-mono tracking-wide">Extracting MFCC Spectrogram...</p>
+                </div>
+            </div>
+
+            <!-- Forensic Results Card (Shown after scan) -->
+            <div id="result-card" class="hidden mt-8 bg-slate-50 dark:bg-darkbg/60 border border-slate-200 dark:border-white/10 rounded-3xl p-8 transition-all">
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center border-b border-slate-200 dark:border-white/10 pb-6 mb-6 gap-4">
+                    <div>
+                        <div class="flex items-center space-x-3 mb-1">
+                            <i class="fa-solid fa-file-audio text-primary text-xl"></i>
+                            <h3 id="res-filename" class="text-xl font-bold text-slate-900 dark:text-white">sample.wav</h3>
+                        </div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">CNN Model Inference & Spectrogram Verification Complete</p>
+                    </div>
+                    <div id="res-badge" class="px-5 py-2 rounded-full text-sm font-bold flex items-center border">
+                        <i id="res-icon" class="fa-solid fa-triangle-exclamation mr-2"></i>
+                        <span id="res-verdict">Synthetic Deepfake</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white dark:bg-darkcard border border-slate-200 dark:border-slate-800 rounded-2xl p-5">
+                        <p class="text-xs uppercase font-bold text-slate-400 dark:text-slate-500 mb-1">Confidence Score</p>
+                        <p id="res-confidence" class="text-3xl font-extrabold text-slate-900 dark:text-white font-tech">96.4%</p>
+                        <div class="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-1.5 mt-3">
+                            <div id="res-confidence-bar" class="h-1.5 rounded-full bg-alert" style="width: 96.4%"></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white dark:bg-darkcard border border-slate-200 dark:border-slate-800 rounded-2xl p-5">
+                        <p class="text-xs uppercase font-bold text-slate-400 dark:text-slate-500 mb-1">Risk Evaluation</p>
+                        <p id="res-risk" class="text-xl font-bold text-alert mt-1">High Risk</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">Synthetic vocal artifacts detected.</p>
+                    </div>
+
+                    <div class="bg-white dark:bg-darkcard border border-slate-200 dark:border-slate-800 rounded-2xl p-5 flex flex-col justify-center">
+                        <a href="/history" class="bg-slate-200 dark:bg-slate-800 hover:bg-primary text-slate-800 dark:text-white hover:text-white py-2.5 px-4 rounded-xl text-center font-medium transition-all text-sm flex items-center justify-center">
+                            <i class="fa-solid fa-clock-rotate-left mr-2"></i> View in Scan History
+                        </a>
+                    </div>
+                </div>
+            </div>
+
         </main>
     </div>
+
+    <!-- Drag & Drop + Upload Script -->
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const audioInput = document.getElementById('audio-input');
+        const idleState = document.getElementById('upload-idle');
+        const processingState = document.getElementById('upload-processing');
+        const resultCard = document.getElementById('result-card');
+        const errorBox = document.getElementById('error-box');
+        const errorMessage = document.getElementById('error-message');
+
+        // Drag & Drop visual events
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.add('border-primary', 'bg-primary/5');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.remove('border-primary', 'bg-primary/5');
+            }, false);
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files.length > 0) {
+                handleFileUpload(files[0]);
+            }
+        });
+
+        audioInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileUpload(e.target.files[0]);
+            }
+        });
+
+        function handleFileUpload(file) {
+            // Client-side extension validation
+            const validExtensions = ['wav', 'mp3'];
+            const fileExt = file.name.split('.').pop().toLowerCase();
+            
+            if (!validExtensions.includes(fileExt)) {
+                showError('Unsupported file type. Please upload a .WAV or .MP3 file.');
+                return;
+            }
+
+            if (file.size > 10 * 1024 * 1024) {
+                showError('File exceeds the 10MB maximum limit.');
+                return;
+            }
+
+            errorBox.classList.add('hidden');
+            resultCard.classList.add('hidden');
+            idleState.classList.add('hidden');
+            processingState.classList.remove('hidden');
+
+            // Simulated progress steps for forensic analysis
+            const stepText = document.getElementById('processing-step');
+            setTimeout(() => { stepText.innerText = "Extracting Mel-Frequency Cepstral Coefficients (MFCCs)..."; }, 600);
+            setTimeout(() => { stepText.innerText = "Running Convolutional Neural Network inference..."; }, 1400);
+
+            // FormData upload to Flask /scan endpoint
+            const formData = new FormData();
+            formData.append('audio_file', file);
+
+            fetch('/scan', {
+                method: 'POST',
+                body: formData
+            })
+            .then(async response => {
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.message || 'Error occurred while scanning.');
+                }
+                return data;
+            })
+            .then(data => {
+                processingState.classList.add('hidden');
+                idleState.classList.remove('hidden');
+                displayScanResult(data);
+            })
+            .catch(err => {
+                processingState.classList.add('hidden');
+                idleState.classList.remove('hidden');
+                showError(err.message);
+            });
+        }
+
+        function displayScanResult(data) {
+            document.getElementById('res-filename').innerText = data.filename;
+            document.getElementById('res-confidence').innerText = `${data.confidence}%`;
+            document.getElementById('res-risk').innerText = data.risk_level;
+            
+            const verdictSpan = document.getElementById('res-verdict');
+            const verdictBadge = document.getElementById('res-badge');
+            const verdictIcon = document.getElementById('res-icon');
+            const confBar = document.getElementById('res-confidence-bar');
+            const riskText = document.getElementById('res-risk');
+
+            confBar.style.width = `${data.confidence}%`;
+
+            if (data.result === 'Deepfake') {
+                verdictSpan.innerText = 'Synthetic Deepfake';
+                verdictBadge.className = 'px-5 py-2 rounded-full text-sm font-bold flex items-center border bg-alert/10 text-alert border-alert/20';
+                verdictIcon.className = 'fa-solid fa-triangle-exclamation mr-2 text-alert';
+                confBar.className = 'h-1.5 rounded-full bg-alert';
+                riskText.className = 'text-xl font-bold text-alert mt-1';
+            } else {
+                verdictSpan.innerText = 'Authentic Human Voice';
+                verdictBadge.className = 'px-5 py-2 rounded-full text-sm font-bold flex items-center border bg-safe/10 text-safe border-safe/20';
+                verdictIcon.className = 'fa-solid fa-circle-check mr-2 text-safe';
+                confBar.className = 'h-1.5 rounded-full bg-safe';
+                riskText.className = 'text-xl font-bold text-safe mt-1';
+            }
+
+            // Update user's daily quota widget dynamically
+            const scanText = document.getElementById('scan-count-text');
+            const scanBar = document.getElementById('scan-progress-bar');
+            if (!data.is_pro) {
+                scanText.innerText = `${data.scans_used} / 5`;
+                scanBar.style.width = `${(data.scans_used / 5) * 100}%`;
+            }
+
+            resultCard.classList.remove('hidden');
+        }
+
+        function showError(msg) {
+            errorMessage.innerText = msg;
+            errorBox.classList.remove('hidden');
+        }
+    </script>
 </body>
 </html>
