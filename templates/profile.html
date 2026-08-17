@@ -14,7 +14,6 @@
                 extend: { 
                     colors: { primary: '#3b82f6', alert: '#ef4444', safe: '#10b981', darkbg: '#0a0f1c', darkcard: '#111827' }, 
                     fontFamily: { sans: ['Inter', 'sans-serif'], tech: ['Orbitron', 'sans-serif'] },
-                    animation: { 'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite', 'spin-slow': 'spin 8s linear infinite' }
                 } 
             } 
         }
@@ -32,6 +31,7 @@
     <div class="absolute w-[800px] h-[800px] bg-primary/10 rounded-full blur-[150px] top-[-300px] right-[-100px] pointer-events-none z-0"></div>
     <div class="absolute w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[150px] bottom-[-200px] left-[-200px] pointer-events-none z-0"></div>
 
+    <!-- Top Navigation -->
     <nav class="h-20 border-b border-slate-200 dark:border-white/5 bg-white/50 dark:bg-darkcard/50 backdrop-blur-xl relative z-20 flex items-center justify-between px-8 transition-colors duration-300">
         <div class="flex items-center space-x-3">
             <i class="fa-solid fa-shield-halved text-primary text-3xl"></i>
@@ -54,6 +54,7 @@
 
     <div class="flex-1 flex overflow-hidden relative z-10 p-6 gap-6 max-w-[1600px] w-full mx-auto">
         
+        <!-- Sidebar -->
         <aside class="w-72 flex-shrink-0 bg-white/60 dark:bg-darkcard/40 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] p-6 flex flex-col justify-between hidden lg:flex shadow-2xl transition-colors duration-300">
             <div class="space-y-2">
                 <p class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-4 px-4">Menu</p>
@@ -91,13 +92,16 @@
                 {% endif %}
             </div>
 
+            <!-- Usage Widget -->
             <div class="bg-slate-100/50 dark:bg-darkbg/50 border border-slate-200 dark:border-white/5 rounded-2xl p-5 mt-auto transition-colors duration-300">
                 <div class="flex justify-between items-end mb-2">
                     <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Daily Scans</span>
-                    <span class="text-xs text-primary font-bold">{{ current_user.scans_used }} / 5</span>
+                    <span class="text-xs text-primary font-bold">
+                        {% if current_user.is_pro %}Unlimited{% else %}{{ current_user.scans_used }} / 5{% endif %}
+                    </span>
                 </div>
                 <div class="w-full bg-slate-300 dark:bg-slate-800 rounded-full h-2 mb-3">
-                    <div class="bg-primary h-2 rounded-full" style="width: {{ (current_user.scans_used / 5) * 100 }}%"></div>
+                    <div class="bg-primary h-2 rounded-full transition-all duration-500" style="width: {% if current_user.is_pro %}100%{% else %}{{ (current_user.scans_used / 5) * 100 }}%{% endif %}"></div>
                 </div>
                 {% if not current_user.is_pro %}
                 <a href="/subscription" class="text-xs text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-white transition-colors flex items-center">
@@ -107,37 +111,54 @@
             </div>
         </aside>
 
+        <!-- Main Content Area -->
         <main class="flex-1 flex flex-col bg-white/60 dark:bg-darkcard/40 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] p-8 lg:p-12 shadow-2xl overflow-y-auto transition-colors duration-300">
             
-            <header class="mb-10">
+            <header class="mb-8">
                 <h1 class="text-3xl font-bold text-slate-900 dark:text-white mb-2">Account Profile</h1>
-                <p class="text-slate-600 dark:text-slate-400">Manage your personal information and security settings.</p>
+                <p class="text-slate-600 dark:text-slate-400">Manage your personal information, username, and security settings.</p>
             </header>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="mb-6 px-5 py-3 rounded-2xl text-sm flex items-center {% if category == 'alert' %}bg-alert/10 border border-alert/30 text-alert{% else %}bg-safe/10 border border-safe/30 text-safe{% endif %}">
+                            <i class="fa-solid {% if category == 'alert' %}fa-circle-exclamation{% else %}fa-circle-check{% endif %} mr-3 text-lg"></i>
+                            <span>{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
 
             <div class="grid grid-cols-1 xl:grid-cols-2 gap-8 max-w-6xl">
                 
+                <!-- Left Column: Personal Info & Tier -->
                 <div class="space-y-8">
-                    <div class="bg-slate-50 dark:bg-darkbg/50 border border-slate-200 dark:border-white/5 rounded-3xl p-8 transition-colors duration-300">
-                        <h3 class="text-xl font-semibold text-slate-900 dark:text-white mb-6 border-b border-slate-200 dark:border-white/10 pb-4">Personal Details</h3>
+                    
+                    <!-- Clean Personal Details Card (Matching Screenshot) -->
+                    <div class="bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-3xl p-8 transition-colors duration-300 shadow-sm">
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-6 border-b border-slate-200 dark:border-slate-700/50 pb-4">Personal Details</h3>
                         
                         <div class="flex items-center space-x-6 mb-8">
-                            <div class="w-20 h-20 rounded-full bg-slate-200 dark:bg-slate-800 border-2 border-primary/50 flex items-center justify-center">
-                                <span class="text-2xl font-bold text-slate-900 dark:text-white">{{ current_user.username[0] | upper }}</span>
+                            <div class="w-24 h-24 rounded-full bg-slate-800 dark:bg-[#1e293b] border-2 border-primary/30 flex items-center justify-center flex-shrink-0 shadow-lg">
+                                <span class="text-4xl font-extrabold text-white">{{ current_user.username[0] | upper }}</span>
                             </div>
                             <div>
-                                <p class="text-slate-900 dark:text-white font-medium text-lg">{{ current_user.username }}</p>
-                                <p class="text-slate-600 dark:text-slate-400 text-sm mb-1">{{ current_user.email }}</p>
-                                <p class="text-xs text-primary bg-primary/10 inline-block px-2 py-1 rounded-md mt-2">
+                                <p class="text-slate-900 dark:text-white font-bold text-2xl tracking-wide">{{ current_user.username }}</p>
+                                <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">{{ current_user.email }}</p>
+                                <div class="inline-block mt-3 bg-primary/10 dark:bg-[#1e3a8a]/40 text-primary dark:text-blue-400 px-3.5 py-1.5 rounded-lg text-xs font-semibold">
                                     Joined {{ current_user.created_at.strftime('%B %Y') }}
-                                </p>
+                                </div>
                             </div>
                         </div>
 
-                        <button class="bg-slate-800 hover:bg-slate-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-colors border border-transparent">
+                        <button onclick="openEditModal()" class="bg-slate-800 dark:bg-[#1e293b] hover:bg-slate-700 dark:hover:bg-[#334155] text-white px-6 py-2.5 rounded-xl text-sm font-semibold transition-colors border border-transparent shadow-md">
                             Edit Profile
                         </button>
                     </div>
 
+                    <!-- Tier Card -->
                     <div class="bg-slate-50 dark:bg-darkbg/50 border border-slate-200 dark:border-white/5 rounded-3xl p-8 relative overflow-hidden transition-colors duration-300">
                         <div class="absolute right-0 top-0 w-32 h-32 bg-primary/20 blur-[50px] rounded-full"></div>
                         <h3 class="text-xl font-semibold text-slate-900 dark:text-white mb-6 border-b border-slate-200 dark:border-white/10 pb-4">Current Plan</h3>
@@ -162,6 +183,7 @@
                     </div>
                 </div>
 
+                <!-- Right Column: Password Security Settings -->
                 <div>
                     <div class="bg-slate-50 dark:bg-darkbg/50 border border-slate-200 dark:border-white/5 rounded-3xl p-8 h-full transition-colors duration-300">
                         <h3 class="text-xl font-semibold text-slate-900 dark:text-white mb-6 border-b border-slate-200 dark:border-white/10 pb-4 flex items-center">
@@ -169,6 +191,7 @@
                         </h3>
                         
                         <form action="{{ url_for('profile') }}" method="POST" class="space-y-5">
+                            <input type="hidden" name="form_type" value="update_password">
                             <div>
                                 <label class="block text-sm font-medium text-slate-800 dark:text-slate-300 mb-2">Current Password</label>
                                 <div class="relative">
@@ -202,8 +225,42 @@
                         </form>
                     </div>
                 </div>
+
             </div>
         </main>
+    </div>
+
+    <!-- Edit Profile Modal (Hidden by Default) -->
+    <div id="edit-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-900/50 dark:bg-black/60 backdrop-blur-sm transition-opacity">
+        <div class="bg-white dark:bg-darkcard border border-slate-200 dark:border-slate-700/50 rounded-[2rem] p-8 max-w-md w-full shadow-2xl relative mx-4">
+            
+            <button onclick="closeEditModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            
+            <div class="flex items-center mb-4">
+                <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mr-3">
+                    <i class="fa-solid fa-pen-to-square text-primary"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-slate-900 dark:text-white">Edit Profile</h3>
+            </div>
+            
+            <p class="text-slate-600 dark:text-slate-400 mb-6 text-sm">Update your display name across the DeepGuard platform.</p>
+
+            <form action="{{ url_for('profile') }}" method="POST" class="space-y-6">
+                <input type="hidden" name="form_type" value="update_username">
+                
+                <div>
+                    <label class="block text-sm font-medium text-slate-800 dark:text-slate-300 mb-2">Display Username</label>
+                    <input type="text" name="username" value="{{ current_user.username }}" required class="block w-full px-4 py-3 bg-slate-50 dark:bg-darkbg border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
+                </div>
+                
+                <div class="flex justify-end space-x-3 pt-2 border-t border-slate-200 dark:border-white/10 mt-6">
+                    <button type="button" onclick="closeEditModal()" class="px-5 py-2.5 rounded-xl font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">Cancel</button>
+                    <button type="submit" class="bg-primary hover:bg-blue-600 text-white px-6 py-2.5 rounded-xl font-semibold transition-all shadow-lg shadow-primary/30">Save Changes</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script>
@@ -221,6 +278,21 @@
                 icon.classList.add('fa-eye');
             }
         }
+
+        function openEditModal() {
+            document.getElementById('edit-modal').classList.remove('hidden');
+        }
+
+        function closeEditModal() {
+            document.getElementById('edit-modal').classList.add('hidden');
+        }
+
+        // Close modal if user clicks outside of the box
+        document.getElementById('edit-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEditModal();
+            }
+        });
     </script>
 </body>
 </html>

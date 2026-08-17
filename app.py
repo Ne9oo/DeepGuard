@@ -1,10 +1,13 @@
 import os
 from datetime import datetime
+from functools import wraps
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from flask_bcrypt import Bcrypt
 from werkzeug.utils import secure_filename
+from flask_mail import Mail, Message
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
 
 # Initialize the Flask App
 app = Flask(__name__)
@@ -13,6 +16,19 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'deepguard_super_secret_key_2026'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///deepguard.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# ==========================================
+# EMAIL CONFIGURATION (SMTP)
+# ==========================================
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'afiqdanish@gmail.com'     # <-- Your verified Gmail address
+app.config['MAIL_PASSWORD'] = 'abcdefghijklmnop'         # <-- Your 16-character Google App Password
+app.config['MAIL_DEFAULT_SENDER'] = 'DeepGuard Security <noreply@deepguard.com>'
+
+mail = Mail(app)
+s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 
 # Upload Configuration
 UPLOAD_FOLDER = os.path.join(app.root_path, 'uploads')
@@ -47,6 +63,7 @@ class User(db.Model, UserMixin):
     scans_used = db.Column(db.Integer, default=0)
     is_pro = db.Column(db.Boolean, default=False)
     is_admin = db.Column(db.Boolean, default=False)
+    is_verified = db.Column(db.Boolean, default=False) # MFA Email Verification Status
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     scans = db.relationship('ScanRecord', backref='user', lazy=True)
@@ -67,19 +84,39 @@ def load_user(user_id):
 
 
 # ==========================================
+# SECURITY DECORATORS & HELPERS
+# ==========================================
+def requires_verification(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_verified:
+            return redirect(url_for('unverified'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+def send_verification_email(user_email):
+    token = s.dumps(user_email, salt='email-verify')
+    verify_url = url_for('verify_email', token=token, _external=True)
+    
+    msg = Message('Verify Your DeepGuard Account', recipients=[user_email])
+    msg.body = f'''Welcome to DeepGuard! 
+
+To unlock your account and access the Voice Forensics Engine, please click the link below to verify your email address:
+{verify_url}
+
+If you did not make this request, please ignore this email.
+'''
+    try:
+        mail.send(msg)
+    except Exception as e:
+        print(f"Email sending failed (Check your SMTP settings): {e}")
+
+
+# ==========================================
 # FORENSICS ANALYSIS PIPELINE (AI Placeholder)
 # ==========================================
 def analyze_audio_forensics(filepath):
-    """
-    Forensics Pipeline:
-    1. Loads audio via Librosa.
-    2. Extracts Mel-Spectrogram / MFCCs.
-    3. Runs inference through trained CNN.
-    (Currently simulates realistic inference scores until model weights are loaded).
-    """
     import random
-    
-    # Simulated prediction output for testing the complete UI/UX flow
     is_synthetic = random.choice([True, False])
     if is_synthetic:
         confidence = round(random.uniform(75.0, 99.2), 1)
@@ -131,12 +168,14 @@ def signup():
             return redirect(url_for('signup'))
         
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-        new_user = User(username=username, email=email, password=hashed_password, is_admin=False)
+        new_user = User(username=username, email=email, password=hashed_password, is_admin=False, is_verified=False)
         
         db.session.add(new_user)
         db.session.commit()
         
-        flash('Account created successfully! You can now log in.', 'safe')
+        send_verification_email(email)
+        
+        flash('Account created! Please check your email to verify your account before logging in.', 'safe')
         return redirect(url_for('login'))
     
     return render_template('signup.html')
@@ -154,8 +193,12 @@ def login():
         user = User.query.filter_by(email=email).first()
         if user and bcrypt.check_password_hash(user.password, password):
             login_user(user)
+            
+            if not user.is_verified:
+                return redirect(url_for('unverified'))
             if user.is_admin:
                 return redirect(url_for('admin_dashboard'))
+                
             return redirect(url_for('dashboard'))
         else:
             flash('Login Unsuccessful. Please check email and password.', 'alert')
@@ -170,70 +213,89 @@ def logout():
     return redirect(url_for('index'))
 
 
+# ==========================================
+# VERIFICATION ROUTES
+# ==========================================
+@app.route('/unverified')
+@login_required
+def unverified():
+    if current_user.is_verified:
+        return redirect(url_for('dashboard'))
+    return render_template('unverified.html')
+
+
+@app.route('/resend_verification')
+@login_required
+def resend_verification():
+    if current_user.is_verified:
+        return redirect(url_for('dashboard'))
+        
+    send_verification_email(current_user.email)
+    flash('A new verification email has been sent. Please check your inbox.', 'safe')
+    return redirect(url_for('unverified'))
+
+
+@app.route('/verify/<token>')
+def verify_email(token):
+    try:
+        email = s.loads(token, salt='email-verify', max_age=3600)
+    except SignatureExpired:
+        flash('The verification link has expired. Please log in to request a new one.', 'alert')
+        return redirect(url_for('login'))
+    except BadTimeSignature:
+        flash('Invalid verification link.', 'alert')
+        return redirect(url_for('login'))
+
+    user = User.query.filter_by(email=email).first_or_404()
+    if user.is_verified:
+        flash('Account already verified. Please log in.', 'safe')
+    else:
+        user.is_verified = True
+        db.session.commit()
+        flash('Your account has been successfully verified! You can now log in.', 'safe')
+        
+    return redirect(url_for('login'))
+
+
+# ==========================================
+# PROTECTED WORKSPACE ROUTES
+# ==========================================
 @app.route('/dashboard')
 @login_required
+@requires_verification
 def dashboard():
     return render_template('dashboard.html')
 
 
-# ==========================================
-# ASYNCHRONOUS SCANNING ENDPOINT
-# ==========================================
 @app.route('/scan', methods=['POST'])
 @login_required
+@requires_verification
 def scan_audio():
-    # 1. Enforce Daily Scan Quota for Basic Users
     if not current_user.is_pro and current_user.scans_used >= 5:
-        return jsonify({
-            'success': False,
-            'message': 'Daily scan limit reached (5/5). Please upgrade to Pro for unlimited forensic analysis.'
-        }), 403
+        return jsonify({'success': False, 'message': 'Daily scan limit reached (5/5). Please upgrade to Pro.'}), 403
 
-    # 2. Check File Payload
     if 'audio_file' not in request.files:
-        return jsonify({'success': False, 'message': 'No audio file found in the request.'}), 400
+        return jsonify({'success': False, 'message': 'No audio file found.'}), 400
 
     file = request.files['audio_file']
-    if file.filename == '':
-        return jsonify({'success': False, 'message': 'No selected file.'}), 400
+    if file.filename == '' or not allowed_file(file.filename):
+        return jsonify({'success': False, 'message': 'Invalid file format.'}), 400
 
-    if not allowed_file(file.filename):
-        return jsonify({'success': False, 'message': 'Invalid file format. Only .WAV and .MP3 files are supported.'}), 400
-
-    # 3. Secure File Saving
     filename = secure_filename(file.filename)
-    unique_filename = f"{datetime.utcnow().strftime('%Y%m%d%H%M%S')}_{filename}"
-    filepath = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], f"{datetime.utcnow().strftime('%Y%m%d%H%M%S')}_{filename}")
     file.save(filepath)
 
     try:
-        # 4. Perform Forensic CNN Audio Analysis
         analysis = analyze_audio_forensics(filepath)
-
-        # 5. Record to Database
-        new_scan = ScanRecord(
-            filename=filename,
-            result=analysis['result'],
-            confidence=analysis['confidence'],
-            user_id=current_user.id
-        )
+        new_scan = ScanRecord(filename=filename, result=analysis['result'], confidence=analysis['confidence'], user_id=current_user.id)
         current_user.scans_used += 1
         db.session.add(new_scan)
         db.session.commit()
 
-        # 6. Optional Clean-Up (Auto-delete raw file after extraction to preserve storage)
         if os.path.exists(filepath):
             os.remove(filepath)
 
-        return jsonify({
-            'success': True,
-            'filename': filename,
-            'result': analysis['result'],
-            'confidence': analysis['confidence'],
-            'risk_level': analysis['risk_level'],
-            'scans_used': current_user.scans_used,
-            'is_pro': current_user.is_pro
-        })
+        return jsonify({'success': True, 'filename': filename, 'result': analysis['result'], 'confidence': analysis['confidence'], 'risk_level': analysis['risk_level'], 'scans_used': current_user.scans_used, 'is_pro': current_user.is_pro})
 
     except Exception as e:
         if os.path.exists(filepath):
@@ -243,6 +305,7 @@ def scan_audio():
 
 @app.route('/history')
 @login_required
+@requires_verification
 def history():
     user_scans = ScanRecord.query.filter_by(user_id=current_user.id).order_by(ScanRecord.scan_date.desc()).all()
     return render_template('history.html', scans=user_scans)
@@ -250,21 +313,62 @@ def history():
 
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
+@requires_verification
 def profile():
     if request.method == 'POST':
-        flash('Password updated successfully.', 'safe')
-        return redirect(url_for('profile'))
+        form_type = request.form.get('form_type')
+        
+        # Handle Username Update
+        if form_type == 'update_username':
+            new_username = request.form.get('username').strip()
+            
+            if not new_username:
+                flash('Username cannot be empty.', 'alert')
+                return redirect(url_for('profile'))
+                
+            if new_username == current_user.username:
+                flash('New username is the same as your current username.', 'alert')
+                return redirect(url_for('profile'))
+                
+            existing_user = User.query.filter_by(username=new_username).first()
+            if existing_user:
+                flash('This username is already taken. Please choose another.', 'alert')
+                return redirect(url_for('profile'))
+                
+            current_user.username = new_username
+            db.session.commit()
+            flash('Username updated successfully!', 'safe')
+            return redirect(url_for('profile'))
+
+        # Handle Password Update
+        elif form_type == 'update_password':
+            current_password = request.form.get('current_password')
+            new_password = request.form.get('new_password')
+            confirm_new_password = request.form.get('confirm_new_password')
+            
+            if not bcrypt.check_password_hash(current_user.password, current_password):
+                flash('Incorrect current password.', 'alert')
+            elif new_password != confirm_new_password:
+                flash('New passwords do not match.', 'alert')
+            else:
+                current_user.password = bcrypt.generate_password_hash(new_password).decode('utf-8')
+                db.session.commit()
+                flash('Password updated successfully.', 'safe')
+            return redirect(url_for('profile'))
+            
     return render_template('profile.html')
 
 
 @app.route('/settings')
 @login_required
+@requires_verification
 def settings():
     return render_template('settings.html')
 
 
 @app.route('/subscription', methods=['GET', 'POST'])
 @login_required
+@requires_verification
 def subscription():
     if request.method == 'POST':
         current_user.is_pro = True
@@ -276,6 +380,7 @@ def subscription():
 
 @app.route('/admin')
 @login_required
+@requires_verification
 def admin_dashboard():
     if not current_user.is_admin:
         flash('Access Denied. Administrator privileges required.', 'alert')
@@ -283,18 +388,12 @@ def admin_dashboard():
     
     all_users = User.query.all()
     recent_scans = ScanRecord.query.order_by(ScanRecord.scan_date.desc()).limit(10).all()
-    
     total_users = len(all_users)
     total_scans = ScanRecord.query.count()
     fake_scans = ScanRecord.query.filter_by(result='Deepfake').count()
     detection_rate = round((fake_scans / total_scans * 100), 1) if total_scans > 0 else 0
     
-    return render_template('admin.html', 
-                           users=all_users, 
-                           scans=recent_scans,
-                           total_users=total_users,
-                           total_scans=total_scans,
-                           detection_rate=detection_rate)
+    return render_template('admin.html', users=all_users, scans=recent_scans, total_users=total_users, total_scans=total_scans, detection_rate=detection_rate)
 
 
 # ==========================================
@@ -306,7 +405,7 @@ if __name__ == '__main__':
         admin_email = 'admin@deepguard.com'
         if not User.query.filter_by(email=admin_email).first():
             hashed_pw = bcrypt.generate_password_hash('admin123').decode('utf-8')
-            admin_user = User(username='Admin', email=admin_email, password=hashed_pw, is_admin=True)
+            admin_user = User(username='Admin', email=admin_email, password=hashed_pw, is_admin=True, is_verified=True)
             db.session.add(admin_user)
             db.session.commit()
             print(f"[*] Premade Admin Account Generated! Email: {admin_email} | Password: admin123")

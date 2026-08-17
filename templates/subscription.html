@@ -91,13 +91,16 @@
                 {% endif %}
             </div>
 
+            <!-- Usage Widget -->
             <div class="bg-slate-100/50 dark:bg-darkbg/50 border border-slate-200 dark:border-white/5 rounded-2xl p-5 mt-auto transition-colors duration-300">
                 <div class="flex justify-between items-end mb-2">
                     <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Daily Scans</span>
-                    <span class="text-xs text-primary font-bold">{{ current_user.scans_used }} / 5</span>
+                    <span class="text-xs text-primary font-bold">
+                        {% if current_user.is_pro %}Unlimited{% else %}{{ current_user.scans_used }} / 5{% endif %}
+                    </span>
                 </div>
                 <div class="w-full bg-slate-300 dark:bg-slate-800 rounded-full h-2 mb-3">
-                    <div class="bg-primary h-2 rounded-full" style="width: {{ (current_user.scans_used / 5) * 100 }}%"></div>
+                    <div class="bg-primary h-2 rounded-full transition-all duration-500" style="width: {% if current_user.is_pro %}100%{% else %}{{ (current_user.scans_used / 5) * 100 }}%{% endif %}"></div>
                 </div>
                 {% if not current_user.is_pro %}
                 <a href="/subscription" class="text-xs text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-white transition-colors flex items-center">
