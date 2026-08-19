@@ -1,5 +1,20 @@
+# Python Virtual Environments & Cache
 __pycache__/
 *.pyc
 env/
 venv/
+
+# Security / Secrets (CRITICAL)
+.env
+
+# Database
+instance/
 deepguard.db
+
+# User Uploads & Generated Reports
+uploads/
+static/spectrograms/
+
+# Large AI Models & Datasets (GitHub will block files over 100MB)
+dataset/
+*.h5

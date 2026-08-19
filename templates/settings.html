@@ -13,8 +13,7 @@
             theme: { 
                 extend: { 
                     colors: { primary: '#3b82f6', alert: '#ef4444', safe: '#10b981', darkbg: '#0a0f1c', darkcard: '#111827', lightbg: '#f8fafc', lightcard: '#ffffff' }, 
-                    fontFamily: { sans: ['Inter', 'sans-serif'], tech: ['Orbitron', 'sans-serif'] },
-                    animation: { 'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite', 'spin-slow': 'spin 8s linear infinite' }
+                    fontFamily: { sans: ['Inter', 'sans-serif'], tech: ['Orbitron', 'sans-serif'] }
                 } 
             } 
         }
@@ -91,7 +90,6 @@
                 {% endif %}
             </div>
 
-            <!-- Usage Widget -->
             <div class="bg-slate-100/50 dark:bg-darkbg/50 border border-slate-200 dark:border-white/5 rounded-2xl p-5 mt-auto transition-colors duration-300">
                 <div class="flex justify-between items-end mb-2">
                     <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Daily Scans</span>
@@ -117,8 +115,21 @@
                 <p class="text-slate-600 dark:text-slate-400">Customize your DeepGuard interface and analysis preferences.</p>
             </header>
 
-            <div class="max-w-3xl space-y-8">
+            <!-- Flash Messages for Save Confirmation -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="mb-6 px-5 py-3 rounded-xl flex items-center justify-between {% if category == 'alert' %}bg-alert/10 text-alert border border-alert/30{% else %}bg-safe/10 text-safe border border-safe/30{% endif %}">
+                            <span class="font-medium"><i class="fa-solid fa-circle-check mr-2"></i> {{ message }}</span>
+                            <button onclick="this.parentElement.style.display='none'" class="hover:opacity-70 transition-opacity"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('settings') }}" class="max-w-3xl space-y-8">
                 
+                <!-- Appearance (Theme uses JS, doesn't need to be sent to DB) -->
                 <div class="bg-slate-50 dark:bg-darkbg/50 border border-slate-200 dark:border-white/5 rounded-3xl p-8 transition-colors duration-300">
                     <h3 class="text-xl font-semibold text-slate-900 dark:text-white mb-6 border-b border-slate-200 dark:border-white/10 pb-4 flex items-center">
                         <i class="fa-solid fa-palette text-slate-500 dark:text-slate-400 mr-3"></i> Appearance
@@ -136,6 +147,7 @@
                     </div>
                 </div>
 
+                <!-- Analysis Preferences -->
                 <div class="bg-slate-50 dark:bg-darkbg/50 border border-slate-200 dark:border-white/5 rounded-3xl p-8 transition-colors duration-300">
                     <h3 class="text-xl font-semibold text-slate-900 dark:text-white mb-6 border-b border-slate-200 dark:border-white/10 pb-4 flex items-center">
                         <i class="fa-solid fa-microchip text-slate-500 dark:text-slate-400 mr-3"></i> Analysis Preferences
@@ -146,10 +158,10 @@
                             <label class="block font-medium text-slate-800 dark:text-white mb-1">Analysis Mode</label>
                             <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">Choose the balance between scan speed and detection accuracy.</p>
                             <select name="scan_mode" class="block w-full px-4 py-3 bg-white dark:bg-darkcard border border-slate-300 dark:border-slate-700 rounded-xl text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
-                                <option value="fast">Fast (Quicker scan, potential for lower accuracy)</option>
-                                <option value="standard" selected>Standard (Recommended balance)</option>
+                                <option value="fast" {% if current_user.scan_mode == 'fast' %}selected{% endif %}>Fast (Quicker scan, potential for lower accuracy)</option>
+                                <option value="standard" {% if current_user.scan_mode == 'standard' %}selected{% endif %}>Standard (Recommended balance)</option>
                                 {% if current_user.is_pro %}
-                                    <option value="pro">Pro Deep Scan (Maximum accuracy)</option>
+                                    <option value="pro" {% if current_user.scan_mode == 'pro' %}selected{% endif %}>Pro Deep Scan (Maximum accuracy)</option>
                                 {% else %}
                                     <option value="pro" disabled>Pro Deep Scan (Maximum accuracy) - Upgrade Required</option>
                                 {% endif %}
@@ -157,17 +169,18 @@
                         </div>
                         <div class="flex items-center justify-between pt-2">
                             <div>
-                                <p class="font-medium text-slate-800 dark:text-white">Auto-Delete Audio Files</p>
-                                <p class="text-sm text-slate-500 dark:text-slate-400">Automatically delete uploaded files 24 hours after scanning.</p>
+                                <p class="font-medium text-slate-800 dark:text-white">Secure Auto-Delete</p>
+                                <p class="text-sm text-slate-500 dark:text-slate-400">Immediately wipe uploaded audio files from the server after analysis.</p>
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" name="auto_delete" class="sr-only peer" checked>
+                                <input type="checkbox" name="auto_delete" class="sr-only peer" {% if current_user.auto_delete %}checked{% endif %}>
                                 <div class="w-11 h-6 bg-slate-300 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                             </label>
                         </div>
                     </div>
                 </div>
 
+                <!-- Notifications -->
                 <div class="bg-slate-50 dark:bg-darkbg/50 border border-slate-200 dark:border-white/5 rounded-3xl p-8 transition-colors duration-300">
                     <h3 class="text-xl font-semibold text-slate-900 dark:text-white mb-6 border-b border-slate-200 dark:border-white/10 pb-4 flex items-center">
                         <i class="fa-regular fa-bell text-slate-500 dark:text-slate-400 mr-3"></i> Notifications
@@ -176,15 +189,22 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="font-medium text-slate-800 dark:text-white">Scan Completion Alerts</p>
-                            <p class="text-sm text-slate-500 dark:text-slate-400">Receive an email when a long audio analysis is finished.</p>
+                            <p class="text-sm text-slate-500 dark:text-slate-400">Receive an email notification when your audio analysis is finished.</p>
                         </div>
                         <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" name="email_alerts" class="sr-only peer">
+                            <input type="checkbox" name="email_alerts" class="sr-only peer" {% if current_user.email_alerts %}checked{% endif %}>
                             <div class="w-11 h-6 bg-slate-300 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                         </label>
                     </div>
                 </div>
-            </div>
+
+                <!-- Submit Button -->
+                <div class="flex justify-end pt-4 pb-10">
+                    <button type="submit" class="bg-primary hover:bg-primary/90 text-white px-8 py-3.5 rounded-xl font-semibold transition-all shadow-lg hover:shadow-primary/30 flex items-center">
+                        <i class="fa-solid fa-floppy-disk mr-2"></i> Save Settings
+                    </button>
+                </div>
+            </form>
         </main>
     </div>
 
