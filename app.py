@@ -1,4 +1,6 @@
 import os
+import numpy as np
+import librosa
 from datetime import datetime
 from functools import wraps
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
@@ -8,6 +10,7 @@ from flask_bcrypt import Bcrypt
 from werkzeug.utils import secure_filename
 from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
+from tensorflow.keras.models import load_model
 
 # Initialize the Flask App
 app = Flask(__name__)
@@ -49,6 +52,16 @@ login_manager.login_message_category = 'alert'
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+# ==========================================
+# LOAD DEEP LEARNING MODEL
+# ==========================================
+MODEL_PATH = os.path.join(app.root_path, 'deepguard_cnn.h5')
+try:
+    model = load_model(MODEL_PATH)
+    print("[+] DeepGuard CNN Model loaded successfully.")
+except Exception as e:
+    model = None
+    print(f"[-] WARNING: Could not load 'deepguard_cnn.h5'. AI functionality will run in simulation mode. Error: {e}")
 
 # ==========================================
 # DATABASE MODELS
@@ -113,18 +126,50 @@ If you did not make this request, please ignore this email.
 
 
 # ==========================================
-# FORENSICS ANALYSIS PIPELINE (AI Placeholder)
+# FORENSICS ANALYSIS PIPELINE (CNN & Librosa)
 # ==========================================
+def extract_mfcc(filepath, max_pad_len=150):
+    try:
+        audio, sample_rate = librosa.load(filepath, sr=16000, duration=5.0)
+        mfccs = librosa.feature.mfcc(y=audio, sr=sample_rate, n_mfcc=40)
+        
+        if mfccs.shape[1] > max_pad_len:
+            mfccs = mfccs[:, :max_pad_len]
+        else:
+            pad_width = max_pad_len - mfccs.shape[1]
+            mfccs = np.pad(mfccs, pad_width=((0, 0), (0, pad_width)), mode='constant')
+            
+        return mfccs
+    except Exception as e:
+        print(f"Error extracting features: {e}")
+        return None
+
 def analyze_audio_forensics(filepath):
-    import random
-    is_synthetic = random.choice([True, False])
-    if is_synthetic:
-        confidence = round(random.uniform(75.0, 99.2), 1)
-        result = 'Deepfake'
-        risk_level = 'High Risk'
+    if model is None:
+        import random
+        is_synthetic = random.choice([True, False])
+        fake_prob = random.uniform(0.75, 0.99) if is_synthetic else random.uniform(0.01, 0.25)
     else:
-        confidence = round(random.uniform(80.0, 98.8), 1)
+        features = extract_mfcc(filepath)
+        if features is None:
+            raise ValueError("Could not extract audio features.")
+            
+        features = features.reshape(1, features.shape[0], features.shape[1], 1)
+        prediction = model.predict(features)
+        fake_prob = float(prediction[0][0])
+        
+    if fake_prob > 0.5:
+        result = 'Deepfake'
+        confidence = round(fake_prob * 100, 1)
+    else:
         result = 'Authentic'
+        confidence = round((1 - fake_prob) * 100, 1)
+        
+    if fake_prob >= 0.71:
+        risk_level = 'High Risk'
+    elif fake_prob >= 0.31:
+        risk_level = 'Medium Risk'
+    else:
         risk_level = 'Low Risk'
         
     return {
