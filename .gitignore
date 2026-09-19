@@ -15,6 +15,5 @@ deepguard.db
 uploads/
 static/spectrograms/
 
-# Large AI Models & Datasets (GitHub will block files over 100MB)
+# Training Data (Keep off the live server)
 dataset/
-*.h5
