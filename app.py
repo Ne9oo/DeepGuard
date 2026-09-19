@@ -19,6 +19,10 @@ from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignat
 from tensorflow.keras.models import load_model
 from fpdf import FPDF
 
+# Import Rate Limiting Libraries
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+
 # Import dotenv to keep your passwords secure
 from dotenv import load_dotenv
 
@@ -27,6 +31,16 @@ load_dotenv()
 
 # Initialize the Flask App
 app = Flask(__name__)
+
+# ==========================================
+# SECURITY: RATE LIMITER INITIALIZATION
+# ==========================================
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=["200 per day", "50 per hour"], # Global limits for the whole site
+    storage_uri="memory://" # Stores IP tracking in RAM
+)
 
 # Configuration
 app.config['SECRET_KEY'] = 'deepguard_super_secret_key_2026'
@@ -63,7 +77,6 @@ bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.login_message_category = 'alert'
-
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -130,8 +143,6 @@ def send_verification_email(user_email):
     verify_url = url_for('verify_email', token=token, _external=True)
     
     msg = Message('Verify Your DeepGuard Account', recipients=[user_email])
-    
-    # --- UPDATED PROFESSIONAL EMAIL TEXT ---
     msg.body = f'''Welcome to DeepGuard!
 
 You are one step away from accessing our advanced audio forensics platform. Please verify your email address to activate your account by clicking the secure link below:
@@ -142,8 +153,6 @@ SECURITY WARNING: If you did not sign up for a DeepGuard account, please ignore 
 
 Stay secure,
 The DeepGuard Team'''
-    # ---------------------------------------
-
     try:
         mail.send(msg)
     except Exception as e:
@@ -196,8 +205,6 @@ def generate_spectrogram_image(y, sr):
     return base64.b64encode(buf.read()).decode('utf-8')
 
 def analyze_audio_forensics(filepath, mode='standard'):
-    
-    # Apply user preference for scan depth
     if mode == 'fast':
         duration = 3.0
     elif mode == 'pro':
@@ -249,6 +256,7 @@ def index():
     return render_template('index.html')
 
 @app.route('/signup', methods=['GET', 'POST'])
+@limiter.limit("5 per minute")  # Protect against bot signups
 def signup():
     if current_user.is_authenticated: return redirect(url_for('dashboard'))
     if request.method == 'POST':
@@ -275,6 +283,7 @@ def signup():
     return render_template('signup.html')
 
 @app.route('/login', methods=['GET', 'POST'])
+@limiter.limit("10 per minute")  # Protect against brute-force attacks
 def login():
     if current_user.is_authenticated: return redirect(url_for('dashboard'))
     if request.method == 'POST':
@@ -304,6 +313,7 @@ def unverified():
 
 @app.route('/resend_verification')
 @login_required
+@limiter.limit("3 per minute") # Prevent users from spamming the email server
 def resend_verification():
     if current_user.is_verified: return redirect(url_for('dashboard'))
     send_verification_email(current_user.email)
@@ -338,6 +348,7 @@ def dashboard():
 @app.route('/scan', methods=['POST'])
 @login_required
 @requires_verification
+@limiter.limit("3 per minute")  # Protect server RAM/CPU from spam uploads
 def scan_audio():
     if not current_user.is_pro and current_user.scans_used >= 5:
         return jsonify({'success': False, 'message': 'Daily scan limit reached (5/5). Please upgrade to Pro.'}), 403
@@ -544,7 +555,6 @@ def admin_dashboard():
     all_users = User.query.all()
     recent_scans = ScanRecord.query.order_by(ScanRecord.scan_date.desc()).limit(10).all()
 
-    # Calculate real scan volume for the last 7 days
     today = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
     traffic_labels = []
     traffic_data = []
@@ -553,10 +563,8 @@ def admin_dashboard():
         target_date = today - timedelta(days=i)
         next_date = target_date + timedelta(days=1)
         
-        # Get the day name (e.g., 'Mon', 'Tue')
         traffic_labels.append(target_date.strftime('%a')) 
         
-        # Count how many scans happened on this specific day
         count = ScanRecord.query.filter(
             ScanRecord.scan_date >= target_date,
             ScanRecord.scan_date < next_date
@@ -564,6 +572,13 @@ def admin_dashboard():
         traffic_data.append(count)
 
     return render_template('admin.html', users=all_users, scans=recent_scans, traffic_labels=traffic_labels, traffic_data=traffic_data)
+
+# ==========================================
+# CUSTOM 404 ERROR HANDLER
+# ==========================================
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
 
 if __name__ == '__main__':
     with app.app_context():

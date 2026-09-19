@@ -356,7 +356,6 @@
                 <!-- Team Member 1: Afiq -->
                 <div class="group bg-white dark:bg-darkcard border border-slate-200 dark:border-border p-10 rounded-3xl text-center hover:border-slate-400 dark:hover:border-slate-600 reveal delay-100 flex flex-col items-center shadow-lg transition-all duration-300 hover:-translate-y-2 cursor-pointer">
                     <div class="relative w-48 h-48 shrink-0 rounded-full overflow-hidden border-4 border-slate-100 dark:border-slate-800 shadow-md mb-8">
-                        <!-- Removed grayscale and blue overlay. Added scale animation on hover -->
                         <img src="{{ url_for('static', filename='Afiq Picture.jpeg') }}" onerror="this.onerror=null; this.src='{{ url_for('static', filename='Afiq Picture.jpg') }}';" alt="Afiq Danish" class="w-full h-full object-cover transition-all duration-500 group-hover:scale-105">
                     </div>
                     <div>
@@ -389,6 +388,80 @@
                         <p class="text-slate-600 dark:text-slate-400 text-base leading-relaxed">Managing cloud infrastructure, model deployment pipelines, and database optimization.</p>
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="py-24 px-6 bg-white/40 dark:bg-darkbg/40 backdrop-blur-sm">
+        <div class="max-w-3xl mx-auto reveal delay-100">
+            <h2 class="text-3xl md:text-4xl font-bold text-center text-slate-900 dark:text-white mb-12">Frequently Asked Questions</h2>
+            
+            <div class="space-y-4">
+                <!-- FAQ Item 1 -->
+                <details class="group bg-white dark:bg-darkcard border border-slate-200 dark:border-border rounded-2xl shadow-sm [&_summary::-webkit-details-marker]:hidden">
+                    <summary class="flex justify-between items-center font-semibold cursor-pointer list-none p-6 text-slate-900 dark:text-white text-lg transition-colors hover:text-primary dark:hover:text-primary">
+                        <span>What is vishing and how does DeepGuard prevent it?</span>
+                        <span class="transition-transform duration-300 group-open:rotate-180 text-slate-500">
+                            <svg fill="none" height="24" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
+                        </span>
+                    </summary>
+                    <div class="text-slate-600 dark:text-slate-400 px-6 pb-6 animate-pop-in">
+                        Vishing (voice phishing) uses AI-generated deepfake voices to impersonate people you trust. DeepGuard extracts Mel-frequency cepstral coefficients (MFCCs) from uploaded audio and runs them through our CNN model to detect synthetic anomalies human ears can't hear.
+                    </div>
+                </details>
+
+                <!-- FAQ Item 2 -->
+                <details class="group bg-white dark:bg-darkcard border border-slate-200 dark:border-border rounded-2xl shadow-sm [&_summary::-webkit-details-marker]:hidden">
+                    <summary class="flex justify-between items-center font-semibold cursor-pointer list-none p-6 text-slate-900 dark:text-white text-lg transition-colors hover:text-primary dark:hover:text-primary">
+                        <span>What audio file formats do you support?</span>
+                        <span class="transition-transform duration-300 group-open:rotate-180 text-slate-500">
+                            <svg fill="none" height="24" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
+                        </span>
+                    </summary>
+                    <div class="text-slate-600 dark:text-slate-400 px-6 pb-6 animate-pop-in">
+                        DeepGuard currently supports WAV, MP3, OGG, FLAC, and M4A formats. For the most accurate forensic results, we recommend uploading uncompressed WAV files.
+                    </div>
+                </details>
+
+                <!-- FAQ Item 3 -->
+                <details class="group bg-white dark:bg-darkcard border border-slate-200 dark:border-border rounded-2xl shadow-sm [&_summary::-webkit-details-marker]:hidden">
+                    <summary class="flex justify-between items-center font-semibold cursor-pointer list-none p-6 text-slate-900 dark:text-white text-lg transition-colors hover:text-primary dark:hover:text-primary">
+                        <span>Is my uploaded audio stored on your servers?</span>
+                        <span class="transition-transform duration-300 group-open:rotate-180 text-slate-500">
+                            <svg fill="none" height="24" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
+                        </span>
+                    </summary>
+                    <div class="text-slate-600 dark:text-slate-400 px-6 pb-6 animate-pop-in">
+                        Your privacy is our priority. If you enable "Auto-Delete" in your dashboard settings, your audio files are permanently wiped from our Quasar VPS the exact millisecond the forensic analysis is complete.
+                    </div>
+                </details>
+
+                <!-- FAQ Item 4 -->
+                <details class="group bg-white dark:bg-darkcard border border-slate-200 dark:border-border rounded-2xl shadow-sm [&_summary::-webkit-details-marker]:hidden">
+                    <summary class="flex justify-between items-center font-semibold cursor-pointer list-none p-6 text-slate-900 dark:text-white text-lg transition-colors hover:text-primary dark:hover:text-primary">
+                        <span>Are there any limits on how many files I can scan?</span>
+                        <span class="transition-transform duration-300 group-open:rotate-180 text-slate-500">
+                            <svg fill="none" height="24" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
+                        </span>
+                    </summary>
+                    <div class="text-slate-600 dark:text-slate-400 px-6 pb-6 animate-pop-in">
+                        Free accounts are limited to 5 audio scans per day to prevent server overload. You can upgrade to a Pro account at any time for unlimited forensics analysis and access to deeper scan modes.
+                    </div>
+                </details>
+
+                <!-- FAQ Item 5 -->
+                <details class="group bg-white dark:bg-darkcard border border-slate-200 dark:border-border rounded-2xl shadow-sm [&_summary::-webkit-details-marker]:hidden">
+                    <summary class="flex justify-between items-center font-semibold cursor-pointer list-none p-6 text-slate-900 dark:text-white text-lg transition-colors hover:text-primary dark:hover:text-primary">
+                        <span>Can DeepGuard process real-time phone calls?</span>
+                        <span class="transition-transform duration-300 group-open:rotate-180 text-slate-500">
+                            <svg fill="none" height="24" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
+                        </span>
+                    </summary>
+                    <div class="text-slate-600 dark:text-slate-400 px-6 pb-6 animate-pop-in">
+                        Currently, DeepGuard is a forensic tool designed to analyze pre-recorded audio files. We are actively researching ways to implement real-time stream analysis in future updates to provide active vishing defense.
+                    </div>
+                </details>
             </div>
         </div>
     </section>
