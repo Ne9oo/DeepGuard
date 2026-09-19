@@ -7,51 +7,127 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Check theme immediately to prevent flashing -->
+    <script>
+        if (localStorage.getItem('theme') === 'light' || (!('theme' in localStorage) && !window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.remove('dark');
+        } else {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+
     <script>
         tailwind.config = { 
             darkMode: 'class', 
             theme: { 
                 extend: { 
-                    colors: { primary: '#3b82f6', alert: '#ef4444', safe: '#10b981', darkbg: '#0a0f1c', darkcard: '#111827' }, 
+                    colors: { 
+                        primary: '#4f46e5', 
+                        primaryHover: '#4338ca',
+                        alert: '#ef4444', 
+                        safe: '#10b981', 
+                        darkbg: '#121212', 
+                        darkcard: '#1a1a1a', 
+                        border: '#2a2a2a',
+                        lightbg: '#f5f5f7'
+                    }, 
                     fontFamily: { sans: ['Inter', 'sans-serif'], tech: ['Orbitron', 'sans-serif'] },
-                    animation: { 'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite', }
+                    animation: {
+                        'pop-in': 'popIn 0.5s ease-out forwards',
+                        'slide-up': 'slideUp 0.5s ease-out forwards',
+                        'pulse-glow': 'pulseGlow 4s ease-in-out infinite alternate'
+                    },
+                    keyframes: {
+                        popIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px) scale(0.95)' },
+                            '100%': { opacity: '1', transform: 'translateY(0) scale(1)' }
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(150%)' },
+                            '100%': { transform: 'translateY(0)' }
+                        },
+                        pulseGlow: {
+                            '0%': { opacity: '0.4', transform: 'translate(-50%, -50%) scale(0.9)' },
+                            '100%': { opacity: '0.7', transform: 'translate(-50%, -50%) scale(1.1)' }
+                        }
+                    }
                 } 
             } 
         }
     </script>
     <style>
-        /* Smooth Scroll Animation Classes */
-        .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.5, 0, 0, 1); }
-        .reveal.active { opacity: 1; transform: translateY(0); }
+        /* Smooth Scroll & Premium Blur Reveal Animation */
+        .reveal { opacity: 0; filter: blur(8px); transform: translateY(40px); transition: all 1s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .reveal.active { opacity: 1; filter: blur(0px); transform: translateY(0); }
         .delay-100 { transition-delay: 100ms; }
         .delay-200 { transition-delay: 200ms; }
         .delay-300 { transition-delay: 300ms; }
         
-        /* Soundwave glowing orb effect */
-        .bg-glow { position: absolute; border-radius: 50%; filter: blur(100px); z-index: -1; opacity: 0.4; }
+        /* Pause phone animation until scrolled into view */
+        .sync-anim { animation-play-state: paused !important; }
+        .reveal.active .sync-anim { animation-play-state: running !important; }
+
+        /* Canvas Background */
+        #waveCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        /* Global Smooth Transition for Theme Switch */
+        body, nav, p, h1, h2, h3, a, button, li, i, span {
+            transition-property: background-color, border-color, color;
+            transition-duration: 500ms;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Interactive Feature Cards Logic */
+        .feature-card {
+            transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-origin: center center; 
+        }
+
+        /* Hide scrollbar globally but keep functionality */
+        ::-webkit-scrollbar {
+            display: none; 
+        }
+        html, body {
+            -ms-overflow-style: none; 
+            scrollbar-width: none; 
+        }
     </style>
 </head>
-<body class="bg-darkbg text-slate-300 antialiased overflow-x-hidden selection:bg-primary/30">
+<body class="bg-lightbg dark:bg-darkbg text-slate-700 dark:text-slate-300 antialiased overflow-x-hidden selection:bg-primary/30">
 
-    <!-- Glowing Background Orbs -->
-    <div class="bg-glow w-[600px] h-[600px] bg-primary top-[-200px] left-[-200px] animate-pulse-slow"></div>
-    <div class="bg-glow w-[500px] h-[500px] bg-purple-600 top-[20%] right-[-150px] animate-pulse-slow" style="animation-delay: 2s;"></div>
+    <!-- Fluid HTML5 Canvas Soundwave -->
+    <canvas id="waveCanvas"></canvas>
 
-    <!-- Sticky Glass Navbar -->
-    <nav class="fixed w-full z-50 bg-darkbg/80 backdrop-blur-lg border-b border-white/5 transition-all duration-300">
-        <div class="max-w-[1400px] mx-auto px-6 h-20 flex items-center justify-between">
-            <div class="flex items-center space-x-3 cursor-pointer" onclick="window.scrollTo(0,0)">
-                <i class="fa-solid fa-shield-halved text-primary text-3xl"></i>
-                <span class="text-2xl font-bold text-white tracking-wider font-tech">DeepGuard</span>
+    <!-- Floating Pill Navbar -->
+    <nav class="fixed top-6 left-1/2 -translate-x-1/2 w-[95%] max-w-[1100px] z-50 bg-white/80 dark:bg-[#1e1e1e]/80 backdrop-blur-xl border border-slate-200 dark:border-border rounded-full shadow-sm">
+        <div class="px-6 py-3.5 flex items-center justify-between">
+            <div class="flex items-center cursor-pointer" onclick="window.scrollTo(0,0)">
+                <span class="text-xs font-bold text-slate-900 dark:text-white tracking-widest uppercase font-sans">DeepGuard</span>
             </div>
-            <div class="hidden md:flex space-x-8 text-sm font-medium text-slate-300">
-                <a href="#features" class="hover:text-white transition-colors">Features</a>
-                <a href="#pricing" class="hover:text-white transition-colors">Pricing</a>
-                <a href="#team" class="hover:text-white transition-colors">The Team</a>
+            
+            <div class="hidden md:flex space-x-8 text-xs font-semibold tracking-widest uppercase text-slate-500 dark:text-slate-400">
+                <a href="#about" class="hover:text-slate-900 dark:hover:text-white">About</a>
+                <a href="#features" class="hover:text-slate-900 dark:hover:text-white">Features</a>
+                <a href="#pricing" class="hover:text-slate-900 dark:hover:text-white">Pricing</a>
+                <a href="#team" class="hover:text-slate-900 dark:hover:text-white">Team</a>
             </div>
-            <div class="flex items-center space-x-4">
-                <a href="/login" class="text-sm font-medium hover:text-white transition-colors hidden sm:block">Log in</a>
-                <a href="/signup" class="bg-primary hover:bg-blue-600 text-white px-6 py-2.5 rounded-full text-sm font-semibold transition-all shadow-[0_0_20px_rgba(59,130,246,0.4)] hover:shadow-[0_0_30px_rgba(59,130,246,0.6)]">
+            
+            <div class="flex items-center space-x-6">
+                <button id="themeToggle" class="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
+                    <i id="themeIcon" class="fa-solid fa-sun text-lg"></i>
+                </button>
+                <a href="/login" class="text-xs font-bold tracking-widest uppercase text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors hidden sm:block">Log in</a>
+                <a href="/signup" class="bg-transparent border border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800 px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest transition-colors">
                     Get Started
                 </a>
             </div>
@@ -59,111 +135,208 @@
     </nav>
 
     <!-- Hero Section -->
-    <section class="relative pt-40 pb-20 lg:pt-56 lg:pb-32 px-6 overflow-hidden flex flex-col items-center text-center max-w-[1200px] mx-auto min-h-screen">
-        <div class="inline-block bg-primary/10 border border-primary/20 text-primary px-5 py-2 rounded-full text-sm font-semibold tracking-wide mb-8 reveal">
-            <i class="fa-solid fa-bolt mr-2 text-yellow-400"></i> Deepfake Audio Forensics
-        </div>
-        
-        <h1 class="text-5xl md:text-7xl lg:text-[6rem] font-extrabold text-white leading-[1.1] tracking-tight mb-8 reveal delay-100">
-            Detect AI Voices. <br>
-            <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-purple-400">Prevent Vishing Scams.</span>
+    <section class="relative pt-40 pb-32 lg:pt-56 lg:pb-48 px-6 flex flex-col items-center text-center max-w-[1000px] mx-auto min-h-screen justify-center">
+        <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold text-slate-900 dark:text-white leading-[1.15] tracking-tight mb-8 reveal delay-100 dark:drop-shadow-2xl">
+            Detect AI Voices.<br>
+            <span class="text-slate-500 dark:text-slate-400">Prevent Vishing Scams.</span>
         </h1>
         
-        <p class="text-xl md:text-2xl text-slate-400 leading-relaxed max-w-3xl mb-12 reveal delay-200">
+        <p class="text-lg md:text-xl text-slate-600 dark:text-slate-400 leading-relaxed max-w-2xl mb-12 reveal delay-200">
             Don't trust the voice on the other end of the line. DeepGuard utilizes an advanced CNN model and Librosa feature extraction to identify synthetic vocal patterns in milliseconds.
         </p>
         
-        <div class="flex flex-col sm:flex-row items-center gap-5 reveal delay-300">
-            <a href="/signup" class="bg-primary hover:bg-blue-600 text-white px-10 py-4 rounded-full text-lg font-semibold transition-all shadow-[0_0_30px_rgba(59,130,246,0.3)] hover:shadow-[0_0_40px_rgba(59,130,246,0.5)] flex items-center">
-                Start Scanning Free <i class="fa-solid fa-arrow-right ml-3"></i>
-            </a>
-            <a href="#features" class="text-white px-10 py-4 rounded-full text-lg font-semibold border border-slate-700 hover:bg-slate-800 transition-colors">
-                Learn More
+        <div class="flex items-center justify-center reveal delay-300 mt-2">
+            <a href="/signup" class="group relative inline-flex overflow-hidden rounded-full p-[2px] shadow-[0_0_20px_rgba(59,130,246,0.2)] hover:shadow-[0_0_30px_rgba(59,130,246,0.4)] transition-shadow duration-300">
+                <span class="absolute inset-[-1000%] animate-[spin_3s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#3b82f6_50%,transparent_100%)]"></span>
+                <span class="relative inline-flex items-center justify-center px-8 py-3.5 text-base font-medium rounded-full bg-white dark:bg-[#121212] text-slate-900 dark:text-white group-hover:bg-slate-50 dark:group-hover:bg-[#1a1a1a] transition-colors">
+                    Start Scanning Free 
+                    <i class="fa-solid fa-arrow-right ml-3 text-sm transition-transform group-hover:translate-x-1"></i>
+                </span>
             </a>
         </div>
     </section>
 
-    <!-- Features Section -->
-    <section id="features" class="py-24 px-6 border-t border-white/5 bg-darkcard/30">
-        <div class="max-w-[1400px] mx-auto">
-            <div class="text-center mb-16 reveal">
-                <h2 class="text-4xl font-bold text-white mb-4">Powerful Defense Mechanisms</h2>
-                <p class="text-lg text-slate-400">Built with cutting-edge machine learning to keep your organization secure.</p>
+    <!-- About Section with Simulated Phone Attack -->
+    <section id="about" class="py-32 px-6 bg-white/40 dark:bg-darkbg/40 backdrop-blur-sm relative overflow-hidden">
+        <div class="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            
+            <div class="reveal">
+                <h2 class="text-xs font-bold text-primary tracking-widest uppercase mb-4">About DeepGuard</h2>
+                <h3 class="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-6 leading-tight">
+                    The Reality of Voice Phishing.
+                </h3>
+                <p class="text-lg text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
+                    Voice cloning platforms have made it incredibly easy for bad actors to perfectly mimic the voices of executives, family members, and IT staff. Standard security protocols simply aren't equipped to authenticate audio in real-time.
+                </p>
+                <p class="text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
+                    We built DeepGuard to fight back. By transforming audio into a visual spectrogram, our engine applies deep learning to mathematically expose the microscopic, non-human artifacts left behind by synthetic generators. 
+                </p>
+            </div>
+
+            <!-- Custom Phone UI -->
+            <div class="reveal delay-200 relative w-full flex items-center justify-center overflow-hidden">
+                <div class="relative w-[280px] h-[600px] bg-white dark:bg-[#050505] border-[6px] border-slate-200 dark:border-[#222] rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.05)] dark:shadow-none flex flex-col overflow-hidden">
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-6 bg-slate-200 dark:bg-[#222] rounded-b-2xl z-20"></div>
+                    
+                    <div class="bg-slate-50 dark:bg-[#111] pt-8 pb-3 px-4 border-b border-slate-100 dark:border-[#222] flex items-center space-x-3 z-10">
+                        <div class="w-10 h-10 bg-slate-300 dark:bg-slate-700 rounded-full flex items-center justify-center">
+                            <i class="fa-solid fa-user-tie text-white dark:text-slate-400 text-[14px]"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-bold text-slate-900 dark:text-white leading-tight">CEO (Urgent)</p>
+                            <p class="text-[10px] text-slate-500 font-medium">Online</p>
+                        </div>
+                    </div>
+
+                    <div class="flex-1 p-4 flex flex-col space-y-4 overflow-hidden text-xs">
+                        <div class="sync-anim opacity-0 animate-pop-in self-start bg-slate-100 dark:bg-[#1a1a1a] text-slate-800 dark:text-slate-300 rounded-2xl rounded-tl-sm p-3 max-w-[85%]" style="animation-delay: 1s;">
+                            <div class="flex items-center space-x-3">
+                                <i class="fa-solid fa-play text-primary text-lg"></i>
+                                <div class="flex items-center space-x-[3px] h-4 opacity-60">
+                                    <div class="w-1 h-full bg-current rounded-full"></div>
+                                    <div class="w-1 h-1/2 bg-current rounded-full"></div>
+                                    <div class="w-1 h-3/4 bg-current rounded-full"></div>
+                                    <div class="w-1 h-full bg-current rounded-full"></div>
+                                    <div class="w-1 h-1/4 bg-current rounded-full"></div>
+                                    <div class="w-1 h-3/4 bg-current rounded-full"></div>
+                                </div>
+                                <span class="text-[10px] font-mono">0:14</span>
+                            </div>
+                        </div>
+
+                        <div class="sync-anim opacity-0 animate-pop-in self-end bg-primary text-white rounded-2xl rounded-tr-sm p-3 max-w-[85%] shadow-sm" style="animation-delay: 3s;">
+                            Are you sure? Your voice sounds slightly muffled...
+                        </div>
+
+                        <div class="sync-anim opacity-0 animate-pop-in self-start bg-slate-100 dark:bg-[#1a1a1a] text-slate-800 dark:text-slate-300 rounded-2xl rounded-tl-sm p-3 max-w-[85%]" style="animation-delay: 5s;">
+                            I'm at the airport. Need you to wire $5,000 to the vendor immediately or we lose the contract.
+                        </div>
+
+                        <div class="sync-anim opacity-0 animate-pop-in self-end bg-slate-800 dark:bg-white text-white dark:text-slate-900 rounded-xl p-4 w-[85%] flex flex-col items-center shadow-md border border-transparent dark:border-slate-200 mt-auto mb-16" style="animation-delay: 7s;">
+                            <i class="fa-solid fa-circle-check text-safe text-2xl mb-2"></i>
+                            <p class="font-bold text-sm">Transfer Complete</p>
+                            <p class="text-[10px] opacity-80 mt-1">-$5,000.00 USD</p>
+                        </div>
+                    </div>
+                    
+                    <div class="sync-anim absolute bottom-6 left-0 w-full flex justify-center translate-y-[200%] animate-slide-up" style="animation-delay: 8.5s;">
+                        <div class="bg-alert px-4 py-2 rounded-full flex items-center space-x-2 shadow-[0_5px_15px_rgba(239,68,68,0.3)]">
+                            <i class="fa-solid fa-triangle-exclamation text-white text-[12px]"></i>
+                            <p class="text-white text-[10px] font-bold uppercase tracking-wider leading-none mt-[1px]">Vishing Attack Successful</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Carousel Features Section -->
+    <section id="features" class="min-h-screen flex flex-col justify-center py-32 px-6 bg-white/40 dark:bg-darkbg/40 backdrop-blur-sm relative overflow-hidden">
+        <div class="max-w-[1200px] w-full mx-auto">
+            <div class="text-center mb-12 reveal">
+                <h2 class="text-xs font-bold text-primary tracking-widest uppercase mb-4">Platform Capabilities</h2>
+                <h3 class="text-4xl font-bold text-slate-900 dark:text-white">What DeepGuard Provides</h3>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Feature 1 -->
-                <div class="bg-darkcard border border-slate-800 p-10 rounded-3xl hover:border-primary/50 transition-colors reveal delay-100 group">
-                    <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
-                        <i class="fa-solid fa-microchip text-3xl text-primary"></i>
+            <div id="feature-carousel" class="relative w-full max-w-lg mx-auto h-[400px] reveal delay-200">
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] bg-primary/20 dark:bg-primary/30 blur-[100px] rounded-full z-0 pointer-events-none animate-pulse-glow"></div>
+
+                <div class="feature-card absolute top-0 left-0 w-full h-full bg-white dark:bg-darkcard border border-slate-200 dark:border-border rounded-3xl p-10 flex flex-col justify-center cursor-pointer" data-index="0">
+                    <div class="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center mb-6">
+                        <i class="fa-solid fa-bolt text-2xl text-primary"></i>
                     </div>
-                    <h3 class="text-2xl font-semibold text-white mb-4">CNN Architecture</h3>
-                    <p class="text-slate-400 leading-relaxed">Our Convolutional Neural Network analyzes complex spectrograms to detect the microscopic artifacts left behind by AI voice generators.</p>
+                    <h3 class="text-3xl font-bold text-slate-900 dark:text-white mb-4">Instant Audio Forensics</h3>
+                    <p class="text-slate-600 dark:text-slate-400 text-lg leading-relaxed">
+                        Upload suspicious MP3 or WAV files directly to your secure dashboard. DeepGuard instantly analyzes the audio data and provides an immediate True/Fake probability score.
+                    </p>
                 </div>
-                
-                <!-- Feature 2 -->
-                <div class="bg-darkcard border border-slate-800 p-10 rounded-3xl hover:border-purple-500/50 transition-colors reveal delay-200 group">
-                    <div class="w-16 h-16 bg-purple-500/10 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
-                        <i class="fa-solid fa-wave-square text-3xl text-purple-400"></i>
+
+                <div class="feature-card absolute top-0 left-0 w-full h-full bg-white dark:bg-darkcard border border-slate-200 dark:border-border rounded-3xl p-10 flex flex-col justify-center cursor-pointer" data-index="1">
+                    <div class="w-14 h-14 bg-purple-500/10 rounded-2xl flex items-center justify-center mb-6">
+                        <i class="fa-solid fa-microchip text-2xl text-purple-500"></i>
                     </div>
-                    <h3 class="text-2xl font-semibold text-white mb-4">Librosa Extraction</h3>
-                    <p class="text-slate-400 leading-relaxed">Utilizes advanced Librosa audio analysis to extract MFCCs, chroma features, and spectral contrast for highly accurate threat scoring.</p>
+                    <h3 class="text-3xl font-bold text-slate-900 dark:text-white mb-4">Deep Scan Mode</h3>
+                    <p class="text-slate-600 dark:text-slate-400 text-lg leading-relaxed">
+                        Encounter a highly sophisticated clone? Engage Deep Scan Mode to unleash our most advanced CNN model to scrutinize complex spectrogram matrices for microscopic synthetic artifacts.
+                    </p>
                 </div>
-                
-                <!-- Feature 3 -->
-                <div class="bg-darkcard border border-slate-800 p-10 rounded-3xl hover:border-safe/50 transition-colors reveal delay-300 group">
-                    <div class="w-16 h-16 bg-safe/10 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
-                        <i class="fa-solid fa-shield-virus text-3xl text-safe"></i>
+
+                <div class="feature-card absolute top-0 left-0 w-full h-full bg-white dark:bg-darkcard border border-slate-200 dark:border-border rounded-3xl p-10 flex flex-col justify-center cursor-pointer" data-index="2">
+                    <div class="w-14 h-14 bg-alert/10 rounded-2xl flex items-center justify-center mb-6">
+                        <i class="fa-solid fa-file-pdf text-2xl text-alert"></i>
                     </div>
-                    <h3 class="text-2xl font-semibold text-white mb-4">Vishing Prevention</h3>
-                    <p class="text-slate-400 leading-relaxed">Specifically engineered to defend against Voice Phishing (Vishing) attacks targeting corporate help desks and financial institutions.</p>
+                    <h3 class="text-3xl font-bold text-slate-900 dark:text-white mb-4">Comprehensive Forensic Reports</h3>
+                    <p class="text-slate-600 dark:text-slate-400 text-lg leading-relaxed">
+                        Accountability matters. DeepGuard allows you to download official, shareable forensic reports containing the threat score and spectrogram visual to submit to your IT security team.
+                    </p>
                 </div>
+
+                <div class="feature-card absolute top-0 left-0 w-full h-full bg-white dark:bg-darkcard border border-slate-200 dark:border-border rounded-3xl p-10 flex flex-col justify-center cursor-pointer" data-index="3">
+                    <div class="w-14 h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center mb-6">
+                        <i class="fa-solid fa-bell text-2xl text-emerald-500"></i>
+                    </div>
+                    <h3 class="text-3xl font-bold text-slate-900 dark:text-white mb-4">Priority Alerts</h3>
+                    <p class="text-slate-600 dark:text-slate-400 text-lg leading-relaxed">
+                        Never lose track of a threat. Access your complete scan history logs directly from your dashboard and receive priority email notifications the moment a high-risk deepfake is detected.
+                    </p>
+                </div>
+
             </div>
+
+            <!-- Navigation Controls -->
+            <div class="flex justify-center items-center space-x-6 mt-12 reveal delay-300">
+                <button id="prevBtn" class="w-12 h-12 rounded-full bg-white dark:bg-darkcard border border-slate-300 dark:border-border flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:border-primary dark:hover:border-primary transition-all hover:scale-110 shadow-sm">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <button id="nextBtn" class="w-12 h-12 rounded-full bg-white dark:bg-darkcard border border-slate-300 dark:border-border flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:border-primary dark:hover:border-primary transition-all hover:scale-110 shadow-sm">
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+
         </div>
     </section>
 
     <!-- Pricing Section -->
-    <section id="pricing" class="py-24 px-6 border-t border-white/5 relative">
-        <!-- Background Glow -->
-        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-primary/20 blur-[120px] rounded-full z-0 pointer-events-none"></div>
-
-        <div class="max-w-[1200px] mx-auto relative z-10">
+    <section id="pricing" class="py-24 px-6 bg-white/40 dark:bg-darkbg/40 backdrop-blur-sm">
+        <div class="max-w-[1000px] mx-auto">
             <div class="text-center mb-16 reveal">
-                <h2 class="text-4xl font-bold text-white mb-4">Choose Your Protection Level</h2>
-                <p class="text-lg text-slate-400">Start scanning for free, or upgrade for enterprise-grade accuracy.</p>
+                <h2 class="text-3xl font-bold text-slate-900 dark:text-white mb-4">Choose Your Protection Level</h2>
+                <p class="text-base text-slate-600 dark:text-slate-400">Start scanning for free, or upgrade for enterprise-grade accuracy.</p>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Free Tier -->
-                <div class="bg-darkcard border border-slate-800 p-10 rounded-3xl flex flex-col reveal delay-100">
-                    <h3 class="text-2xl font-semibold text-white mb-2">Basic Tier</h3>
-                    <div class="text-4xl font-bold text-white mb-6">Free</div>
-                    <p class="text-slate-400 mb-8 border-b border-slate-800 pb-8">Perfect for individuals wanting to verify suspicious voicemails.</p>
-                    <ul class="space-y-4 mb-10 flex-1">
-                        <li class="flex items-center text-slate-300"><i class="fa-solid fa-check text-safe mr-3"></i> 5 Scans per day limit</li>
-                        <li class="flex items-center text-slate-300"><i class="fa-solid fa-check text-safe mr-3"></i> Standard CNN Accuracy</li>
-                        <li class="flex items-center text-slate-300"><i class="fa-solid fa-check text-safe mr-3"></i> Support for MP3 & WAV</li>
+                <div class="bg-white dark:bg-darkcard border border-slate-200 dark:border-border p-8 rounded-2xl flex flex-col reveal delay-100 shadow-sm">
+                    <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-1">Basic Tier</h3>
+                    <div class="text-3xl font-bold text-slate-900 dark:text-white mb-4">Free</div>
+                    <p class="text-slate-600 dark:text-slate-400 text-sm mb-6 pb-6 border-b border-slate-200 dark:border-border">Perfect for individuals wanting to verify suspicious voicemails.</p>
+                    <ul class="space-y-3 mb-8 flex-1 text-sm">
+                        <li class="flex items-center text-slate-700 dark:text-slate-300"><i class="fa-solid fa-check text-slate-400 dark:text-slate-500 mr-3"></i> 5 Scans per day limit</li>
+                        <li class="flex items-center text-slate-700 dark:text-slate-300"><i class="fa-solid fa-check text-slate-400 dark:text-slate-500 mr-3"></i> Standard CNN Accuracy</li>
+                        <li class="flex items-center text-slate-700 dark:text-slate-300"><i class="fa-solid fa-check text-slate-400 dark:text-slate-500 mr-3"></i> Basic Scan History</li>
+                        <li class="flex items-center text-slate-700 dark:text-slate-300"><i class="fa-solid fa-check text-slate-400 dark:text-slate-500 mr-3"></i> Email Verification Security</li>
                     </ul>
-                    <a href="/signup" class="w-full text-center bg-slate-800 hover:bg-slate-700 text-white py-4 rounded-xl font-semibold transition-colors">
+                    <a href="/signup" class="w-full text-center bg-transparent border border-slate-300 dark:border-border hover:bg-slate-50 dark:hover:bg-[#252525] text-slate-900 dark:text-white py-3 rounded-xl text-sm font-semibold transition-colors">
                         Create Free Account
                     </a>
                 </div>
 
                 <!-- Pro Tier -->
-                <div class="bg-gradient-to-b from-darkcard to-darkbg border border-primary/50 p-10 rounded-3xl flex flex-col relative reveal delay-200 shadow-[0_0_40px_rgba(59,130,246,0.15)] transform md:-translate-y-4">
-                    <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-white px-4 py-1 rounded-full text-sm font-bold tracking-wide">
-                        RECOMMENDED
+                <div class="bg-white dark:bg-darkcard border border-blue-600 p-8 rounded-2xl flex flex-col relative reveal delay-200 shadow-sm">
+                    <div class="absolute top-0 right-0 bg-blue-600 text-white px-4 py-1.5 rounded-bl-xl rounded-tr-2xl text-xs font-bold tracking-wider uppercase">
+                        Recommended
                     </div>
-                    <h3 class="text-2xl font-semibold text-white mb-2">DeepGuard Pro</h3>
-                    <div class="text-4xl font-bold text-white mb-6">$15<span class="text-xl text-slate-400 font-normal">/mo</span></div>
-                    <p class="text-slate-400 mb-8 border-b border-slate-700 pb-8">For businesses requiring maximum security and unlimited analysis.</p>
-                    <ul class="space-y-4 mb-10 flex-1">
-                        <li class="flex items-center text-white"><i class="fa-solid fa-check text-primary mr-3"></i> <strong>Unlimited</strong> Audio Scans</li>
-                        <li class="flex items-center text-white"><i class="fa-solid fa-check text-primary mr-3"></i> Maximum Accuracy Analysis</li>
-                        <li class="flex items-center text-white"><i class="fa-solid fa-check text-primary mr-3"></i> Save & Export Scan History</li>
-                        <li class="flex items-center text-white"><i class="fa-solid fa-check text-primary mr-3"></i> Multi-Factor Auth (MFA)</li>
+                    <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-1">DeepGuard Pro</h3>
+                    <div class="text-3xl font-bold text-slate-900 dark:text-white mb-4">$15<span class="text-base text-slate-500 dark:text-slate-400 font-normal">/mo</span></div>
+                    <p class="text-slate-600 dark:text-slate-400 text-sm mb-6 pb-6 border-b border-slate-200 dark:border-border">For businesses requiring maximum security and unlimited analysis.</p>
+                    <ul class="space-y-3 mb-8 flex-1 text-sm">
+                        <li class="flex items-center text-slate-900 dark:text-white"><i class="fa-solid fa-plus text-blue-500 mr-3"></i> Everything in Basic, plus:</li>
+                        <li class="flex items-center text-slate-900 dark:text-white"><i class="fa-solid fa-check text-blue-500 mr-3"></i> <strong>Unlimited</strong> Audio Scans</li>
+                        <li class="flex items-center text-slate-900 dark:text-white"><i class="fa-solid fa-check text-blue-500 mr-3"></i> Deep Scan Mode (Max Accuracy)</li>
+                        <li class="flex items-center text-slate-900 dark:text-white"><i class="fa-solid fa-check text-blue-500 mr-3"></i> Downloadable Forensic Reports</li>
+                        <li class="flex items-center text-slate-900 dark:text-white"><i class="fa-solid fa-check text-blue-500 mr-3"></i> Priority Email Alerts</li>
                     </ul>
-                    <a href="/signup" class="w-full text-center bg-primary hover:bg-blue-600 text-white py-4 rounded-xl font-semibold transition-colors shadow-lg shadow-primary/30">
+                    <a href="/signup" class="w-full text-center bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-xl text-sm font-semibold transition-colors">
                         Subscribe to Pro
                     </a>
                 </div>
@@ -171,90 +344,234 @@
         </div>
     </section>
 
-    <!-- The Team Section -->
-    <section id="team" class="py-24 px-6 border-t border-white/5 bg-darkcard/30">
-        <div class="max-w-[1400px] mx-auto">
+    <!-- The Team Section (FULL COLOR) -->
+    <section id="team" class="min-h-screen flex flex-col justify-center py-24 px-6 bg-white/40 dark:bg-darkbg/40 backdrop-blur-sm">
+        <div class="max-w-[1200px] w-full mx-auto">
             <div class="text-center mb-16 reveal">
-                <h2 class="text-4xl font-bold text-white mb-4">Meet the Developers</h2>
-                <p class="text-lg text-slate-400">The cybersecurity minds behind the DeepGuard engine.</p>
+                <h2 class="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-4">Meet the Team</h2>
+                <p class="text-lg text-slate-600 dark:text-slate-400">The cybersecurity minds behind the DeepGuard engine.</p>
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Team Member 1 -->
-                <div class="bg-darkbg border border-slate-800 p-8 rounded-3xl text-center hover:border-slate-600 transition-colors reveal delay-100">
-                    <div class="w-24 h-24 bg-slate-800 rounded-full mx-auto mb-6 flex items-center justify-center border-2 border-primary/30">
-                        <i class="fa-solid fa-user-shield text-3xl text-slate-400"></i>
+                <!-- Team Member 1: Afiq -->
+                <div class="group bg-white dark:bg-darkcard border border-slate-200 dark:border-border p-10 rounded-3xl text-center hover:border-slate-400 dark:hover:border-slate-600 reveal delay-100 flex flex-col items-center shadow-lg transition-all duration-300 hover:-translate-y-2 cursor-pointer">
+                    <div class="relative w-48 h-48 shrink-0 rounded-full overflow-hidden border-4 border-slate-100 dark:border-slate-800 shadow-md mb-8">
+                        <!-- Removed grayscale and blue overlay. Added scale animation on hover -->
+                        <img src="{{ url_for('static', filename='Afiq Picture.jpeg') }}" onerror="this.onerror=null; this.src='{{ url_for('static', filename='Afiq Picture.jpg') }}';" alt="Afiq Danish" class="w-full h-full object-cover transition-all duration-500 group-hover:scale-105">
                     </div>
-                    <h3 class="text-xl font-bold text-white mb-1">Afiq Danish</h3>
-                    <p class="text-primary text-sm font-medium mb-4">Lead Developer</p>
-                    <p class="text-slate-500 text-sm">Specializing in machine learning integration, full-stack architecture, and cybersecurity protocols.</p>
+                    <div>
+                        <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">Afiq Danish</h3>
+                        <p class="text-blue-500 text-sm font-bold mb-4 uppercase tracking-wider">Lead Developer</p>
+                        <p class="text-slate-600 dark:text-slate-400 text-base leading-relaxed">Specializing in machine learning integration, full-stack architecture, and cybersecurity protocols.</p>
+                    </div>
+                </div>
+
+                <!-- Team Member 2: Haris -->
+                <div class="group bg-white dark:bg-darkcard border border-slate-200 dark:border-border p-10 rounded-3xl text-center hover:border-slate-400 dark:hover:border-slate-600 reveal delay-200 flex flex-col items-center shadow-lg transition-all duration-300 hover:-translate-y-2 cursor-pointer">
+                    <div class="relative w-48 h-48 shrink-0 rounded-full overflow-hidden border-4 border-slate-100 dark:border-slate-800 shadow-md mb-8">
+                        <img src="{{ url_for('static', filename='Haris Picture.jpeg') }}" onerror="this.onerror=null; this.src='{{ url_for('static', filename='Haris Picture.jpg') }}';" alt="Haris Iskandar" class="w-full h-full object-cover transition-all duration-500 group-hover:scale-105">
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">Haris Iskandar</h3>
+                        <p class="text-purple-500 text-sm font-bold mb-4 uppercase tracking-wider">Security Engineer</p>
+                        <p class="text-slate-600 dark:text-slate-400 text-base leading-relaxed">Focused on data forensics, neural network training datasets, and threat detection algorithms.</p>
+                    </div>
                 </div>
                 
-                <!-- Team Member 2 -->
-                <div class="bg-darkbg border border-slate-800 p-8 rounded-3xl text-center hover:border-slate-600 transition-colors reveal delay-200">
-                    <div class="w-24 h-24 bg-slate-800 rounded-full mx-auto mb-6 flex items-center justify-center border-2 border-primary/30">
-                        <i class="fa-solid fa-user-lock text-3xl text-slate-400"></i>
+                <!-- Team Member 3: Megat -->
+                <div class="group bg-white dark:bg-darkcard border border-slate-200 dark:border-border p-10 rounded-3xl text-center hover:border-slate-400 dark:hover:border-slate-600 reveal delay-300 flex flex-col items-center shadow-lg transition-all duration-300 hover:-translate-y-2 cursor-pointer">
+                    <div class="relative w-48 h-48 shrink-0 rounded-full overflow-hidden border-4 border-slate-100 dark:border-slate-800 shadow-md mb-8">
+                        <img src="{{ url_for('static', filename='Megat Picture.jpeg') }}" onerror="this.onerror=null; this.src='{{ url_for('static', filename='Megat Picture.jpg') }}';" alt="Megat Daniel" class="w-full h-full object-cover transition-all duration-500 group-hover:scale-105">
                     </div>
-                    <h3 class="text-xl font-bold text-white mb-1">Haris Iskandar</h3>
-                    <p class="text-primary text-sm font-medium mb-4">Security Engineer</p>
-                    <p class="text-slate-500 text-sm">Focused on data forensics, neural network training datasets, and threat detection algorithms.</p>
-                </div>
-                
-                <!-- Team Member 3 -->
-                <div class="bg-darkbg border border-slate-800 p-8 rounded-3xl text-center hover:border-slate-600 transition-colors reveal delay-300">
-                    <div class="w-24 h-24 bg-slate-800 rounded-full mx-auto mb-6 flex items-center justify-center border-2 border-primary/30">
-                        <i class="fa-solid fa-server text-3xl text-slate-400"></i>
+                    <div>
+                        <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">Megat Daniel</h3>
+                        <p class="text-emerald-500 text-sm font-bold mb-4 uppercase tracking-wider">Systems Architect</p>
+                        <p class="text-slate-600 dark:text-slate-400 text-base leading-relaxed">Managing cloud infrastructure, model deployment pipelines, and database optimization.</p>
                     </div>
-                    <h3 class="text-xl font-bold text-white mb-1">Megat Daniel</h3>
-                    <p class="text-primary text-sm font-medium mb-4">Systems Architect</p>
-                    <p class="text-slate-500 text-sm">Managing cloud infrastructure, model deployment pipelines, and database optimization.</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="py-12 border-t border-white/5 bg-darkbg text-center text-slate-500 text-sm">
+    <footer class="py-8 bg-slate-100/50 dark:bg-[#0e0e0e]/50 backdrop-blur-sm text-center text-slate-500 dark:text-slate-500 text-xs">
         <p>&copy; 2026 DeepGuard Audio Forensics. All rights reserved.</p>
     </footer>
 
-    <!-- Scroll Animation Logic & Smooth Scroll Interceptor -->
+    <!-- INTERACTIVE SCRIPTS -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Scroll Reveal Animation
+            
+            // --- Theme Toggle Logic ---
+            const themeBtn = document.getElementById('themeToggle');
+            const themeIcon = document.getElementById('themeIcon');
+            
+            function updateIcon() {
+                if (document.documentElement.classList.contains('dark')) {
+                    themeIcon.classList.replace('fa-moon', 'fa-sun');
+                } else {
+                    themeIcon.classList.replace('fa-sun', 'fa-moon');
+                }
+            }
+            updateIcon(); 
+
+            themeBtn.addEventListener('click', () => {
+                document.documentElement.classList.toggle('dark');
+                if (document.documentElement.classList.contains('dark')) {
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    localStorage.setItem('theme', 'light');
+                }
+                updateIcon();
+            });
+
+            // --- Cover Flow Carousel Logic ---
+            const cards = document.querySelectorAll('.feature-card');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            let currentCardIndex = 0;
+
+            function updateCarousel() {
+                cards.forEach((card, index) => {
+                    let diff = index - currentCardIndex;
+                    
+                    if (diff === 3) diff = -1; 
+                    if (diff === -3) diff = 1; 
+                    if (Math.abs(diff) === 2) diff = 2; 
+
+                    if (diff === 0) {
+                        card.style.zIndex = 40;
+                        card.style.transform = 'translateX(0) scale(1)';
+                        card.style.opacity = '1';
+                        card.style.filter = 'blur(0px)';
+                        card.style.pointerEvents = 'auto';
+                        card.style.borderColor = 'rgba(79, 70, 229, 0.5)';
+                        card.style.boxShadow = '0 0 40px rgba(79, 70, 229, 0.15)';
+                    } else if (diff === 1) {
+                        card.style.zIndex = 30;
+                        card.style.transform = 'translateX(105%) scale(0.85)';
+                        card.style.opacity = '0.5';
+                        card.style.filter = 'blur(4px)';
+                        card.style.pointerEvents = 'none';
+                        card.style.borderColor = '';
+                        card.style.boxShadow = '';
+                    } else if (diff === -1) {
+                        card.style.zIndex = 30;
+                        card.style.transform = 'translateX(-105%) scale(0.85)'; 
+                        card.style.opacity = '0.5';
+                        card.style.filter = 'blur(4px)';
+                        card.style.pointerEvents = 'none';
+                        card.style.borderColor = '';
+                        card.style.boxShadow = '';
+                    } else {
+                        card.style.zIndex = 10;
+                        card.style.transform = 'translateX(0) scale(0.7)';
+                        card.style.opacity = '0';
+                        card.style.filter = 'blur(8px)';
+                        card.style.pointerEvents = 'none';
+                        card.style.borderColor = '';
+                        card.style.boxShadow = '';
+                    }
+                });
+            }
+
+            prevBtn.addEventListener('click', () => {
+                currentCardIndex = (currentCardIndex - 1 + cards.length) % cards.length;
+                updateCarousel();
+            });
+
+            nextBtn.addEventListener('click', () => {
+                currentCardIndex = (currentCardIndex + 1) % cards.length;
+                updateCarousel();
+            });
+            
+            cards.forEach((card, index) => {
+                 card.addEventListener('click', () => {
+                     if(index !== currentCardIndex) {
+                         currentCardIndex = index;
+                         updateCarousel();
+                     }
+                 });
+            });
+
+            updateCarousel();
+
+
+            // --- Canvas Soundwave Animation Logic ---
+            const canvas = document.getElementById('waveCanvas');
+            const ctx = canvas.getContext('2d');
+            let width, height;
+            let time = 0;
+            
+            let xCoords = [];
+            let tapers = [];
+
+            function resize() {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+                
+                xCoords = [];
+                tapers = [];
+                
+                for (let x = 0; x <= width; x += 12) {
+                    xCoords.push(x);
+                    tapers.push(Math.sin((x / width) * Math.PI));
+                }
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            function drawWave(phaseOffset, amplitude, frequency, color) {
+                ctx.beginPath();
+                for (let i = 0; i < xCoords.length; i++) {
+                    let x = xCoords[i];
+                    let edgeTaper = tapers[i];
+                    let y = Math.sin(x * frequency + time + phaseOffset) * amplitude * edgeTaper;
+                    y += Math.cos(x * frequency * 2.5 + time) * (amplitude * 0.3) * edgeTaper;
+                    if (i === 0) ctx.moveTo(x, height / 2 + y);
+                    else ctx.lineTo(x, height / 2 + y);
+                }
+                ctx.strokeStyle = color;
+                ctx.shadowColor = color;
+                ctx.shadowBlur = 15;
+                ctx.stroke();
+            }
+
+            function animateCanvas() {
+                ctx.clearRect(0, 0, width, height);
+                time += 0.015; 
+                ctx.globalCompositeOperation = 'screen';
+                ctx.lineWidth = 2;
+
+                for (let i = 0; i < 8; i++) {
+                    drawWave(i * 0.15, 150 + (i * 15), 0.003, 'rgba(59, 130, 246, 0.4)');
+                    drawWave(i * 0.2 + 2, 120 + (i * 12), 0.004, 'rgba(168, 85, 247, 0.4)');
+                }
+                requestAnimationFrame(animateCanvas);
+            }
+            animateCanvas();
+
+
+            // --- Scroll Reveal & Smooth Scroll Logic ---
             const reveals = document.querySelectorAll('.reveal');
-            const revealOptions = {
-                threshold: 0.15,
-                rootMargin: "0px 0px -50px 0px" 
-            };
+            const revealOptions = { threshold: 0.15, rootMargin: "0px 0px -20px 0px" };
 
             const revealOnScroll = new IntersectionObserver(function(entries, observer) {
                 entries.forEach(entry => {
-                    if (!entry.isIntersecting) {
-                        return;
-                    } else {
+                    if (entry.isIntersecting) {
                         entry.target.classList.add('active');
                         observer.unobserve(entry.target);
                     }
                 });
             }, revealOptions);
 
-            reveals.forEach(reveal => {
-                revealOnScroll.observe(reveal);
-            });
+            reveals.forEach(reveal => revealOnScroll.observe(reveal));
 
-            // Hide URL Hash on Click
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function (e) {
                     e.preventDefault();
-                    const targetId = this.getAttribute('href').substring(1);
-                    const targetElement = document.getElementById(targetId);
-                    
-                    if (targetElement) {
-                        targetElement.scrollIntoView({
-                            behavior: 'smooth'
-                        });
-                    }
+                    const targetElement = document.getElementById(this.getAttribute('href').substring(1));
+                    if (targetElement) targetElement.scrollIntoView({ behavior: 'smooth' });
                 });
             });
         });

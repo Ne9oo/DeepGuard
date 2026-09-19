@@ -3,207 +3,272 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DeepGuard | Admin Control Panel</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>DeepGuard | Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Import Chart.js for Visual Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        tailwind.config = { 
-            darkMode: 'class', 
-            theme: { 
-                extend: { 
-                    colors: { primary: '#3b82f6', alert: '#ef4444', safe: '#10b981', darkbg: '#0a0f1c', darkcard: '#111827' }, 
-                    fontFamily: { sans: ['Inter', 'sans-serif'], tech: ['Orbitron', 'sans-serif'] },
-                    animation: { 'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite', 'spin-slow': 'spin 8s linear infinite' }
-                } 
-            } 
-        }
-    </script>
-    <!-- Theme Check Script -->
-    <script>
-        if (localStorage.getItem('theme') === 'light') {
-            document.documentElement.classList.remove('dark');
-        } else {
-            document.documentElement.classList.add('dark');
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: { primary: '#3b82f6', alert: '#ef4444', safe: '#10b981', darkbg: '#0a0f1c', darkcard: '#111827' },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], tech: ['Orbitron', 'sans-serif'] }
+                }
+            }
         }
     </script>
 </head>
-<body class="bg-slate-100 dark:bg-darkbg text-slate-800 dark:text-slate-300 antialiased h-screen overflow-hidden flex flex-col selection:bg-primary/30 relative transition-colors duration-300">
+<body class="bg-darkbg text-slate-300 font-sans antialiased">
 
-    <!-- Ambient Background -->
-    <div class="absolute w-[800px] h-[800px] bg-primary/10 rounded-full blur-[150px] top-[-300px] right-[-100px] pointer-events-none z-0"></div>
-    <div class="absolute w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[150px] bottom-[-200px] left-[-200px] pointer-events-none z-0"></div>
-
-    <!-- Top Navigation -->
-    <nav class="h-20 border-b border-slate-200 dark:border-white/5 bg-white/50 dark:bg-darkcard/50 backdrop-blur-xl relative z-20 flex items-center justify-between px-8 transition-colors duration-300">
-        <div class="flex items-center space-x-3">
-            <i class="fa-solid fa-shield-halved text-primary text-3xl"></i>
-            <span class="text-2xl font-bold text-slate-900 dark:text-white tracking-wider font-tech">DeepGuard Admin</span>
-        </div>
-        
-        <div class="flex items-center space-x-6">
-            <div class="text-right hidden md:block">
-                <p class="text-sm font-semibold text-slate-900 dark:text-white">{{ current_user.username }}</p>
-                <p class="text-xs text-alert font-bold tracking-wide">Administrator</p>
+    <!-- Navbar -->
+    <nav class="bg-darkcard border-b border-white/10 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-shield-halved text-primary text-2xl"></i>
+                    <span class="text-xl font-bold text-white font-tech tracking-wider">DeepGuard <span class="text-alert">ADMIN</span></span>
+                </div>
+                <div class="flex items-center gap-4">
+                    <a href="{{ url_for('dashboard') }}" class="text-sm font-medium text-slate-400 hover:text-white transition">Exit Admin</a>
+                    <a href="{{ url_for('logout') }}" class="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg text-sm font-medium transition">Logout</a>
+                </div>
             </div>
-            <a href="/profile" class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 flex items-center justify-center cursor-pointer hover:border-primary transition-colors">
-                <i class="fa-solid fa-user-shield text-slate-600 dark:text-slate-400"></i>
-            </a>
-            <a href="/logout" class="text-slate-400 dark:text-slate-500 hover:text-alert transition-colors" title="Log Out">
-                <i class="fa-solid fa-arrow-right-from-bracket text-xl"></i>
-            </a>
         </div>
     </nav>
 
-    <!-- Main Workspace -->
-    <div class="flex-1 flex overflow-hidden relative z-10 p-6 gap-6 max-w-[1600px] w-full mx-auto">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
-        <!-- Admin Sidebar -->
-        <aside class="w-72 flex-shrink-0 bg-white/60 dark:bg-darkcard/40 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] p-6 flex flex-col hidden lg:flex shadow-2xl transition-colors duration-300">
-            <div class="space-y-2 flex-1">
-                <p class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-4 px-4">Command Center</p>
-                
-                <a href="/admin" class="flex items-center space-x-4 px-4 py-3 bg-primary/10 text-primary rounded-xl font-medium border border-primary/20 transition-all">
-                    <i class="fa-solid fa-chart-line w-5"></i>
-                    <span>System Overview</span>
-                </a>
-                
-                <a href="#" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl font-medium transition-all">
-                    <i class="fa-solid fa-users w-5"></i>
-                    <span>User Management</span>
-                </a>
-                
-                <a href="#" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl font-medium transition-all">
-                    <i class="fa-solid fa-microchip w-5"></i>
-                    <span>Engine Health</span>
-                </a>
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="mb-6 p-4 rounded-xl flex items-center gap-3 {% if category == 'safe' %}bg-safe/10 text-safe border border-safe/20{% else %}bg-alert/10 text-alert border border-alert/20{% endif %}">
+                        <i class="fa-solid {% if category == 'safe' %}fa-circle-check{% else %}fa-triangle-exclamation{% endif %} text-lg"></i>
+                        <p class="font-medium">{{ message }}</p>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Top KPI Cards -->
+        {% set total_scans = users | sum(attribute='scans_used') %}
+        {% set pro_users = users | selectattr('is_pro', 'equalto', true) | list | length %}
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-darkcard border border-white/5 p-6 rounded-2xl shadow-lg">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-slate-400 text-sm font-medium mb-1">Total Registered Users</p>
+                        <h3 class="text-3xl font-bold text-white">{{ users|length }}</h3>
+                    </div>
+                    <div class="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center text-primary text-xl">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                </div>
             </div>
-
-            <!-- View Site Button -->
-            <a href="/dashboard" class="flex items-center justify-center space-x-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 py-3 rounded-xl font-medium transition-colors border border-transparent">
-                <i class="fa-solid fa-arrow-left"></i>
-                <span>Return to App</span>
-            </a>
-        </aside>
-
-        <!-- Admin Main Area -->
-        <main class="flex-1 flex flex-col bg-white/60 dark:bg-darkcard/40 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] p-8 shadow-2xl overflow-y-auto transition-colors duration-300">
             
-            <header class="mb-8">
-                <h1 class="text-3xl font-bold text-slate-900 dark:text-white mb-2">Platform Overview</h1>
-                <p class="text-slate-600 dark:text-slate-400">Monitor DeepGuard system health and user activity.</p>
-            </header>
-
-            <!-- Top Level Analytics Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-                <!-- Total Users -->
-                <div class="bg-slate-50 dark:bg-darkbg/50 border border-slate-200 dark:border-white/5 rounded-2xl p-6 transition-colors duration-300">
-                    <div class="flex items-center justify-between mb-4">
-                        <span class="text-slate-500 dark:text-slate-400 font-medium">Total Users</span>
-                        <div class="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
-                            <i class="fa-solid fa-users"></i>
-                        </div>
+            <div class="bg-darkcard border border-white/5 p-6 rounded-2xl shadow-lg">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-slate-400 text-sm font-medium mb-1">Total Audio Scans</p>
+                        <h3 class="text-3xl font-bold text-white">{{ total_scans }}</h3>
                     </div>
-                    <div class="text-3xl font-bold text-slate-900 dark:text-white">{{ total_users }}</div>
-                </div>
-
-                <!-- Total Scans -->
-                <div class="bg-slate-50 dark:bg-darkbg/50 border border-slate-200 dark:border-white/5 rounded-2xl p-6 transition-colors duration-300">
-                    <div class="flex items-center justify-between mb-4">
-                        <span class="text-slate-500 dark:text-slate-400 font-medium">Scans Processed</span>
-                        <div class="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
-                            <i class="fa-solid fa-wave-square"></i>
-                        </div>
-                    </div>
-                    <div class="text-3xl font-bold text-slate-900 dark:text-white">{{ total_scans }}</div>
-                </div>
-
-                <!-- Detection Rate -->
-                <div class="bg-slate-50 dark:bg-darkbg/50 border border-slate-200 dark:border-white/5 rounded-2xl p-6 transition-colors duration-300">
-                    <div class="flex items-center justify-between mb-4">
-                        <span class="text-slate-500 dark:text-slate-400 font-medium">Threat Detection</span>
-                        <div class="w-10 h-10 bg-alert/10 rounded-xl flex items-center justify-center text-alert">
-                            <i class="fa-solid fa-triangle-exclamation"></i>
-                        </div>
-                    </div>
-                    <div class="text-3xl font-bold text-slate-900 dark:text-white">{{ detection_rate }}%</div>
-                </div>
-
-                <!-- System Status -->
-                <div class="bg-slate-50 dark:bg-darkbg/50 border border-slate-200 dark:border-white/5 rounded-2xl p-6 transition-colors duration-300">
-                    <div class="flex items-center justify-between mb-4">
-                        <span class="text-slate-500 dark:text-slate-400 font-medium">CNN Engine Status</span>
-                        <div class="w-10 h-10 bg-safe/10 rounded-xl flex items-center justify-center text-safe">
-                            <i class="fa-solid fa-server"></i>
-                        </div>
-                    </div>
-                    <div class="flex items-center text-safe font-bold">
-                        <div class="w-2.5 h-2.5 bg-safe rounded-full mr-2 animate-pulse"></div> Online
+                    <div class="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center text-purple-400 text-xl">
+                        <i class="fa-solid fa-wave-square"></i>
                     </div>
                 </div>
             </div>
 
-            <!-- User Database Table -->
-            <div class="bg-slate-50 dark:bg-darkbg/50 border border-slate-200 dark:border-white/5 rounded-3xl overflow-hidden transition-colors duration-300 flex-1 flex flex-col mb-10">
-                <div class="px-6 py-5 border-b border-slate-200 dark:border-white/10 flex justify-between items-center bg-slate-100/50 dark:bg-black/20">
-                    <h3 class="font-semibold text-slate-900 dark:text-white">User Database</h3>
-                    <div class="relative">
-                        <input type="text" placeholder="Search users..." class="pl-10 pr-4 py-2 bg-white dark:bg-darkcard border border-slate-300 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:border-primary">
-                        <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            <div class="bg-darkcard border border-white/5 p-6 rounded-2xl shadow-lg">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-slate-400 text-sm font-medium mb-1">Active Pro Subscriptions</p>
+                        <h3 class="text-3xl font-bold text-white">{{ pro_users }}</h3>
+                    </div>
+                    <div class="w-12 h-12 bg-safe/20 rounded-xl flex items-center justify-center text-safe text-xl">
+                        <i class="fa-solid fa-crown"></i>
                     </div>
                 </div>
-                
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="border-b border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400 text-xs tracking-wide uppercase bg-slate-100/50 dark:bg-black/20">
-                                <th class="py-3 px-6 font-semibold">User</th>
-                                <th class="py-3 px-6 font-semibold">Email</th>
-                                <th class="py-3 px-6 font-semibold">Plan</th>
-                                <th class="py-3 px-6 font-semibold">Joined</th>
-                                <th class="py-3 px-6 font-semibold text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-200 dark:divide-white/5">
-                            {% for u in users %}
-                            <tr class="hover:bg-white dark:hover:bg-white/5 transition-colors">
-                                <td class="py-3 px-6">
-                                    <div class="flex items-center">
-                                        <div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 border border-primary/30 flex items-center justify-center mr-3 text-xs font-bold text-slate-900 dark:text-white">
-                                            {{ u.username[0] | upper }}
-                                        </div>
-                                        <span class="font-medium text-slate-800 dark:text-white">{{ u.username }}</span>
-                                        {% if u.is_admin %}
-                                            <span class="ml-2 bg-alert/10 text-alert text-[10px] px-2 py-0.5 rounded-md font-bold uppercase tracking-wider">Admin</span>
-                                        {% endif %}
+            </div>
+        </div>
+
+        <!-- Visual Analytics (Chart.js) -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Traffic Bar Chart -->
+            <div class="bg-darkcard border border-white/5 p-6 rounded-2xl shadow-lg">
+                <h3 class="text-lg font-bold text-white mb-4">System Scan Volume (Last 7 Days)</h3>
+                <div class="relative h-64 w-full">
+                    <canvas id="trafficChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Threat Detection Doughnut Chart -->
+            <div class="bg-darkcard border border-white/5 p-6 rounded-2xl shadow-lg">
+                <h3 class="text-lg font-bold text-white mb-4">Detection Verdict Ratio</h3>
+                <div class="relative h-64 w-full flex justify-center">
+                    <canvas id="threatChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Management Table -->
+        <div class="bg-darkcard border border-white/5 rounded-2xl shadow-lg overflow-hidden">
+            <div class="px-6 py-5 border-b border-white/10 flex justify-between items-center bg-white/[0.02]">
+                <h3 class="text-lg font-bold text-white">User Management</h3>
+                <button class="text-sm bg-primary/20 hover:bg-primary/30 text-primary px-3 py-1.5 rounded-lg transition">
+                    <i class="fa-solid fa-download mr-2"></i>Export CSV
+                </button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-white/[0.02] text-slate-400 text-sm uppercase tracking-wider">
+                            <th class="px-6 py-4 font-medium">ID</th>
+                            <th class="px-6 py-4 font-medium">Username</th>
+                            <th class="px-6 py-4 font-medium">Email Address</th>
+                            <th class="px-6 py-4 font-medium">Plan</th>
+                            <th class="px-6 py-4 font-medium">Scans Used</th>
+                            <th class="px-6 py-4 font-medium">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5 text-sm">
+                        {% for u in users %}
+                        <tr class="hover:bg-white/[0.02] transition-colors">
+                            <td class="px-6 py-4 text-slate-500 font-tech">#{{ u.id }}</td>
+                            <td class="px-6 py-4 font-medium text-white">
+                                {{ u.username }}
+                                {% if u.is_admin %}<span class="ml-2 text-xs bg-alert/20 text-alert px-2 py-0.5 rounded-md">Admin</span>{% endif %}
+                            </td>
+                            <td class="px-6 py-4 text-slate-400">{{ u.email }}</td>
+                            <td class="px-6 py-4">
+                                {% if u.is_pro %}
+                                    <span class="text-safe bg-safe/10 px-2 py-1 rounded-md font-medium text-xs border border-safe/20"><i class="fa-solid fa-crown mr-1"></i> Pro</span>
+                                {% else %}
+                                    <span class="text-slate-400 bg-white/5 px-2 py-1 rounded-md font-medium text-xs border border-white/10">Basic</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-16 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                                        <div class="h-full bg-primary" style="width: {{ (u.scans_used / 5 * 100) if not u.is_pro else 100 }}%;"></div>
                                     </div>
-                                </td>
-                                <td class="py-3 px-6 text-slate-600 dark:text-slate-400 text-sm">{{ u.email }}</td>
-                                <td class="py-3 px-6">
-                                    {% if u.is_pro %}
-                                        <span class="text-xs font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-md">Pro</span>
-                                    {% else %}
-                                        <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 bg-slate-200 dark:bg-slate-800 px-2.5 py-1 rounded-md">Basic</span>
-                                    {% endif %}
-                                </td>
-                                <td class="py-3 px-6 text-slate-600 dark:text-slate-400 text-sm">
-                                    {{ u.created_at.strftime('%Y-%m-%d') }}
-                                </td>
-                                <td class="py-3 px-6 text-right">
-                                    <button class="text-slate-400 hover:text-primary transition-colors mr-3" title="Edit User">
-                                        <i class="fa-solid fa-pen-to-square"></i>
-                                    </button>
-                                    <button class="text-slate-400 hover:text-alert transition-colors" title="Delete User">
-                                        <i class="fa-regular fa-trash-can"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+                                    <span class="text-slate-400">{{ u.scans_used }}</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                {% if u.is_verified %}
+                                    <span class="text-safe text-xs font-medium"><i class="fa-solid fa-circle-check mr-1"></i> Verified</span>
+                                {% else %}
+                                    <span class="text-alert text-xs font-medium"><i class="fa-solid fa-circle-xmark mr-1"></i> Pending</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
-        </main>
+        </div>
     </div>
+
+    <!-- Chart.js Initialization Script -->
+    <script>
+        // Global Chart Defaults for Dark Theme
+        Chart.defaults.color = '#94a3b8';
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.05)';
+
+        // 1. Traffic Bar Chart (NOW USING REAL DATA)
+        const trafficLabels = {{ traffic_labels | tojson }};
+        const trafficData = {{ traffic_data | tojson }};
+
+        const trafficCtx = document.getElementById('trafficChart').getContext('2d');
+        new Chart(trafficCtx, {
+            type: 'bar',
+            data: {
+                labels: trafficLabels,
+                datasets: [{
+                    label: 'Audio Scans Performed',
+                    data: trafficData, 
+                    backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                    borderColor: '#3b82f6',
+                    borderWidth: 1,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { 
+                        beginAtZero: true, 
+                        ticks: { stepSize: 1 }, // Ensures the Y-axis doesn't show decimals like 0.5
+                        grid: { color: 'rgba(255,255,255,0.05)' } 
+                    },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // 2. Threat Detection Doughnut Chart
+        // Calculate dynamic ratio from Jinja data
+        {% set fake_count = scans | selectattr('result', 'equalto', 'Deepfake') | list | length %}
+        {% set auth_count = scans | selectattr('result', 'equalto', 'Authentic') | list | length %}
+        
+        // Fallback to demo data if the database is empty so the chart still renders nicely
+        const fakeData = {{ fake_count }} || 45; 
+        const authData = {{ auth_count }} || 55;
+
+        const threatCtx = document.getElementById('threatChart').getContext('2d');
+        new Chart(threatCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Synthetic (Deepfake)', 'Authentic Human'],
+                datasets: [{
+                    data: [fakeData, authData],
+                    backgroundColor: [
+                        'rgba(239, 68, 68, 0.8)', // Alert Red
+                        'rgba(16, 185, 129, 0.8)'  // Safe Green
+                    ],
+                    borderColor: '#111827', // Match darkcard background
+                    borderWidth: 4,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '75%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { padding: 20, usePointStyle: true }
+                    },
+                    // Custom Tooltip to calculate and show percentages
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                let value = context.parsed;
+                                let dataset = context.chart.data.datasets[context.datasetIndex];
+                                let total = dataset.data.reduce((acc, current) => acc + current, 0);
+                                let percentage = total > 0 ? Math.round((value / total) * 100) + '%' : '0%';
+                                
+                                return label + value + ' scans (' + percentage + ')';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 </html>

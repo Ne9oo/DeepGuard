@@ -7,7 +7,7 @@ matplotlib.use('Agg') # Headless backend for server use
 import matplotlib.pyplot as plt
 import io
 import base64
-from datetime import datetime
+from datetime import datetime, timedelta
 from functools import wraps
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, send_file
 from flask_sqlalchemy import SQLAlchemy
@@ -19,7 +19,7 @@ from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignat
 from tensorflow.keras.models import load_model
 from fpdf import FPDF
 
-# NEW: Import dotenv to keep your passwords secure
+# Import dotenv to keep your passwords secure
 from dotenv import load_dotenv
 
 # Load environment variables from the .env file
@@ -130,7 +130,20 @@ def send_verification_email(user_email):
     verify_url = url_for('verify_email', token=token, _external=True)
     
     msg = Message('Verify Your DeepGuard Account', recipients=[user_email])
-    msg.body = f'''Welcome to DeepGuard!\n\nPlease click the link below to verify your email address:\n{verify_url}'''
+    
+    # --- UPDATED PROFESSIONAL EMAIL TEXT ---
+    msg.body = f'''Welcome to DeepGuard!
+
+You are one step away from accessing our advanced audio forensics platform. Please verify your email address to activate your account by clicking the secure link below:
+
+{verify_url}
+
+SECURITY WARNING: If you did not sign up for a DeepGuard account, please ignore and delete this email. Do not click the link above.
+
+Stay secure,
+The DeepGuard Team'''
+    # ---------------------------------------
+
     try:
         mail.send(msg)
     except Exception as e:
@@ -527,9 +540,30 @@ def admin_dashboard():
     if not current_user.is_admin:
         flash('Access Denied.', 'alert')
         return redirect(url_for('dashboard'))
+    
     all_users = User.query.all()
     recent_scans = ScanRecord.query.order_by(ScanRecord.scan_date.desc()).limit(10).all()
-    return render_template('admin.html', users=all_users, scans=recent_scans)
+
+    # Calculate real scan volume for the last 7 days
+    today = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+    traffic_labels = []
+    traffic_data = []
+
+    for i in range(6, -1, -1):
+        target_date = today - timedelta(days=i)
+        next_date = target_date + timedelta(days=1)
+        
+        # Get the day name (e.g., 'Mon', 'Tue')
+        traffic_labels.append(target_date.strftime('%a')) 
+        
+        # Count how many scans happened on this specific day
+        count = ScanRecord.query.filter(
+            ScanRecord.scan_date >= target_date,
+            ScanRecord.scan_date < next_date
+        ).count()
+        traffic_data.append(count)
+
+    return render_template('admin.html', users=all_users, scans=recent_scans, traffic_labels=traffic_labels, traffic_data=traffic_data)
 
 if __name__ == '__main__':
     with app.app_context():
