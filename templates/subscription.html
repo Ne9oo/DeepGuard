@@ -36,47 +36,34 @@
         }
     </script>
     <style>
-        /* Custom Premium Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent; 
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #3b82f6; 
-        }
-        .dark ::-webkit-scrollbar-thumb {
-            background: #1e293b; 
-        }
-        .dark ::-webkit-scrollbar-thumb:hover {
-            background: #3b82f6;
-        }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+        .dark ::-webkit-scrollbar-thumb { background: #1e293b; }
+        .dark ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
     </style>
 </head>
-<body class="bg-slate-50 dark:bg-deepbg text-slate-800 dark:text-slate-300 font-sans antialiased h-screen overflow-hidden flex transition-colors duration-300 selection:bg-primary/30 relative">
+<body class="bg-slate-50 dark:bg-deepbg text-slate-800 dark:text-slate-300 font-sans antialiased h-screen overflow-hidden flex transition-colors duration-300 selection:bg-primary/30 relative w-full">
 
-    <!-- Ambient Background Grid -->
     <div class="absolute inset-0 z-0 pointer-events-none flex items-center justify-center">
         <div class="absolute inset-0 hidden dark:block bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMCAwaDQwdjQwaC00MHoiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNMCAzOWg0MHYxSDB6TDM5IDB2NDBoMXoiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wMykiLz48L3N2Zz4=')]"></div>
         <div class="absolute inset-0 block dark:hidden bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMCAwaDQwdjQwaC00MHoiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNMCAzOWg0MHYxSDB6TDM5IDB2NDBoMXoiIGZpbGw9InJnYmEoMCwwLDAsMC4wMykiLz48L3N2Zz4=')]"></div>
     </div>
 
-    <!-- Full Height Sidebar -->
-    <aside class="w-72 h-full bg-white/80 dark:bg-cardbg/80 backdrop-blur-2xl border-r border-slate-200 dark:border-white/5 flex flex-col justify-between relative z-20 transition-colors duration-300">
+    <!-- Mobile Overlay -->
+    <div id="mobile-overlay" class="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-sm z-40 hidden lg:hidden transition-opacity" onclick="toggleSidebar()"></div>
+
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 h-full bg-white/95 dark:bg-cardbg/95 backdrop-blur-3xl border-r border-slate-200 dark:border-white/5 flex flex-col justify-between transform -translate-x-full lg:relative lg:translate-x-0 transition-transform duration-300">
         <div>
-            <!-- Logo Area -->
-            <div class="h-24 flex items-center px-8 border-b border-slate-200 dark:border-white/5">
+            <div class="h-24 flex items-center justify-between px-8 border-b border-slate-200 dark:border-white/5">
                 <span class="text-xl font-bold text-slate-900 dark:text-white tracking-wider font-tech pt-1">DEEPGUARD</span>
+                <button onclick="toggleSidebar()" class="lg:hidden text-slate-500 hover:text-alert transition-colors focus:outline-none">
+                    <i class="fa-solid fa-xmark text-2xl"></i>
+                </button>
             </div>
 
-            <!-- Navigation Links -->
-            <div class="p-6 space-y-2">
+            <div class="p-6 space-y-2 overflow-y-auto">
                 <p class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4 px-4">Core Engine</p>
                 <a href="/dashboard" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl font-medium transition-all group">
                     <i class="fa-solid fa-wave-square w-5 text-center group-hover:text-primary transition-colors"></i><span class="text-sm">Audio Scanner</span>
@@ -88,7 +75,7 @@
                     <i class="fa-solid fa-crown w-5 text-center"></i><span class="text-sm">Subscription</span>
                 </a>
                 
-                <a href="/profile" class="flex items-center space-x-4 px-4 py-3 mt-6 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl font-medium transition-all group">
+                <a href="/profile" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl font-medium transition-all group">
                     <i class="fa-regular fa-id-badge w-5 text-center group-hover:text-primary transition-colors"></i><span class="text-sm">Profile</span>
                 </a>
                 <a href="/settings" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl font-medium transition-all group">
@@ -103,7 +90,6 @@
             </div>
         </div>
 
-        <!-- Usage Widget -->
         <div class="p-6 border-t border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-deepbg/30">
             <div class="flex justify-between items-end mb-2">
                 <span class="text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Scan Limit</span>
@@ -120,16 +106,20 @@
         </div>
     </aside>
 
-    <!-- Main Workspace Area -->
-    <div class="flex-1 flex flex-col relative z-10 h-full overflow-hidden">
+    <div class="flex-1 flex flex-col relative z-10 h-full overflow-hidden w-full">
         
-        <header class="h-24 px-10 flex items-center justify-between border-b border-slate-200/50 dark:border-white/5 bg-white/40 dark:bg-cardbg/40 backdrop-blur-xl">
-            <div>
-                <h2 class="text-xl font-bold text-slate-900 dark:text-white">Manage Subscription</h2>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Unlock the full power of the forensics engine.</p>
+        <header class="h-24 px-4 sm:px-10 flex items-center justify-between border-b border-slate-200/50 dark:border-white/5 bg-white/40 dark:bg-cardbg/40 backdrop-blur-xl">
+            <div class="flex items-center space-x-4">
+                <button onclick="toggleSidebar()" class="lg:hidden text-slate-600 dark:text-slate-300 hover:text-primary focus:outline-none">
+                    <i class="fa-solid fa-bars text-2xl"></i>
+                </button>
+                <div>
+                    <h2 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">Manage Subscription</h2>
+                    <p class="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 hidden sm:block">Unlock the full power of the forensics engine.</p>
+                </div>
             </div>
             
-            <div class="flex items-center space-x-5">
+            <div class="flex items-center space-x-3 sm:space-x-5">
                 <div class="text-right hidden sm:block">
                     <p class="text-sm font-semibold text-slate-900 dark:text-white">{{ current_user.username }}</p>
                     <p class="text-xs text-primary font-medium">{% if current_user.is_pro %}Pro Tier{% else %}Basic Tier{% endif %}</p>
@@ -141,10 +131,9 @@
             </div>
         </header>
 
-        <main class="flex-1 overflow-y-auto p-6 lg:p-10">
+        <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-10 w-full">
             <div class="max-w-5xl mx-auto">
 
-                <!-- Flash Messages -->
                 {% with messages = get_flashed_messages(with_categories=true) %}
                     {% if messages %}
                         {% for category, message in messages %}
@@ -158,40 +147,38 @@
 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     
-                    <!-- Basic Tier Card -->
-                    <div class="bg-white/60 dark:bg-cardbg/40 backdrop-blur-xl border border-slate-200 dark:border-white/5 rounded-[2rem] p-10 flex flex-col relative transition-all duration-300 {% if not current_user.is_pro %}shadow-lg border-slate-300 dark:border-slate-700{% else %}opacity-70{% endif %}">
+                    <div class="bg-white/60 dark:bg-cardbg/40 backdrop-blur-xl border border-slate-200 dark:border-white/5 rounded-2xl sm:rounded-[2rem] p-6 sm:p-10 flex flex-col relative transition-all duration-300 {% if not current_user.is_pro %}shadow-lg border-slate-300 dark:border-slate-700{% else %}opacity-70{% endif %}">
                         {% if not current_user.is_pro %}
                         <div class="absolute -top-3.5 left-8 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border border-slate-300 dark:border-slate-600">
                             Active Plan
                         </div>
                         {% endif %}
                         
-                        <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">Basic Tier</h3>
+                        <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mb-2">Basic Tier</h3>
                         <div class="flex items-baseline mb-6 space-x-2">
-                            <span class="text-4xl font-extrabold text-slate-900 dark:text-white font-tech">Free</span>
+                            <span class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white font-tech">Free</span>
                         </div>
-                        <p class="text-sm text-slate-600 dark:text-slate-400 mb-8 border-b border-slate-200 dark:border-white/10 pb-8">Perfect for individuals wanting to verify suspicious voicemails.</p>
+                        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mb-8 border-b border-slate-200 dark:border-white/10 pb-8">Perfect for individuals wanting to verify suspicious voicemails.</p>
                         
                         <ul class="space-y-4 mb-10 flex-1">
-                            <li class="flex items-start text-slate-700 dark:text-slate-300 text-sm"><i class="fa-solid fa-check text-safe mt-1 mr-4"></i> 5 Scans per day limit</li>
-                            <li class="flex items-start text-slate-700 dark:text-slate-300 text-sm"><i class="fa-solid fa-check text-safe mt-1 mr-4"></i> Standard CNN Accuracy</li>
-                            <li class="flex items-start text-slate-700 dark:text-slate-300 text-sm"><i class="fa-solid fa-check text-safe mt-1 mr-4"></i> Basic Scan History</li>
-                            <li class="flex items-start text-slate-700 dark:text-slate-300 text-sm"><i class="fa-solid fa-check text-safe mt-1 mr-4"></i> Email Verification Security</li>
+                            <li class="flex items-start text-slate-700 dark:text-slate-300 text-xs sm:text-sm"><i class="fa-solid fa-check text-safe mt-1 mr-4"></i> 5 Scans per day limit</li>
+                            <li class="flex items-start text-slate-700 dark:text-slate-300 text-xs sm:text-sm"><i class="fa-solid fa-check text-safe mt-1 mr-4"></i> Standard CNN Accuracy</li>
+                            <li class="flex items-start text-slate-700 dark:text-slate-300 text-xs sm:text-sm"><i class="fa-solid fa-check text-safe mt-1 mr-4"></i> Basic Scan History</li>
+                            <li class="flex items-start text-slate-700 dark:text-slate-300 text-xs sm:text-sm"><i class="fa-solid fa-check text-safe mt-1 mr-4"></i> Email Verification Security</li>
                         </ul>
 
                         {% if not current_user.is_pro %}
-                        <button disabled class="w-full text-center bg-slate-100 dark:bg-deepbg text-slate-400 dark:text-slate-500 py-3.5 rounded-xl font-medium tracking-wide cursor-not-allowed border border-slate-200 dark:border-white/5">
+                        <button disabled class="w-full text-center bg-slate-100 dark:bg-deepbg text-slate-400 dark:text-slate-500 py-3.5 rounded-xl font-medium tracking-wide cursor-not-allowed border border-slate-200 dark:border-white/5 text-sm">
                             Current Plan
                         </button>
                         {% else %}
-                        <button disabled class="w-full text-center bg-transparent border border-slate-200 dark:border-white/10 text-slate-400 dark:text-slate-500 py-3.5 rounded-xl font-medium tracking-wide cursor-not-allowed">
+                        <button disabled class="w-full text-center bg-transparent border border-slate-200 dark:border-white/10 text-slate-400 dark:text-slate-500 py-3.5 rounded-xl font-medium tracking-wide cursor-not-allowed text-sm">
                             Downgrade Unavailable
                         </button>
                         {% endif %}
                     </div>
 
-                    <!-- Pro Tier Card -->
-                    <div class="bg-gradient-to-b from-white to-slate-50 dark:from-cardbg dark:to-deepbg backdrop-blur-xl rounded-[2rem] p-10 flex flex-col relative transition-all duration-300 border {% if current_user.is_pro %}border-primary shadow-[0_0_30px_rgba(59,130,246,0.15)] shadow-primary/20 scale-[1.02] z-10{% else %}border-primary/30 dark:border-primary/50 shadow-xl{% endif %}">
+                    <div class="bg-gradient-to-b from-white to-slate-50 dark:from-cardbg dark:to-deepbg backdrop-blur-xl rounded-2xl sm:rounded-[2rem] p-6 sm:p-10 flex flex-col relative transition-all duration-300 border {% if current_user.is_pro %}border-primary shadow-[0_0_30px_rgba(59,130,246,0.15)] shadow-primary/20 scale-[1.02] z-10{% else %}border-primary/30 dark:border-primary/50 shadow-xl{% endif %}">
                         {% if current_user.is_pro %}
                         <div class="absolute -top-3.5 left-8 bg-primary text-white px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border border-primary-600 shadow-lg shadow-primary/30">
                             Active Plan
@@ -202,28 +189,28 @@
                         </div>
                         {% endif %}
                         
-                        <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">DeepGuard Pro</h3>
+                        <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mb-2">DeepGuard Pro</h3>
                         <div class="flex items-baseline mb-6 space-x-1">
-                            <span class="text-4xl font-extrabold text-slate-900 dark:text-white font-tech">$15</span>
-                            <span class="text-sm text-slate-500 dark:text-slate-400">/mo</span>
+                            <span class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white font-tech">$15</span>
+                            <span class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">/mo</span>
                         </div>
-                        <p class="text-sm text-slate-600 dark:text-slate-400 mb-8 border-b border-slate-200 dark:border-white/10 pb-8">For businesses requiring maximum security and unlimited analysis.</p>
+                        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mb-8 border-b border-slate-200 dark:border-white/10 pb-8">For businesses requiring maximum security and unlimited analysis.</p>
                         
                         <ul class="space-y-4 mb-10 flex-1">
-                            <li class="flex items-start text-slate-900 dark:text-white text-sm font-medium"><i class="fa-solid fa-plus text-primary mt-1 mr-4"></i> Everything in Basic, plus:</li>
-                            <li class="flex items-start text-slate-700 dark:text-slate-300 text-sm"><i class="fa-solid fa-check text-primary mt-1 mr-4"></i> <strong class="text-slate-900 dark:text-white font-semibold mr-1">Unlimited</strong> Audio Scans</li>
-                            <li class="flex items-start text-slate-700 dark:text-slate-300 text-sm"><i class="fa-solid fa-check text-primary mt-1 mr-4"></i> Deep Scan Mode (Max Accuracy)</li>
-                            <li class="flex items-start text-slate-700 dark:text-slate-300 text-sm"><i class="fa-solid fa-check text-primary mt-1 mr-4"></i> Downloadable Forensic Reports</li>
-                            <li class="flex items-start text-slate-700 dark:text-slate-300 text-sm"><i class="fa-solid fa-check text-primary mt-1 mr-4"></i> Priority Email Alerts</li>
+                            <li class="flex items-start text-slate-900 dark:text-white text-xs sm:text-sm font-medium"><i class="fa-solid fa-plus text-primary mt-1 mr-4"></i> Everything in Basic, plus:</li>
+                            <li class="flex items-start text-slate-700 dark:text-slate-300 text-xs sm:text-sm"><i class="fa-solid fa-check text-primary mt-1 mr-4"></i> <strong class="text-slate-900 dark:text-white font-semibold mr-1">Unlimited</strong> Audio Scans</li>
+                            <li class="flex items-start text-slate-700 dark:text-slate-300 text-xs sm:text-sm"><i class="fa-solid fa-check text-primary mt-1 mr-4"></i> Deep Scan Mode (Max Accuracy)</li>
+                            <li class="flex items-start text-slate-700 dark:text-slate-300 text-xs sm:text-sm"><i class="fa-solid fa-check text-primary mt-1 mr-4"></i> Downloadable Forensic Reports</li>
+                            <li class="flex items-start text-slate-700 dark:text-slate-300 text-xs sm:text-sm"><i class="fa-solid fa-check text-primary mt-1 mr-4"></i> Priority Email Alerts</li>
                         </ul>
                         
                         {% if current_user.is_pro %}
-                        <button class="w-full bg-slate-100 dark:bg-deepbg hover:bg-slate-200 dark:hover:bg-black/50 text-slate-700 dark:text-white py-3.5 rounded-xl font-medium tracking-wide transition-colors border border-slate-200 dark:border-white/10">
+                        <button class="w-full bg-slate-100 dark:bg-deepbg hover:bg-slate-200 dark:hover:bg-black/50 text-slate-700 dark:text-white py-3.5 rounded-xl font-medium tracking-wide transition-colors border border-slate-200 dark:border-white/10 text-sm">
                             Manage Billing
                         </button>
                         {% else %}
                         <form action="{{ url_for('subscription') }}" method="POST">
-                            <button type="submit" class="w-full bg-primary hover:bg-blue-600 text-white py-3.5 rounded-xl font-medium tracking-wide transition-all shadow-lg shadow-primary/30 border border-transparent dark:border-white/10">
+                            <button type="submit" class="w-full bg-primary hover:bg-blue-600 text-white py-3.5 rounded-xl font-medium tracking-wide transition-all shadow-lg shadow-primary/30 border border-transparent dark:border-white/10 text-sm">
                                 Subscribe to Pro
                             </button>
                         </form>
@@ -234,5 +221,19 @@
             </div>
         </main>
     </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+    </script>
 </body>
 </html>
