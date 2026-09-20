@@ -16,7 +16,6 @@ from flask_bcrypt import Bcrypt
 from werkzeug.utils import secure_filename
 from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
-from tensorflow.keras.models import load_model
 from fpdf import FPDF
 
 # Import Rate Limiting Libraries
@@ -31,6 +30,27 @@ load_dotenv()
 
 # Initialize the Flask App
 app = Flask(__name__)
+
+# ==========================================
+# VPS ENVIRONMENT TOGGLE & AI MODEL LOADING
+# ==========================================
+# Check if the app is running on the Namecheap server
+IS_VPS = os.environ.get('VPS_ENV') == 'True'
+
+if not IS_VPS:
+    # Local Windows Mode: Load the AI normally
+    from tensorflow.keras.models import load_model
+    MODEL_PATH = os.path.join(app.root_path, 'deepguard_cnn.h5')
+    try:
+        model = load_model(MODEL_PATH)
+        print("[+] DeepGuard CNN Model loaded successfully.")
+    except Exception as e:
+        model = None
+        print(f"[-] WARNING: Could not load 'deepguard_cnn.h5' locally. Error: {e}")
+else:
+    # Live Server Mode: Bypass TF to prevent CPU crashes
+    model = None
+    print("[!] VPS Mode Active: AI loading bypassed for hardware compatibility.")
 
 # ==========================================
 # SECURITY: RATE LIMITER INITIALIZATION
@@ -80,17 +100,6 @@ login_manager.login_message_category = 'alert'
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-# ==========================================
-# LOAD DEEP LEARNING MODEL
-# ==========================================
-MODEL_PATH = os.path.join(app.root_path, 'deepguard_cnn.h5')
-try:
-    model = load_model(MODEL_PATH)
-    print("[+] DeepGuard CNN Model loaded successfully.")
-except Exception as e:
-    model = None
-    print(f"[-] WARNING: Could not load 'deepguard_cnn.h5'. AI functionality will run in simulation mode. Error: {e}")
 
 # ==========================================
 # DATABASE MODELS
@@ -364,8 +373,13 @@ def scan_audio():
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], f"{datetime.utcnow().strftime('%Y%m%d%H%M%S')}_{filename}")
     file.save(filepath)
 
+    # Bypass check for live VPS environment
+    if model is None:
+        print("[!] Running in simulation mode. Audio uploaded successfully.")
+
     try:
         # Pass the user's preferred scan mode (Fast/Standard/Pro)
+        # This will automatically utilize the simulation fallback we created in analyze_audio_forensics
         analysis = analyze_audio_forensics(filepath, mode=current_user.scan_mode)
         
         new_scan = ScanRecord(filename=filename, result=analysis['result'], confidence=analysis['confidence'], user_id=current_user.id)
