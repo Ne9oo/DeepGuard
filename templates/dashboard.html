@@ -1,27 +1,34 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DeepGuard | Voice Forensics Engine</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>DeepGuard | Forensics Engine</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- Load Wavesurfer.js -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://unpkg.com/wavesurfer.js@7"></script>
     <script>
         tailwind.config = { 
             darkMode: 'class', 
             theme: { 
                 extend: { 
-                    colors: { primary: '#3b82f6', alert: '#ef4444', safe: '#10b981', darkbg: '#0a0f1c', darkcard: '#111827' }, 
-                    fontFamily: { sans: ['Inter', 'sans-serif'], tech: ['Orbitron', 'sans-serif'] },
-                    animation: { 'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite' }
+                    colors: { 
+                        deepbg: '#030712', 
+                        cardbg: '#0B1120',
+                        primary: '#3b82f6', 
+                        alert: '#ef4444', 
+                        safe: '#10b981',
+                        caution: '#f59e0b'
+                    }, 
+                    fontFamily: { 
+                        sans: ['Inter', 'sans-serif'], 
+                        tech: ['Orbitron', 'sans-serif'] 
+                    }
                 } 
             } 
         }
     </script>
-    <!-- RESTORED: Theme Checker Script -->
     <script>
         if (localStorage.getItem('theme') === 'light') {
             document.documentElement.classList.remove('dark');
@@ -29,200 +36,274 @@
             document.documentElement.classList.add('dark');
         }
     </script>
+    <style>
+        /* Custom Premium Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+        .dark ::-webkit-scrollbar-thumb { background: #1e293b; }
+        .dark ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+    </style>
 </head>
-<body class="bg-slate-100 dark:bg-darkbg text-slate-800 dark:text-slate-300 antialiased h-screen overflow-hidden flex flex-col selection:bg-primary/30 relative transition-colors duration-300">
+<body class="bg-slate-50 dark:bg-deepbg text-slate-800 dark:text-slate-300 font-sans antialiased h-screen overflow-hidden flex transition-colors duration-300 selection:bg-primary/30 relative w-full">
 
-    <div class="absolute w-[800px] h-[800px] bg-primary/10 rounded-full blur-[150px] top-[-300px] right-[-100px] pointer-events-none z-0"></div>
-    <div class="absolute w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[150px] bottom-[-200px] left-[-200px] pointer-events-none z-0"></div>
+    <!-- Ambient Background Grid -->
+    <div class="absolute inset-0 z-0 pointer-events-none flex items-center justify-center">
+        <div class="absolute inset-0 hidden dark:block bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMCAwaDQwdjQwaC00MHoiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNMCAzOWg0MHYxSDB6TDM5IDB2NDBoMXoiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wMykiLz48L3N2Zz4=')]"></div>
+        <div class="absolute inset-0 block dark:hidden bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMCAwaDQwdjQwaC00MHoiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNMCAzOWg0MHYxSDB6TDM5IDB2NDBoMXoiIGZpbGw9InJnYmEoMCwwLDAsMC4wMykiLz48L3N2Zz4=')]"></div>
+    </div>
 
-    <!-- Top Navigation -->
-    <nav class="h-20 border-b border-slate-200 dark:border-white/5 bg-white/50 dark:bg-darkcard/50 backdrop-blur-xl relative z-20 flex items-center justify-between px-8 transition-colors duration-300">
-        <div class="flex items-center space-x-3">
-            <i class="fa-solid fa-shield-halved text-primary text-3xl"></i>
-            <span class="text-2xl font-bold text-slate-900 dark:text-white tracking-wider font-tech">DeepGuard</span>
-        </div>
-        <div class="flex items-center space-x-6">
-            <div class="text-right hidden md:block">
-                <p class="text-sm font-semibold text-slate-900 dark:text-white">{{ current_user.username }}</p>
-                <p class="text-xs text-primary">{% if current_user.is_pro %}Pro Tier{% else %}Basic Tier{% endif %}</p>
-            </div>
-            <a href="/profile" class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 flex items-center justify-center hover:border-primary transition-colors">
-                <i class="fa-solid fa-user text-slate-600 dark:text-slate-400"></i>
-            </a>
-            <a href="/logout" class="text-slate-400 dark:text-slate-500 hover:text-alert transition-colors">
-                <i class="fa-solid fa-arrow-right-from-bracket text-xl"></i>
-            </a>
-        </div>
-    </nav>
+    <!-- Mobile Overlay -->
+    <div id="mobile-overlay" class="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-sm z-40 hidden lg:hidden transition-opacity" onclick="toggleSidebar()"></div>
 
-    <!-- Main Content Area -->
-    <div class="flex-1 flex overflow-hidden relative z-10 p-6 gap-6 max-w-[1600px] w-full mx-auto">
-        
-        <!-- Sidebar -->
-        <aside class="w-72 flex-shrink-0 bg-white/60 dark:bg-darkcard/40 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] p-6 flex flex-col justify-between hidden lg:flex shadow-2xl transition-colors duration-300">
-            <div class="space-y-2">
-                <p class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-4 px-4">Menu</p>
-                <a href="/dashboard" class="flex items-center space-x-4 px-4 py-3 bg-primary/10 text-primary rounded-xl font-medium border border-primary/20 transition-all">
-                    <i class="fa-solid fa-wave-square w-5"></i><span>Audio Scanner</span>
-                </a>
-                <a href="/history" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl font-medium transition-all">
-                    <i class="fa-solid fa-clock-rotate-left w-5"></i><span>Scan History</span>
-                </a>
-                <a href="/subscription" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl font-medium transition-all">
-                    <i class="fa-solid fa-crown w-5"></i><span>Subscription</span>
-                </a>
-                <a href="/profile" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl font-medium transition-all">
-                    <i class="fa-regular fa-id-badge w-5"></i><span>Profile</span>
-                </a>
-                <a href="/settings" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl font-medium transition-all">
-                    <i class="fa-solid fa-gear w-5"></i><span>Settings</span>
-                </a>
-                {% if current_user.is_admin %}
-                <a href="/admin" class="flex items-center space-x-4 px-4 py-3 mt-4 bg-alert/10 text-alert rounded-xl font-bold border border-alert/20 transition-all hover:bg-alert/20">
-                    <i class="fa-solid fa-lock w-5"></i><span>Admin Panel</span>
-                </a>
-                {% endif %}
-            </div>
-
-            <!-- Usage Widget -->
-            <div class="bg-slate-100/50 dark:bg-darkbg/50 border border-slate-200 dark:border-white/5 rounded-2xl p-5 mt-auto transition-colors duration-300">
-                <div class="flex justify-between items-end mb-2">
-                    <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Daily Scans</span>
-                    <span id="scan-count-text" class="text-xs text-primary font-bold">{% if current_user.is_pro %}Unlimited{% else %}{{ current_user.scans_used }} / 5{% endif %}</span>
-                </div>
-                <div class="w-full bg-slate-300 dark:bg-slate-800 rounded-full h-2 mb-3">
-                    <div id="scan-progress-bar" class="bg-primary h-2 rounded-full transition-all duration-500" style="width: {% if current_user.is_pro %}100%{% else %}{{ (current_user.scans_used / 5) * 100 }}%{% endif %}"></div>
-                </div>
-                {% if not current_user.is_pro %}
-                <a href="/subscription" class="text-xs text-slate-500 dark:text-slate-400 hover:text-primary transition-colors flex items-center">
-                    Upgrade to Pro <i class="fa-solid fa-arrow-right ml-2"></i>
-                </a>
-                {% endif %}
-            </div>
-        </aside>
-
-        <!-- Scanner Main Area -->
-        <main class="flex-1 flex flex-col bg-white/60 dark:bg-darkcard/40 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] p-8 lg:p-12 shadow-2xl overflow-y-auto transition-colors duration-300 relative">
-            
-            <header class="mb-8">
-                <h1 class="text-3xl font-bold text-slate-900 dark:text-white mb-2">Voice Forensics Engine</h1>
-                <p class="text-slate-600 dark:text-slate-400">Upload an audio file to interactively preview the waveform and extract the acoustic spectrogram.</p>
-            </header>
-
-            <div id="error-box" class="hidden bg-alert/10 border border-alert/30 text-alert px-5 py-3 rounded-2xl mb-6 text-sm flex items-center justify-between">
-                <div class="flex items-center">
-                    <i class="fa-solid fa-circle-exclamation mr-3 text-lg"></i>
-                    <span id="error-message">Error message</span>
-                </div>
-                <button onclick="document.getElementById('error-box').classList.add('hidden')" class="text-alert hover:opacity-70">
-                    <i class="fa-solid fa-xmark"></i>
+    <!-- Full Height Responsive Sidebar -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 h-full bg-white/95 dark:bg-cardbg/95 backdrop-blur-3xl border-r border-slate-200 dark:border-white/5 flex flex-col justify-between transform -translate-x-full lg:relative lg:translate-x-0 transition-transform duration-300">
+        <div>
+            <!-- Logo Area with Mobile Close -->
+            <div class="h-24 flex items-center justify-between px-8 border-b border-slate-200 dark:border-white/5">
+                <span class="text-xl font-bold text-slate-900 dark:text-white tracking-wider font-tech pt-1">DEEPGUARD</span>
+                <button onclick="toggleSidebar()" class="lg:hidden text-slate-500 hover:text-alert transition-colors focus:outline-none">
+                    <i class="fa-solid fa-xmark text-2xl"></i>
                 </button>
             </div>
 
-            <!-- Upload / Interactive Preview Zone -->
-            <div id="drop-zone" class="flex-1 border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-primary/60 dark:hover:border-primary/60 bg-slate-50 dark:bg-darkbg/30 hover:bg-slate-100/80 dark:hover:bg-darkbg/50 rounded-3xl transition-all flex flex-col items-center justify-center p-10 cursor-pointer relative overflow-hidden min-h-[380px]">
+            <div class="p-6 space-y-2 overflow-y-auto">
+                <p class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4 px-4">Core Engine</p>
+                <a href="/dashboard" class="flex items-center space-x-4 px-4 py-3 bg-primary/10 dark:bg-primary/20 text-primary-600 dark:text-primary rounded-xl font-medium border border-primary/20 transition-all">
+                    <i class="fa-solid fa-wave-square w-5 text-center"></i><span class="text-sm">Audio Scanner</span>
+                </a>
+                <a href="/history" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl font-medium transition-all group">
+                    <i class="fa-solid fa-clock-rotate-left w-5 text-center group-hover:text-primary transition-colors"></i><span class="text-sm">Scan History</span>
+                </a>
+                <a href="/subscription" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl font-medium transition-all group">
+                    <i class="fa-solid fa-crown w-5 text-center group-hover:text-primary transition-colors"></i><span class="text-sm">Subscription</span>
+                </a>
                 
-                <input type="file" id="audio-input" accept=".wav,.mp3,.ogg,.opus,.m4a,.aac,.flac,.wma,.amr,.webm,audio/*" class="hidden">
-                
-                <!-- State 1: Idle -->
-                <div id="upload-idle" class="flex flex-col items-center justify-center text-center">
-                    <div class="w-24 h-24 bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-full flex items-center justify-center mb-6 shadow-lg">
-                        <i class="fa-solid fa-cloud-arrow-up text-4xl text-primary"></i>
+                <a href="/profile" class="flex items-center space-x-4 px-4 py-3 mt-6 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl font-medium transition-all group">
+                    <i class="fa-regular fa-id-badge w-5 text-center group-hover:text-primary transition-colors"></i><span class="text-sm">Profile</span>
+                </a>
+                <a href="/settings" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl font-medium transition-all group">
+                    <i class="fa-solid fa-gear w-5 text-center group-hover:text-primary transition-colors"></i><span class="text-sm">Settings</span>
+                </a>
+
+                {% if current_user.is_admin %}
+                <a href="/admin" class="flex items-center space-x-4 px-4 py-3 mt-6 bg-alert-50 dark:bg-alert/10 text-alert-600 dark:text-alert rounded-xl font-medium border border-alert/20 transition-all hover:bg-alert-100 dark:hover:bg-alert/20">
+                    <i class="fa-solid fa-lock w-5 text-center"></i><span class="text-sm">Admin Panel</span>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="p-6 border-t border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-deepbg/30">
+            <div class="flex justify-between items-end mb-2">
+                <span class="text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Scan Limit</span>
+                <span id="scan-count-text" class="text-xs text-primary font-bold">{% if current_user.is_pro %}Unlimited{% else %}{{ current_user.scans_used }} / 5{% endif %}</span>
+            </div>
+            <div class="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-1.5 mb-3 overflow-hidden">
+                <div id="scan-progress-bar" class="bg-primary h-full rounded-full transition-all duration-500" style="width: {% if current_user.is_pro %}100%{% else %}{{ (current_user.scans_used / 5) * 100 }}%{% endif %}"></div>
+            </div>
+            {% if not current_user.is_pro %}
+            <a href="/subscription" class="text-xs text-slate-500 dark:text-slate-400 hover:text-primary font-medium transition-colors flex items-center group">
+                Upgrade to Pro <i class="fa-solid fa-arrow-right ml-1.5 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all"></i>
+            </a>
+            {% endif %}
+        </div>
+    </aside>
+
+    <!-- Main Workspace Area -->
+    <div class="flex-1 flex flex-col relative z-10 h-full overflow-hidden w-full">
+        
+        <!-- Mobile-Ready Header -->
+        <header class="h-24 px-4 sm:px-10 flex items-center justify-between border-b border-slate-200/50 dark:border-white/5 bg-white/40 dark:bg-cardbg/40 backdrop-blur-xl">
+            <div class="flex items-center space-x-4">
+                <button onclick="toggleSidebar()" class="lg:hidden text-slate-600 dark:text-slate-300 hover:text-primary focus:outline-none">
+                    <i class="fa-solid fa-bars text-2xl"></i>
+                </button>
+                <div>
+                    <h2 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">Forensics Terminal</h2>
+                    <p class="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 hidden sm:block">CNN Interface & Probability Analysis</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-3 sm:space-x-5">
+                <div class="text-right hidden sm:block">
+                    <p class="text-sm font-semibold text-slate-900 dark:text-white">{{ current_user.username }}</p>
+                    <p class="text-xs text-primary font-medium">{% if current_user.is_pro %}Pro Tier{% else %}Basic Tier{% endif %}</p>
+                </div>
+                <div class="h-10 w-px bg-slate-200 dark:bg-white/10 hidden sm:block"></div>
+                <a href="/logout" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-deepbg border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-500 hover:text-alert hover:border-alert/30 transition-all">
+                    <i class="fa-solid fa-power-off text-sm"></i>
+                </a>
+            </div>
+        </header>
+
+        <!-- Main Content Area with Mobile Padding -->
+        <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-10 w-full">
+            <div class="max-w-5xl mx-auto">
+
+                <div id="error-box" class="hidden bg-alert-50 dark:bg-alert/10 border border-alert-200 dark:border-alert/30 text-alert-600 dark:text-alert px-5 py-4 rounded-2xl mb-6 text-sm flex items-center justify-between shadow-sm">
+                    <div class="flex items-center">
+                        <i class="fa-solid fa-triangle-exclamation mr-3 text-lg"></i>
+                        <span id="error-message" class="font-medium">Error message</span>
                     </div>
-                    <h3 class="text-2xl font-semibold text-slate-900 dark:text-white mb-8">Drag & Drop Audio Here</h3>
-                    <button type="button" onclick="document.getElementById('audio-input').click()" class="bg-slate-900 dark:bg-slate-800 hover:bg-primary text-white px-8 py-3.5 rounded-xl font-semibold transition-all shadow-lg hover:shadow-primary/30">
-                        <i class="fa-solid fa-folder-open mr-2"></i> Browse Files
+                    <button onclick="document.getElementById('error-box').classList.add('hidden')" class="text-alert hover:opacity-70">
+                        <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
 
-                <!-- State 2: Waveform Preview -->
-                <div id="upload-preview" class="hidden flex flex-col items-center justify-center w-full max-w-3xl">
-                    <div class="w-16 h-16 bg-slate-200 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4">
-                        <i class="fa-solid fa-file-audio text-2xl text-primary"></i>
-                    </div>
-                    <h3 id="preview-filename" class="text-xl font-bold text-slate-900 dark:text-white mb-6">sample.wav</h3>
+                <!-- Dropzone Terminal -->
+                <div id="drop-zone" class="w-full bg-white/60 dark:bg-cardbg/40 backdrop-blur-md border border-slate-200 dark:border-white/10 rounded-2xl sm:rounded-3xl transition-all flex flex-col items-center justify-center p-6 sm:p-10 cursor-pointer relative overflow-hidden min-h-[400px] lg:min-h-[65vh] shadow-sm hover:shadow-lg dark:hover:shadow-primary/5 hover:border-primary/40 dark:hover:border-primary/40 group">
                     
-                    <!-- Wavesurfer Container -->
-                    <div id="waveform-container" class="w-full bg-white dark:bg-darkcard border border-slate-200 dark:border-slate-700 rounded-2xl p-4 mb-8 shadow-inner">
-                        <div id="waveform"></div>
-                    </div>
-
-                    <div class="flex items-center space-x-4">
-                        <button id="btn-play-pause" class="bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-900 dark:text-white w-12 h-12 rounded-full flex items-center justify-center transition-colors">
-                            <i id="play-icon" class="fa-solid fa-play"></i>
-                        </button>
-                        <button id="btn-cancel" class="text-slate-500 hover:text-alert font-medium px-4 py-2 transition-colors">
-                            Cancel
-                        </button>
-                        <button id="btn-scan-now" class="bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-xl font-semibold transition-all shadow-lg shadow-primary/20 flex items-center">
-                            <i class="fa-solid fa-microchip mr-2"></i> Run Forensics
-                        </button>
-                    </div>
-                </div>
-
-                <!-- State 3: Processing -->
-                <div id="upload-processing" class="hidden flex flex-col items-center justify-center text-center">
-                    <div class="relative w-28 h-28 mb-6 flex items-center justify-center">
-                        <div class="absolute inset-0 rounded-full border-4 border-primary/20 border-t-primary animate-spin"></div>
-                        <i class="fa-solid fa-wave-square text-3xl text-primary animate-pulse"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">Analyzing Acoustic Features</h3>
-                    <p id="processing-step" class="text-slate-500 dark:text-slate-400 text-sm font-mono tracking-wide">Extracting MFCC Spectrogram...</p>
-                </div>
-            </div>
-
-            <!-- Forensic Results Card -->
-            <div id="result-card" class="hidden mt-8 bg-slate-50 dark:bg-darkbg/60 border border-slate-200 dark:border-white/10 rounded-3xl p-8 transition-all">
-                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center border-b border-slate-200 dark:border-white/10 pb-6 mb-6 gap-4">
-                    <div>
-                        <div class="flex items-center space-x-3 mb-1">
-                            <i class="fa-solid fa-file-audio text-primary text-xl"></i>
-                            <h3 id="res-filename" class="text-xl font-bold text-slate-900 dark:text-white">sample.wav</h3>
+                    <input type="file" id="audio-input" accept=".wav,.mp3,.ogg,.opus,.m4a,.aac,.flac,.wma,.amr,.webm,audio/*" class="hidden">
+                    
+                    <!-- State 1: Idle -->
+                    <div id="upload-idle" class="flex flex-col items-center justify-center text-center">
+                        <div class="w-16 h-16 sm:w-20 sm:h-20 bg-slate-100 dark:bg-deepbg border border-slate-200 dark:border-white/10 rounded-2xl flex items-center justify-center mb-6 shadow-inner group-hover:scale-105 transition-transform duration-300">
+                            <i class="fa-solid fa-arrow-up-from-bracket text-2xl sm:text-3xl text-primary"></i>
                         </div>
-                        <p class="text-xs text-slate-500 dark:text-slate-400">CNN Model Inference & Spectrogram Verification Complete</p>
+                        <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mb-2">Initialize Scan Sequence</h3>
+                        <p class="text-slate-500 dark:text-slate-400 text-xs sm:text-sm mb-8 max-w-xs sm:max-w-sm">Drag and drop a suspected audio file, or click to browse your system.</p>
+                        <button type="button" onclick="document.getElementById('audio-input').click()" class="bg-slate-900 dark:bg-slate-100 hover:bg-primary dark:hover:bg-primary text-white dark:text-slate-900 dark:hover:text-white px-6 sm:px-8 py-3 rounded-xl font-medium tracking-wide transition-colors text-sm w-full sm:w-auto">
+                            Select Audio File
+                        </button>
                     </div>
-                    <div id="res-badge" class="px-5 py-2 rounded-full text-sm font-bold flex items-center border">
-                        <i id="res-icon" class="fa-solid fa-triangle-exclamation mr-2"></i>
-                        <span id="res-verdict">Synthetic Deepfake</span>
-                    </div>
-                </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                    <div class="bg-white dark:bg-darkcard border border-slate-200 dark:border-slate-800 rounded-2xl p-5">
-                        <p class="text-xs uppercase font-bold text-slate-400 dark:text-slate-500 mb-1">Confidence Score</p>
-                        <p id="res-confidence" class="text-3xl font-extrabold text-slate-900 dark:text-white font-tech">96.4%</p>
-                        <div class="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-1.5 mt-3">
-                            <div id="res-confidence-bar" class="h-1.5 rounded-full bg-alert" style="width: 96.4%"></div>
+                    <!-- State 2: Waveform Preview -->
+                    <div id="upload-preview" class="hidden flex flex-col w-full max-w-4xl">
+                        <div class="flex items-center space-x-3 sm:space-x-4 mb-6 px-2 min-w-0">
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-xl flex items-center justify-center border border-primary/20 flex-shrink-0">
+                                <i class="fa-solid fa-file-waveform text-lg sm:text-xl text-primary"></i>
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <h3 id="preview-filename" class="text-base sm:text-lg font-bold text-slate-900 dark:text-white truncate">sample.wav</h3>
+                                <p class="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 font-mono truncate">Ready for probability inference</p>
+                            </div>
+                        </div>
+                        
+                        <div id="waveform-container" class="w-full bg-slate-50 dark:bg-deepbg/80 border border-slate-200 dark:border-white/5 rounded-2xl p-4 mb-6 sm:mb-8 shadow-inner">
+                            <div id="waveform"></div>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
+                            <button id="btn-play-pause" class="bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-900 dark:text-white w-12 h-12 rounded-full flex items-center justify-center transition-colors shadow-sm">
+                                <i id="play-icon" class="fa-solid fa-play ml-1"></i>
+                            </button>
+                            
+                            <div class="flex items-center space-x-3 w-full sm:w-auto">
+                                <button id="btn-cancel" class="flex-1 sm:flex-none text-slate-500 dark:text-slate-400 hover:text-alert font-medium px-4 py-3 sm:py-2 transition-colors text-sm bg-slate-100 dark:bg-deepbg sm:bg-transparent rounded-xl sm:rounded-none">
+                                    Abort
+                                </button>
+                                <button id="btn-scan-now" class="flex-1 sm:flex-none bg-primary hover:bg-blue-600 text-white px-6 sm:px-8 py-3 rounded-xl font-medium tracking-wide transition-all shadow-lg shadow-primary/20 flex items-center justify-center text-sm border border-transparent dark:border-white/10">
+                                    <i class="fa-solid fa-microchip mr-2"></i> Scan
+                                </button>
+                            </div>
                         </div>
                     </div>
-                    <div class="bg-white dark:bg-darkcard border border-slate-200 dark:border-slate-800 rounded-2xl p-5">
-                        <p class="text-xs uppercase font-bold text-slate-400 dark:text-slate-500 mb-1">Risk Evaluation</p>
-                        <p id="res-risk" class="text-xl font-bold text-alert mt-1">High Risk</p>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">Synthetic vocal artifacts detected.</p>
-                    </div>
-                    <div class="bg-white dark:bg-darkcard border border-slate-200 dark:border-slate-800 rounded-2xl p-5 flex flex-col justify-center">
-                        <a href="/history" class="bg-slate-200 dark:bg-slate-800 hover:bg-primary text-slate-800 dark:text-white hover:text-white py-2.5 px-4 rounded-xl text-center font-medium transition-all text-sm flex items-center justify-center">
-                            <i class="fa-solid fa-clock-rotate-left mr-2"></i> View in Scan History
-                        </a>
+
+                    <!-- State 3: Processing -->
+                    <div id="upload-processing" class="hidden flex flex-col items-center justify-center text-center">
+                        <div class="relative w-20 h-20 sm:w-24 sm:h-24 mb-6 sm:mb-8 flex items-center justify-center">
+                            <div class="absolute inset-0 rounded-full border-2 border-slate-200 dark:border-white/10"></div>
+                            <div class="absolute inset-0 rounded-full border-2 border-transparent border-t-primary border-r-primary animate-spin"></div>
+                            <i class="fa-solid fa-crosshairs text-xl sm:text-2xl text-primary animate-pulse"></i>
+                        </div>
+                        <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mb-2">Analyzing Acoustics</h3>
+                        <p id="processing-step" class="text-slate-500 dark:text-slate-400 text-xs sm:text-sm font-mono tracking-wider truncate">Calculating Probability Score...</p>
                     </div>
                 </div>
 
-                <!-- Spectrogram Image Display -->
-                <div class="border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden bg-black/5 dark:bg-black/40">
-                    <div class="bg-slate-200 dark:bg-slate-800 px-4 py-3 border-b border-slate-200 dark:border-slate-700">
-                        <p class="text-xs uppercase font-bold text-slate-700 dark:text-slate-300 tracking-wider"><i class="fa-solid fa-chart-line mr-2"></i> Visual Mel-Spectrogram</p>
+                <!-- Forensic Results Card -->
+                <div id="result-card" class="hidden mt-6 sm:mt-8 bg-white/80 dark:bg-cardbg/80 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-xl transition-all">
+                    
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-200 dark:border-white/10 pb-6 mb-8 gap-4">
+                        <div class="flex items-center space-x-3 sm:space-x-4 flex-1 min-w-0">
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-slate-100 dark:bg-deepbg rounded-xl flex items-center justify-center border border-slate-200 dark:border-white/5 flex-shrink-0">
+                                <i class="fa-solid fa-file-audio text-primary text-lg sm:text-xl"></i>
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <h3 id="res-filename" class="text-base sm:text-lg font-bold text-slate-900 dark:text-white truncate">sample.wav</h3>
+                                <p class="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 truncate">Threat Classification Complete</p>
+                            </div>
+                        </div>
+                        <div id="res-badge" class="px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center border tracking-wide flex-shrink-0 whitespace-nowrap w-full sm:w-auto justify-center">
+                            <i id="res-icon" class="fa-solid fa-shield-halved mr-2"></i>
+                            <span id="res-verdict">Authentic Human</span>
+                        </div>
                     </div>
-                    <div class="p-4">
-                        <img id="res-spectrogram" src="" alt="Audio Spectrogram" class="w-full rounded-xl shadow-lg border border-slate-300 dark:border-slate-700">
+
+                    <!-- Probability Score Grid Layout -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
+                        <div class="bg-slate-50 dark:bg-deepbg/50 border border-slate-200 dark:border-white/5 rounded-2xl p-5 sm:p-6 flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <p class="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 tracking-widest">Probability Score</p>
+                                    <span id="res-tier-tag" class="text-[10px] sm:text-xs font-semibold px-2 sm:px-2.5 py-1 rounded-md bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">Low Risk</span>
+                                </div>
+                                <div class="flex items-baseline space-x-2 mt-2 sm:mt-0">
+                                    <p id="res-confidence" class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white font-tech">12.5%</p>
+                                    <span class="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 hidden sm:inline">Synthetic Probability</span>
+                                </div>
+                            </div>
+                            <div class="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-2 mt-5 sm:mt-6 overflow-hidden">
+                                <div id="res-confidence-bar" class="h-full rounded-full bg-safe transition-all duration-700" style="width: 12.5%"></div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 dark:bg-deepbg/50 border border-slate-200 dark:border-white/5 rounded-2xl p-5 sm:p-6 flex flex-col justify-center">
+                            <p class="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 mb-2 tracking-widest">Risk Classification</p>
+                            <p id="res-risk" class="text-xl sm:text-2xl font-bold text-safe">Low Risk (Real)</p>
+                            <p id="res-description" class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-2">The audio displays natural acoustic patterns consistent with a genuine human speaker.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6 sm:mb-8 text-center text-[10px] sm:text-xs">
+                        <div class="bg-slate-50 dark:bg-deepbg/30 border border-slate-200 dark:border-white/5 rounded-xl p-3 flex sm:block items-center justify-between sm:justify-center">
+                            <span class="block font-bold text-safe sm:mb-0.5">0% – 30%</span>
+                            <span class="text-slate-500 dark:text-slate-400">Low Risk (Real)</span>
+                        </div>
+                        <div class="bg-slate-50 dark:bg-deepbg/30 border border-slate-200 dark:border-white/5 rounded-xl p-3 flex sm:block items-center justify-between sm:justify-center">
+                            <span class="block font-bold text-caution sm:mb-0.5">31% – 70%</span>
+                            <span class="text-slate-500 dark:text-slate-400">Medium (Caution)</span>
+                        </div>
+                        <div class="bg-slate-50 dark:bg-deepbg/30 border border-slate-200 dark:border-white/5 rounded-xl p-3 flex sm:block items-center justify-between sm:justify-center">
+                            <span class="block font-bold text-alert sm:mb-0.5">71% – 100%</span>
+                            <span class="text-slate-500 dark:text-slate-400">High (Critical)</span>
+                        </div>
+                    </div>
+
+                    <div class="border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden bg-slate-50 dark:bg-deepbg/50">
+                        <div class="px-4 sm:px-5 py-3 border-b border-slate-200 dark:border-white/5 flex items-center">
+                            <i class="fa-solid fa-chart-area text-slate-400 mr-2"></i>
+                            <p class="text-[10px] sm:text-xs uppercase font-bold text-slate-600 dark:text-slate-400 tracking-widest">Visual Mel-Spectrogram</p>
+                        </div>
+                        <div class="p-3 sm:p-5">
+                            <img id="res-spectrogram" src="" alt="Audio Spectrogram" class="w-full rounded-xl border border-slate-200 dark:border-white/5">
+                        </div>
                     </div>
                 </div>
+
             </div>
-
         </main>
     </div>
 
-    <!-- UI Logic -->
+    <!-- UI Logic & Mobile Sidebar Toggle -->
     <script>
+        // --- Mobile Sidebar Logic ---
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        // --- Core UI Logic ---
         const dropZone = document.getElementById('drop-zone');
         const audioInput = document.getElementById('audio-input');
         
@@ -241,7 +322,7 @@
             dropZone.addEventListener(eventName, (e) => {
                 e.preventDefault(); e.stopPropagation();
                 if(idleState.classList.contains('hidden') === false) {
-                    dropZone.classList.add('border-primary', 'bg-primary/5');
+                    dropZone.classList.add('border-primary', 'dark:border-primary', 'bg-primary/5');
                 }
             });
         });
@@ -249,7 +330,7 @@
         ['dragleave', 'drop'].forEach(eventName => {
             dropZone.addEventListener(eventName, (e) => {
                 e.preventDefault(); e.stopPropagation();
-                dropZone.classList.remove('border-primary', 'bg-primary/5');
+                dropZone.classList.remove('border-primary', 'dark:border-primary', 'bg-primary/5');
             });
         });
 
@@ -284,14 +365,16 @@
             previewState.classList.remove('hidden');
 
             if (wavesurfer) wavesurfer.destroy();
+            
+            const isDark = document.documentElement.classList.contains('dark');
             wavesurfer = WaveSurfer.create({
                 container: '#waveform',
-                waveColor: '#64748b',
+                waveColor: isDark ? '#475569' : '#94a3b8',
                 progressColor: '#3b82f6',
                 barWidth: 2,
                 barGap: 2,
                 barRadius: 2,
-                height: 80,
+                height: window.innerWidth < 640 ? 50 : 80,
                 cursorColor: 'transparent',
                 responsive: true
             });
@@ -299,7 +382,7 @@
             wavesurfer.load(URL.createObjectURL(file));
 
             wavesurfer.on('finish', () => {
-                document.getElementById('play-icon').className = 'fa-solid fa-play';
+                document.getElementById('play-icon').className = 'fa-solid fa-play ml-1';
             });
         }
 
@@ -311,7 +394,7 @@
                 if(wavesurfer.isPlaying()) {
                     icon.className = 'fa-solid fa-pause';
                 } else {
-                    icon.className = 'fa-solid fa-play';
+                    icon.className = 'fa-solid fa-play ml-1';
                 }
             }
         });
@@ -336,7 +419,7 @@
 
             const stepText = document.getElementById('processing-step');
             setTimeout(() => { stepText.innerText = "Extracting Mel-Frequency Cepstral Coefficients (MFCCs)..."; }, 600);
-            setTimeout(() => { stepText.innerText = "Running Convolutional Neural Network inference..."; }, 1400);
+            setTimeout(() => { stepText.innerText = "Evaluating synthetic probabilities via CNN model..."; }, 1400);
 
             const formData = new FormData();
             formData.append('audio_file', currentFile);
@@ -363,7 +446,6 @@
         function displayScanResult(data) {
             document.getElementById('res-filename').innerText = data.filename;
             document.getElementById('res-confidence').innerText = `${data.confidence}%`;
-            document.getElementById('res-risk').innerText = data.risk_level;
             
             if(data.spectrogram) {
                 document.getElementById('res-spectrogram').src = 'data:image/png;base64,' + data.spectrogram;
@@ -374,21 +456,43 @@
             const verdictIcon = document.getElementById('res-icon');
             const confBar = document.getElementById('res-confidence-bar');
             const riskText = document.getElementById('res-risk');
+            const tierTag = document.getElementById('res-tier-tag');
+            const descText = document.getElementById('res-description');
 
             confBar.style.width = `${data.confidence}%`;
 
-            if (data.result === 'Deepfake') {
-                verdictSpan.innerText = 'Synthetic Deepfake';
-                verdictBadge.className = 'px-5 py-2 rounded-full text-sm font-bold flex items-center border bg-alert/10 text-alert border-alert/20';
-                verdictIcon.className = 'fa-solid fa-triangle-exclamation mr-2 text-alert';
-                confBar.className = 'h-1.5 rounded-full bg-alert';
-                riskText.className = 'text-xl font-bold text-alert mt-1';
+            const score = parseFloat(data.confidence);
+
+            if (score <= 30) {
+                verdictSpan.innerText = 'Authentic Human';
+                verdictBadge.className = 'px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center border tracking-wide flex-shrink-0 whitespace-nowrap bg-safe-50 dark:bg-safe/10 text-safe-600 dark:text-safe border-safe-200 dark:border-safe/20';
+                verdictIcon.className = 'fa-solid fa-circle-check mr-2 text-safe-500 dark:text-safe';
+                confBar.className = 'h-full rounded-full bg-safe transition-all duration-700';
+                riskText.className = 'text-xl sm:text-2xl font-bold text-safe-600 dark:text-safe';
+                riskText.innerText = 'Low Risk (Real)';
+                tierTag.innerText = 'Low Risk';
+                tierTag.className = 'text-[10px] sm:text-xs font-semibold px-2 sm:px-2.5 py-1 rounded-md bg-safe/10 text-safe';
+                descText.innerText = 'The audio displays natural acoustic patterns consistent with a genuine human speaker.';
+            } else if (score <= 70) {
+                verdictSpan.innerText = 'Suspicious Audio';
+                verdictBadge.className = 'px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center border tracking-wide flex-shrink-0 whitespace-nowrap bg-amber-50 dark:bg-caution/10 text-amber-600 dark:text-caution border-amber-200 dark:border-caution/20';
+                verdictIcon.className = 'fa-solid fa-triangle-exclamation mr-2 text-amber-500 dark:text-caution';
+                confBar.className = 'h-full rounded-full bg-caution transition-all duration-700';
+                riskText.className = 'text-xl sm:text-2xl font-bold text-amber-600 dark:text-caution';
+                riskText.innerText = 'Medium Risk (Caution)';
+                tierTag.innerText = 'Caution';
+                tierTag.className = 'text-[10px] sm:text-xs font-semibold px-2 sm:px-2.5 py-1 rounded-md bg-caution/10 text-caution';
+                descText.innerText = 'The audio contains ambiguous spectral anomalies. Exercise caution; manual verification recommended.';
             } else {
-                verdictSpan.innerText = 'Authentic Human Voice';
-                verdictBadge.className = 'px-5 py-2 rounded-full text-sm font-bold flex items-center border bg-safe/10 text-safe border-safe/20';
-                verdictIcon.className = 'fa-solid fa-circle-check mr-2 text-safe';
-                confBar.className = 'h-1.5 rounded-full bg-safe';
-                riskText.className = 'text-xl font-bold text-safe mt-1';
+                verdictSpan.innerText = 'Synthetic Deepfake';
+                verdictBadge.className = 'px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center border tracking-wide flex-shrink-0 whitespace-nowrap bg-alert-50 dark:bg-alert/10 text-alert-600 dark:text-alert border-alert-200 dark:border-alert/20';
+                verdictIcon.className = 'fa-solid fa-shield-virus mr-2 text-alert-500 dark:text-alert';
+                confBar.className = 'h-full rounded-full bg-alert transition-all duration-700';
+                riskText.className = 'text-xl sm:text-2xl font-bold text-alert-600 dark:text-alert';
+                riskText.innerText = 'High Risk (Critical Threat)';
+                tierTag.innerText = 'Critical Threat';
+                tierTag.className = 'text-[10px] sm:text-xs font-semibold px-2 sm:px-2.5 py-1 rounded-md bg-alert/10 text-alert';
+                descText.innerText = 'High probability of synthetic generation. Strong vocal cloning artifacts identified.';
             }
 
             const scanText = document.getElementById('scan-count-text');

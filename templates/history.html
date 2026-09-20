@@ -1,24 +1,33 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scan History | DeepGuard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>DeepGuard | Scan History</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script>
         tailwind.config = { 
             darkMode: 'class', 
             theme: { 
                 extend: { 
-                    colors: { primary: '#3b82f6', alert: '#ef4444', safe: '#10b981', darkbg: '#0a0f1c', darkcard: '#111827' }, 
-                    fontFamily: { sans: ['Inter', 'sans-serif'], tech: ['Orbitron', 'sans-serif'] }
+                    colors: { 
+                        deepbg: '#030712', 
+                        cardbg: '#0B1120',
+                        primary: '#3b82f6', 
+                        alert: '#ef4444', 
+                        safe: '#10b981',
+                        caution: '#f59e0b'
+                    }, 
+                    fontFamily: { 
+                        sans: ['Inter', 'sans-serif'], 
+                        tech: ['Orbitron', 'sans-serif'] 
+                    }
                 } 
             } 
         }
     </script>
-    <!-- RESTORED: Theme Checker Script -->
     <script>
         if (localStorage.getItem('theme') === 'light') {
             document.documentElement.classList.remove('dark');
@@ -43,170 +52,197 @@
             background: #3b82f6; 
         }
         .dark ::-webkit-scrollbar-thumb {
-            background: #334155; 
+            background: #1e293b; 
         }
         .dark ::-webkit-scrollbar-thumb:hover {
             background: #3b82f6;
         }
     </style>
 </head>
-<body class="bg-slate-100 dark:bg-darkbg text-slate-800 dark:text-slate-300 antialiased h-screen overflow-hidden flex flex-col selection:bg-primary/30 relative">
+<body class="bg-slate-50 dark:bg-deepbg text-slate-800 dark:text-slate-300 font-sans antialiased h-screen overflow-hidden flex transition-colors duration-300 selection:bg-primary/30 relative">
 
-    <div class="absolute w-[800px] h-[800px] bg-primary/10 rounded-full blur-[150px] top-[-300px] right-[-100px] pointer-events-none z-0"></div>
-    <div class="absolute w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[150px] bottom-[-200px] left-[-200px] pointer-events-none z-0"></div>
+    <!-- Ambient Background Grid -->
+    <div class="absolute inset-0 z-0 pointer-events-none flex items-center justify-center">
+        <div class="absolute inset-0 hidden dark:block bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMCAwaDQwdjQwaC00MHoiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNMCAzOWg0MHYxSDB6TDM5IDB2NDBoMXoiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wMykiLz48L3N2Zz4=')]"></div>
+        <div class="absolute inset-0 block dark:hidden bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMCAwaDQwdjQwaC00MHoiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNMCAzOWg0MHYxSDB6TDM5IDB2NDBoMXoiIGZpbGw9InJnYmEoMCwwLDAsMC4wMykiLz48L3N2Zz4=')]"></div>
+    </div>
 
-    <!-- Top Navigation -->
-    <nav class="h-20 border-b border-slate-200 dark:border-white/5 bg-white/50 dark:bg-darkcard/50 backdrop-blur-xl relative z-20 flex items-center justify-between px-8 transition-colors duration-300">
-        <div class="flex items-center space-x-3">
-            <i class="fa-solid fa-shield-halved text-primary text-3xl"></i>
-            <span class="text-2xl font-bold text-slate-900 dark:text-white tracking-wider font-tech">DeepGuard</span>
-        </div>
-        <div class="flex items-center space-x-6">
-            <div class="text-right hidden md:block">
-                <p class="text-sm font-semibold text-slate-900 dark:text-white">{{ current_user.username }}</p>
-                <p class="text-xs text-primary">{% if current_user.is_pro %}Pro Tier{% else %}Basic Tier{% endif %}</p>
+    <!-- Full Height Sidebar -->
+    <aside class="w-72 h-full bg-white/80 dark:bg-cardbg/80 backdrop-blur-2xl border-r border-slate-200 dark:border-white/5 flex flex-col justify-between relative z-20 transition-colors duration-300">
+        <div>
+            <!-- Logo Area -->
+            <div class="h-24 flex items-center px-8 border-b border-slate-200 dark:border-white/5">
+                <span class="text-xl font-bold text-slate-900 dark:text-white tracking-wider font-tech pt-1">DEEPGUARD</span>
             </div>
-            <a href="/profile" class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 flex items-center justify-center hover:border-primary transition-colors">
-                <i class="fa-solid fa-user text-slate-600 dark:text-slate-400"></i>
-            </a>
-            <a href="/logout" class="text-slate-400 dark:text-slate-500 hover:text-alert transition-colors" title="Log Out">
-                <i class="fa-solid fa-arrow-right-from-bracket text-xl"></i>
-            </a>
-        </div>
-    </nav>
 
-    <!-- Main Content Area -->
-    <div class="flex-1 flex overflow-hidden relative z-10 p-6 gap-6 max-w-[1600px] w-full mx-auto">
-        
-        <!-- Sidebar -->
-        <aside class="w-72 flex-shrink-0 bg-white/60 dark:bg-darkcard/40 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] p-6 flex flex-col justify-between hidden lg:flex shadow-2xl transition-colors duration-300">
-            <div class="space-y-2">
-                <p class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-4 px-4">Menu</p>
-                <a href="/dashboard" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl font-medium transition-all">
-                    <i class="fa-solid fa-wave-square w-5"></i><span>Audio Scanner</span>
+            <!-- Navigation Links -->
+            <div class="p-6 space-y-2">
+                <p class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4 px-4">Core Engine</p>
+                <a href="/dashboard" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl font-medium transition-all group">
+                    <i class="fa-solid fa-wave-square w-5 text-center group-hover:text-primary transition-colors"></i><span class="text-sm">Audio Scanner</span>
                 </a>
-                <a href="/history" class="flex items-center space-x-4 px-4 py-3 bg-primary/10 text-primary rounded-xl font-medium border border-primary/20 transition-all">
-                    <i class="fa-solid fa-clock-rotate-left w-5"></i><span>Scan History</span>
+                <a href="/history" class="flex items-center space-x-4 px-4 py-3 bg-primary/10 dark:bg-primary/20 text-primary-600 dark:text-primary rounded-xl font-medium border border-primary/20 transition-all">
+                    <i class="fa-solid fa-clock-rotate-left w-5 text-center"></i><span class="text-sm">Scan History</span>
                 </a>
-                <a href="/subscription" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl font-medium transition-all">
-                    <i class="fa-solid fa-crown w-5"></i><span>Subscription</span>
+                <a href="/subscription" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl font-medium transition-all group">
+                    <i class="fa-solid fa-crown w-5 text-center group-hover:text-primary transition-colors"></i><span class="text-sm">Subscription</span>
                 </a>
-                <a href="/profile" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl font-medium transition-all">
-                    <i class="fa-regular fa-id-badge w-5"></i><span>Profile</span>
+                
+                <a href="/profile" class="flex items-center space-x-4 px-4 py-3 mt-6 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl font-medium transition-all group">
+                    <i class="fa-regular fa-id-badge w-5 text-center group-hover:text-primary transition-colors"></i><span class="text-sm">Profile</span>
                 </a>
-                <a href="/settings" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl font-medium transition-all">
-                    <i class="fa-solid fa-gear w-5"></i><span>Settings</span>
+                <a href="/settings" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl font-medium transition-all group">
+                    <i class="fa-solid fa-gear w-5 text-center group-hover:text-primary transition-colors"></i><span class="text-sm">Settings</span>
                 </a>
+
                 {% if current_user.is_admin %}
-                <a href="/admin" class="flex items-center space-x-4 px-4 py-3 mt-4 bg-alert/10 text-alert rounded-xl font-bold border border-alert/20 transition-all hover:bg-alert/20">
-                    <i class="fa-solid fa-lock w-5"></i><span>Admin Panel</span>
+                <a href="/admin" class="flex items-center space-x-4 px-4 py-3 mt-6 bg-alert-50 dark:bg-alert/10 text-alert-600 dark:text-alert rounded-xl font-medium border border-alert/20 transition-all hover:bg-alert-100 dark:hover:bg-alert/20">
+                    <i class="fa-solid fa-lock w-5 text-center"></i><span class="text-sm">Admin Panel</span>
                 </a>
                 {% endif %}
             </div>
+        </div>
 
-            <!-- Usage Widget -->
-            <div class="bg-slate-100/50 dark:bg-darkbg/50 border border-slate-200 dark:border-white/5 rounded-2xl p-5 mt-auto transition-colors duration-300">
-                <div class="flex justify-between items-end mb-2">
-                    <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Daily Scans</span>
-                    <span id="scan-count-text" class="text-xs text-primary font-bold">{% if current_user.is_pro %}Unlimited{% else %}{{ current_user.scans_used }} / 5{% endif %}</span>
-                </div>
-                <div class="w-full bg-slate-300 dark:bg-slate-800 rounded-full h-2 mb-3">
-                    <div id="scan-progress-bar" class="bg-primary h-2 rounded-full transition-all duration-500" style="width: {% if current_user.is_pro %}100%{% else %}{{ (current_user.scans_used / 5) * 100 }}%{% endif %}"></div>
-                </div>
-                {% if not current_user.is_pro %}
-                <a href="/subscription" class="text-xs text-slate-500 dark:text-slate-400 hover:text-primary transition-colors flex items-center">
-                    Upgrade to Pro <i class="fa-solid fa-arrow-right ml-2"></i>
-                </a>
-                {% endif %}
+        <!-- Usage Widget -->
+        <div class="p-6 border-t border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-deepbg/30">
+            <div class="flex justify-between items-end mb-2">
+                <span class="text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Scan Limit</span>
+                <span id="scan-count-text" class="text-xs text-primary font-bold">{% if current_user.is_pro %}Unlimited{% else %}{{ current_user.scans_used }} / 5{% endif %}</span>
             </div>
-        </aside>
-
-        <!-- History Main Area -->
-        <main class="flex-1 flex flex-col bg-white/60 dark:bg-darkcard/40 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] p-8 lg:p-12 shadow-2xl overflow-y-auto transition-colors duration-300">
-            
-            <header class="mb-8">
-                <h1 class="text-3xl font-bold text-slate-900 dark:text-white mb-2">Forensic Scan History</h1>
-                <p class="text-slate-600 dark:text-slate-400">Review past analyses and download official PDF incident reports.</p>
-            </header>
-
-            <!-- Flash Messages for Deletion Confirmation -->
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="mb-6 px-5 py-3 rounded-xl flex items-center justify-between {% if category == 'alert' %}bg-alert/10 text-alert border border-alert/30{% else %}bg-safe/10 text-safe border border-safe/30{% endif %}">
-                            <span class="font-medium"><i class="fa-solid fa-circle-check mr-2"></i> {{ message }}</span>
-                            <button onclick="this.parentElement.style.display='none'" class="hover:opacity-70 transition-opacity"><i class="fa-solid fa-xmark"></i></button>
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-
-            {% if scans|length == 0 %}
-            <div class="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-3xl p-10 text-center transition-colors duration-300">
-                <div class="w-20 h-20 bg-slate-200 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4">
-                    <i class="fa-solid fa-ghost text-3xl text-slate-400 dark:text-slate-500"></i>
-                </div>
-                <h3 class="text-xl font-semibold text-slate-900 dark:text-white mb-2">No scans found</h3>
-                <p class="text-slate-500 mb-6">You haven't analyzed any audio files yet.</p>
-                <a href="/dashboard" class="bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-xl font-semibold transition-all shadow-lg hover:shadow-primary/30">Run First Scan</a>
+            <div class="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-1.5 mb-3 overflow-hidden">
+                <div id="scan-progress-bar" class="bg-primary h-full rounded-full transition-all duration-500" style="width: {% if current_user.is_pro %}100%{% else %}{{ (current_user.scans_used / 5) * 100 }}%{% endif %}"></div>
             </div>
-            {% else %}
-            
-            <!-- Table Container -->
-            <div class="bg-white dark:bg-darkbg/50 rounded-2xl border border-slate-200 dark:border-white/10 overflow-x-auto shadow-sm transition-colors duration-300">
-                <table class="w-full text-left border-collapse whitespace-nowrap min-w-[800px]">
-                    <thead>
-                        <tr class="bg-slate-50 dark:bg-black/20 border-b border-slate-200 dark:border-white/10 text-xs uppercase font-bold text-slate-500 dark:text-slate-400">
-                            <th class="py-4 px-6">Filename</th>
-                            <th class="py-4 px-6">Date / Time</th>
-                            <th class="py-4 px-6">AI Verdict</th>
-                            <th class="py-4 px-6">Confidence</th>
-                            <th class="py-4 px-6 text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-200 dark:divide-white/5">
-                        {% for scan in scans %}
-                        <tr class="hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors group">
-                            <td class="py-4 px-6 font-medium text-slate-900 dark:text-white flex items-center max-w-[300px] truncate">
-                                <i class="fa-solid fa-file-audio text-slate-400 mr-3"></i>
-                                <span class="truncate" title="{{ scan.filename }}">{{ scan.filename }}</span>
-                            </td>
-                            <td class="py-4 px-6 text-sm text-slate-600 dark:text-slate-400">
-                                {{ scan.scan_date.strftime('%Y-%m-%d %H:%M') }}
-                            </td>
-                            <td class="py-4 px-6">
-                                {% if scan.result == 'Deepfake' %}
-                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-alert/10 text-alert border border-alert/20 flex items-center w-max">
-                                    <i class="fa-solid fa-triangle-exclamation mr-1.5"></i> Deepfake
-                                </span>
-                                {% else %}
-                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-safe/10 text-safe border border-safe/20 flex items-center w-max">
-                                    <i class="fa-solid fa-circle-check mr-1.5"></i> Authentic
-                                </span>
-                                {% endif %}
-                            </td>
-                            <td class="py-4 px-6">
-                                <div class="font-tech font-bold text-slate-900 dark:text-white">{{ scan.confidence }}%</div>
-                            </td>
-                            <td class="py-4 px-6 text-right">
-                                <div class="flex items-center justify-end space-x-2">
-                                    <a href="{{ url_for('download_report', scan_id=scan.id) }}" class="text-sm bg-slate-200 dark:bg-slate-800 hover:bg-primary text-slate-700 dark:text-slate-300 hover:text-white px-4 py-2.5 rounded-lg font-semibold transition-all inline-flex items-center shadow-sm">
-                                        <i class="fa-solid fa-file-pdf mr-2"></i> PDF
-                                    </a>
-                                    <form action="{{ url_for('delete_scan', scan_id=scan.id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to permanently delete this scan record?');">
-                                        <button type="submit" class="text-sm bg-slate-200 dark:bg-slate-800 hover:bg-alert text-slate-700 dark:text-slate-300 hover:text-white w-10 h-10 rounded-lg font-semibold transition-all inline-flex items-center justify-center shadow-sm" title="Delete Record">
-                                            <i class="fa-solid fa-trash-can"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+            {% if not current_user.is_pro %}
+            <a href="/subscription" class="text-xs text-slate-500 dark:text-slate-400 hover:text-primary font-medium transition-colors flex items-center group">
+                Upgrade to Pro <i class="fa-solid fa-arrow-right ml-1.5 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all"></i>
+            </a>
             {% endif %}
+        </div>
+    </aside>
 
+    <!-- Main Workspace Area -->
+    <div class="flex-1 flex flex-col relative z-10 h-full overflow-hidden">
+        
+        <header class="h-24 px-10 flex items-center justify-between border-b border-slate-200/50 dark:border-white/5 bg-white/40 dark:bg-cardbg/40 backdrop-blur-xl">
+            <div>
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white">Scan History</h2>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Archived Forensic Reports & PDF Exports</p>
+            </div>
+            
+            <div class="flex items-center space-x-5">
+                <div class="text-right hidden sm:block">
+                    <p class="text-sm font-semibold text-slate-900 dark:text-white">{{ current_user.username }}</p>
+                    <p class="text-xs text-primary font-medium">{% if current_user.is_pro %}Pro Tier{% else %}Basic Tier{% endif %}</p>
+                </div>
+                <div class="h-10 w-px bg-slate-200 dark:bg-white/10 hidden sm:block"></div>
+                <a href="/logout" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-deepbg border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-500 hover:text-alert hover:border-alert/30 transition-all" title="Log Out">
+                    <i class="fa-solid fa-power-off text-sm"></i>
+                </a>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-6 lg:p-10">
+            <div class="max-w-6xl mx-auto">
+
+                <!-- Flash Messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="mb-6 px-5 py-4 rounded-xl flex items-center justify-between shadow-sm {% if category == 'alert' %}bg-alert-50 dark:bg-alert/10 text-alert-600 dark:text-alert border border-alert-200 dark:border-alert/30{% else %}bg-safe-50 dark:bg-safe/10 text-safe-600 dark:text-safe border border-safe-200 dark:border-safe/30{% endif %}">
+                                <span class="font-medium flex items-center"><i class="fa-solid fa-circle-check mr-3"></i> {{ message }}</span>
+                                <button onclick="this.parentElement.style.display='none'" class="hover:opacity-70 transition-opacity"><i class="fa-solid fa-xmark"></i></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                {% if scans|length == 0 %}
+                <div class="w-full bg-white/60 dark:bg-cardbg/40 backdrop-blur-md border border-slate-200 dark:border-white/10 rounded-3xl flex flex-col items-center justify-center p-16 text-center shadow-sm min-h-[50vh]">
+                    <div class="w-20 h-20 bg-slate-100 dark:bg-deepbg border border-slate-200 dark:border-white/10 rounded-2xl flex items-center justify-center mb-6 shadow-inner">
+                        <i class="fa-solid fa-ghost text-3xl text-slate-400 dark:text-slate-500"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">No Scan History Found</h3>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm mb-8 max-w-sm">You haven't analyzed any audio files yet. Your forensic records will appear here.</p>
+                    <a href="/dashboard" class="bg-slate-900 dark:bg-slate-100 hover:bg-primary dark:hover:bg-primary text-white dark:text-slate-900 dark:hover:text-white px-8 py-3 rounded-xl font-medium tracking-wide transition-colors text-sm">
+                        Initialize First Scan
+                    </a>
+                </div>
+                {% else %}
+                
+                <!-- Table Container -->
+                <div class="bg-white/80 dark:bg-cardbg/60 backdrop-blur-xl rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-xl transition-colors duration-300">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse whitespace-nowrap min-w-[900px]">
+                            <thead>
+                                <tr class="bg-slate-50 dark:bg-deepbg/50 border-b border-slate-200 dark:border-white/5 text-[10px] uppercase tracking-widest font-bold text-slate-500 dark:text-slate-400">
+                                    <th class="py-5 px-8">Audio File</th>
+                                    <th class="py-5 px-6">Date / Time</th>
+                                    <th class="py-5 px-6">Risk Classification</th>
+                                    <th class="py-5 px-6">Probability</th>
+                                    <th class="py-5 px-8 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 dark:divide-white/5">
+                                {% for scan in scans %}
+                                {% set score = scan.confidence | float %}
+                                <tr class="hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors group">
+                                    <!-- Filename -->
+                                    <td class="py-5 px-8 font-medium text-slate-900 dark:text-white flex items-center max-w-[300px]">
+                                        <div class="w-10 h-10 rounded-lg bg-slate-100 dark:bg-deepbg flex items-center justify-center mr-4 border border-slate-200 dark:border-white/5">
+                                            <i class="fa-solid fa-file-audio text-primary text-sm"></i>
+                                        </div>
+                                        <span class="truncate block" title="{{ scan.filename }}">{{ scan.filename }}</span>
+                                    </td>
+                                    
+                                    <!-- Date -->
+                                    <td class="py-5 px-6 text-sm text-slate-600 dark:text-slate-400">
+                                        {{ scan.scan_date.strftime('%Y-%m-%d %H:%M') }}
+                                    </td>
+                                    
+                                    <!-- Dynamic 3-Tier Risk Badge -->
+                                    <td class="py-5 px-6">
+                                        {% if score <= 30 %}
+                                        <span class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-safe-50 dark:bg-safe/10 text-safe-600 dark:text-safe border border-safe-200 dark:border-safe/20 flex items-center w-max tracking-wide">
+                                            <i class="fa-solid fa-circle-check mr-2"></i> Low Risk
+                                        </span>
+                                        {% elif score <= 70 %}
+                                        <span class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-amber-50 dark:bg-caution/10 text-amber-600 dark:text-caution border border-amber-200 dark:border-caution/20 flex items-center w-max tracking-wide">
+                                            <i class="fa-solid fa-triangle-exclamation mr-2"></i> Caution
+                                        </span>
+                                        {% else %}
+                                        <span class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-alert-50 dark:bg-alert/10 text-alert-600 dark:text-alert border border-alert-200 dark:border-alert/20 flex items-center w-max tracking-wide">
+                                            <i class="fa-solid fa-shield-virus mr-2"></i> Critical
+                                        </span>
+                                        {% endif %}
+                                    </td>
+                                    
+                                    <!-- Probability Score -->
+                                    <td class="py-5 px-6">
+                                        <div class="font-tech font-bold text-slate-900 dark:text-white tracking-wide">{{ scan.confidence }}%</div>
+                                    </td>
+                                    
+                                    <!-- Actions -->
+                                    <td class="py-5 px-8 text-right">
+                                        <div class="flex items-center justify-end space-x-3">
+                                            <a href="{{ url_for('download_report', scan_id=scan.id) }}" class="text-xs bg-slate-100 dark:bg-deepbg hover:bg-primary dark:hover:bg-primary text-slate-600 dark:text-slate-300 hover:text-white dark:hover:text-white px-4 py-2 rounded-lg font-semibold transition-all inline-flex items-center shadow-sm border border-slate-200 dark:border-white/5 hover:border-primary">
+                                                <i class="fa-solid fa-file-pdf mr-2"></i> PDF
+                                            </a>
+                                            <form action="{{ url_for('delete_scan', scan_id=scan.id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to permanently delete this forensic record?');">
+                                                <button type="submit" class="text-xs bg-slate-100 dark:bg-deepbg hover:bg-alert dark:hover:bg-alert text-slate-600 dark:text-slate-300 hover:text-white dark:hover:text-white w-8 h-8 rounded-lg font-semibold transition-all inline-flex items-center justify-center shadow-sm border border-slate-200 dark:border-white/5 hover:border-alert" title="Delete Record">
+                                                    <i class="fa-solid fa-trash-can"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {% endif %}
+
+            </div>
         </main>
     </div>
 </body>

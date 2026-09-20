@@ -1,19 +1,29 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DeepGuard | Settings</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script>
         tailwind.config = { 
             darkMode: 'class', 
             theme: { 
                 extend: { 
-                    colors: { primary: '#3b82f6', alert: '#ef4444', safe: '#10b981', darkbg: '#0a0f1c', darkcard: '#111827', lightbg: '#f8fafc', lightcard: '#ffffff' }, 
-                    fontFamily: { sans: ['Inter', 'sans-serif'], tech: ['Orbitron', 'sans-serif'] }
+                    colors: { 
+                        deepbg: '#030712', 
+                        cardbg: '#0B1120',
+                        primary: '#3b82f6', 
+                        alert: '#ef4444', 
+                        safe: '#10b981',
+                        caution: '#f59e0b'
+                    }, 
+                    fontFamily: { 
+                        sans: ['Inter', 'sans-serif'], 
+                        tech: ['Orbitron', 'sans-serif'] 
+                    }
                 } 
             } 
         }
@@ -25,186 +35,213 @@
             document.documentElement.classList.add('dark');
         }
     </script>
+    <style>
+        /* Custom Premium Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3b82f6; 
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #1e293b; 
+        }
+        .dark ::-webkit-scrollbar-thumb:hover {
+            background: #3b82f6;
+        }
+    </style>
 </head>
-<body class="bg-slate-100 dark:bg-darkbg text-slate-800 dark:text-slate-300 antialiased h-screen overflow-hidden flex flex-col selection:bg-primary/30 relative transition-colors duration-300">
+<body class="bg-slate-50 dark:bg-deepbg text-slate-800 dark:text-slate-300 font-sans antialiased h-screen overflow-hidden flex transition-colors duration-300 selection:bg-primary/30 relative">
 
-    <div class="absolute w-[800px] h-[800px] bg-primary/10 rounded-full blur-[150px] top-[-300px] right-[-100px] pointer-events-none z-0"></div>
-    <div class="absolute w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[150px] bottom-[-200px] left-[-200px] pointer-events-none z-0"></div>
+    <!-- Ambient Background Grid -->
+    <div class="absolute inset-0 z-0 pointer-events-none flex items-center justify-center">
+        <div class="absolute inset-0 hidden dark:block bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMCAwaDQwdjQwaC00MHoiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNMCAzOWg0MHYxSDB6TDM5IDB2NDBoMXoiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wMykiLz48L3N2Zz4=')]"></div>
+        <div class="absolute inset-0 block dark:hidden bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMCAwaDQwdjQwaC00MHoiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNMCAzOWg0MHYxSDB6TDM5IDB2NDBoMXoiIGZpbGw9InJnYmEoMCwwLDAsMC4wMykiLz48L3N2Zz4=')]"></div>
+    </div>
 
-    <nav class="h-20 border-b border-slate-200 dark:border-white/5 bg-white/50 dark:bg-darkcard/50 backdrop-blur-xl relative z-20 flex items-center justify-between px-8 transition-colors duration-300">
-        <div class="flex items-center space-x-3">
-            <i class="fa-solid fa-shield-halved text-primary text-3xl"></i>
-            <span class="text-2xl font-bold text-slate-900 dark:text-white tracking-wider font-tech">DeepGuard</span>
-        </div>
-        
-        <div class="flex items-center space-x-6">
-            <div class="text-right hidden md:block">
-                <p class="text-sm font-semibold text-slate-900 dark:text-white">{{ current_user.username }}</p>
-                <p class="text-xs text-primary">{% if current_user.is_pro %}Pro Tier{% else %}Basic Tier{% endif %}</p>
+    <!-- Full Height Sidebar -->
+    <aside class="w-72 h-full bg-white/80 dark:bg-cardbg/80 backdrop-blur-2xl border-r border-slate-200 dark:border-white/5 flex flex-col justify-between relative z-20 transition-colors duration-300">
+        <div>
+            <!-- Logo Area -->
+            <div class="h-24 flex items-center px-8 border-b border-slate-200 dark:border-white/5">
+                <span class="text-xl font-bold text-slate-900 dark:text-white tracking-wider font-tech pt-1">DEEPGUARD</span>
             </div>
-            <a href="/profile" class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 flex items-center justify-center cursor-pointer hover:border-primary transition-colors">
-                <i class="fa-solid fa-user text-slate-600 dark:text-slate-400"></i>
-            </a>
-            <a href="/logout" class="text-slate-400 dark:text-slate-500 hover:text-alert transition-colors" title="Log Out">
-                <i class="fa-solid fa-arrow-right-from-bracket text-xl"></i>
-            </a>
-        </div>
-    </nav>
 
-    <div class="flex-1 flex overflow-hidden relative z-10 p-6 gap-6 max-w-[1600px] w-full mx-auto">
-        
-        <aside class="w-72 flex-shrink-0 bg-white/60 dark:bg-darkcard/40 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] p-6 flex flex-col justify-between hidden lg:flex shadow-2xl transition-colors duration-300">
-            <div class="space-y-2">
-                <p class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-4 px-4">Menu</p>
-                
-                <a href="/dashboard" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl font-medium transition-all">
-                    <i class="fa-solid fa-wave-square w-5"></i>
-                    <span>Audio Scanner</span>
+            <!-- Navigation Links -->
+            <div class="p-6 space-y-2">
+                <p class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4 px-4">Core Engine</p>
+                <a href="/dashboard" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl font-medium transition-all group">
+                    <i class="fa-solid fa-wave-square w-5 text-center group-hover:text-primary transition-colors"></i><span class="text-sm">Audio Scanner</span>
+                </a>
+                <a href="/history" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl font-medium transition-all group">
+                    <i class="fa-solid fa-clock-rotate-left w-5 text-center group-hover:text-primary transition-colors"></i><span class="text-sm">Scan History</span>
+                </a>
+                <a href="/subscription" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl font-medium transition-all group">
+                    <i class="fa-solid fa-crown w-5 text-center group-hover:text-primary transition-colors"></i><span class="text-sm">Subscription</span>
                 </a>
                 
-                <a href="/history" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl font-medium transition-all">
-                    <i class="fa-solid fa-clock-rotate-left w-5"></i>
-                    <span>Scan History</span>
+                <a href="/profile" class="flex items-center space-x-4 px-4 py-3 mt-6 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl font-medium transition-all group">
+                    <i class="fa-regular fa-id-badge w-5 text-center group-hover:text-primary transition-colors"></i><span class="text-sm">Profile</span>
                 </a>
-                
-                <a href="/subscription" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl font-medium transition-all">
-                    <i class="fa-solid fa-crown w-5"></i>
-                    <span>Subscription</span>
-                </a>
-                
-                <a href="/profile" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl font-medium transition-all">
-                    <i class="fa-regular fa-id-badge w-5"></i>
-                    <span>Profile</span>
-                </a>
-                
-                <a href="/settings" class="flex items-center space-x-4 px-4 py-3 bg-primary/10 text-primary rounded-xl font-medium border border-primary/20 transition-all">
-                    <i class="fa-solid fa-gear w-5"></i>
-                    <span>Settings</span>
+                <a href="/settings" class="flex items-center space-x-4 px-4 py-3 bg-primary/10 dark:bg-primary/20 text-primary-600 dark:text-primary rounded-xl font-medium border border-primary/20 transition-all">
+                    <i class="fa-solid fa-gear w-5 text-center"></i><span class="text-sm">Settings</span>
                 </a>
 
                 {% if current_user.is_admin %}
-                <a href="/admin" class="flex items-center space-x-4 px-4 py-3 mt-4 bg-alert/10 text-alert rounded-xl font-bold border border-alert/20 transition-all hover:bg-alert/20">
-                    <i class="fa-solid fa-lock w-5"></i>
-                    <span>Admin Panel</span>
+                <a href="/admin" class="flex items-center space-x-4 px-4 py-3 mt-6 bg-alert-50 dark:bg-alert/10 text-alert-600 dark:text-alert rounded-xl font-medium border border-alert/20 transition-all hover:bg-alert-100 dark:hover:bg-alert/20">
+                    <i class="fa-solid fa-lock w-5 text-center"></i><span class="text-sm">Admin Panel</span>
                 </a>
                 {% endif %}
             </div>
+        </div>
 
-            <div class="bg-slate-100/50 dark:bg-darkbg/50 border border-slate-200 dark:border-white/5 rounded-2xl p-5 mt-auto transition-colors duration-300">
-                <div class="flex justify-between items-end mb-2">
-                    <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Daily Scans</span>
-                    <span class="text-xs text-primary font-bold">
-                        {% if current_user.is_pro %}Unlimited{% else %}{{ current_user.scans_used }} / 5{% endif %}
-                    </span>
-                </div>
-                <div class="w-full bg-slate-300 dark:bg-slate-800 rounded-full h-2 mb-3">
-                    <div class="bg-primary h-2 rounded-full transition-all duration-500" style="width: {% if current_user.is_pro %}100%{% else %}{{ (current_user.scans_used / 5) * 100 }}%{% endif %}"></div>
-                </div>
-                {% if not current_user.is_pro %}
-                <a href="/subscription" class="text-xs text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-white transition-colors flex items-center">
-                    Upgrade to Pro <i class="fa-solid fa-arrow-right ml-2"></i>
-                </a>
-                {% endif %}
+        <!-- Usage Widget -->
+        <div class="p-6 border-t border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-deepbg/30">
+            <div class="flex justify-between items-end mb-2">
+                <span class="text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Scan Limit</span>
+                <span id="scan-count-text" class="text-xs text-primary font-bold">{% if current_user.is_pro %}Unlimited{% else %}{{ current_user.scans_used }} / 5{% endif %}</span>
             </div>
-        </aside>
+            <div class="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-1.5 mb-3 overflow-hidden">
+                <div id="scan-progress-bar" class="bg-primary h-full rounded-full transition-all duration-500" style="width: {% if current_user.is_pro %}100%{% else %}{{ (current_user.scans_used / 5) * 100 }}%{% endif %}"></div>
+            </div>
+            {% if not current_user.is_pro %}
+            <a href="/subscription" class="text-xs text-slate-500 dark:text-slate-400 hover:text-primary font-medium transition-colors flex items-center group">
+                Upgrade to Pro <i class="fa-solid fa-arrow-right ml-1.5 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all"></i>
+            </a>
+            {% endif %}
+        </div>
+    </aside>
 
-        <main class="flex-1 flex flex-col bg-white/60 dark:bg-darkcard/40 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] p-8 lg:p-12 shadow-2xl overflow-y-auto transition-colors duration-300">
+    <!-- Main Workspace Area -->
+    <div class="flex-1 flex flex-col relative z-10 h-full overflow-hidden">
+        
+        <header class="h-24 px-10 flex items-center justify-between border-b border-slate-200/50 dark:border-white/5 bg-white/40 dark:bg-cardbg/40 backdrop-blur-xl">
+            <div>
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white">System Settings</h2>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Customize your DeepGuard interface and analysis preferences</p>
+            </div>
             
-            <header class="mb-10">
-                <h1 class="text-3xl font-bold text-slate-900 dark:text-white mb-2">System Settings</h1>
-                <p class="text-slate-600 dark:text-slate-400">Customize your DeepGuard interface and analysis preferences.</p>
-            </header>
-
-            <!-- Flash Messages for Save Confirmation -->
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="mb-6 px-5 py-3 rounded-xl flex items-center justify-between {% if category == 'alert' %}bg-alert/10 text-alert border border-alert/30{% else %}bg-safe/10 text-safe border border-safe/30{% endif %}">
-                            <span class="font-medium"><i class="fa-solid fa-circle-check mr-2"></i> {{ message }}</span>
-                            <button onclick="this.parentElement.style.display='none'" class="hover:opacity-70 transition-opacity"><i class="fa-solid fa-xmark"></i></button>
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-
-            <form method="POST" action="{{ url_for('settings') }}" class="max-w-3xl space-y-8">
-                
-                <!-- Appearance (Theme uses JS, doesn't need to be sent to DB) -->
-                <div class="bg-slate-50 dark:bg-darkbg/50 border border-slate-200 dark:border-white/5 rounded-3xl p-8 transition-colors duration-300">
-                    <h3 class="text-xl font-semibold text-slate-900 dark:text-white mb-6 border-b border-slate-200 dark:border-white/10 pb-4 flex items-center">
-                        <i class="fa-solid fa-palette text-slate-500 dark:text-slate-400 mr-3"></i> Appearance
-                    </h3>
-                    
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="font-medium text-slate-800 dark:text-white">Dark Mode</p>
-                            <p class="text-sm text-slate-500 dark:text-slate-400">Toggle the dark theme for the dashboard interface.</p>
-                        </div>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" id="theme-toggle" class="sr-only peer">
-                            <div class="w-11 h-6 bg-slate-300 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                        </label>
-                    </div>
+            <div class="flex items-center space-x-5">
+                <div class="text-right hidden sm:block">
+                    <p class="text-sm font-semibold text-slate-900 dark:text-white">{{ current_user.username }}</p>
+                    <p class="text-xs text-primary font-medium">{% if current_user.is_pro %}Pro Tier{% else %}Basic Tier{% endif %}</p>
                 </div>
+                <div class="h-10 w-px bg-slate-200 dark:bg-white/10 hidden sm:block"></div>
+                <a href="/logout" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-deepbg border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-500 hover:text-alert hover:border-alert/30 transition-all" title="Log Out">
+                    <i class="fa-solid fa-power-off text-sm"></i>
+                </a>
+            </div>
+        </header>
 
-                <!-- Analysis Preferences -->
-                <div class="bg-slate-50 dark:bg-darkbg/50 border border-slate-200 dark:border-white/5 rounded-3xl p-8 transition-colors duration-300">
-                    <h3 class="text-xl font-semibold text-slate-900 dark:text-white mb-6 border-b border-slate-200 dark:border-white/10 pb-4 flex items-center">
-                        <i class="fa-solid fa-microchip text-slate-500 dark:text-slate-400 mr-3"></i> Analysis Preferences
-                    </h3>
+        <main class="flex-1 overflow-y-auto p-6 lg:p-10">
+            <div class="max-w-4xl mx-auto">
+
+                <!-- Flash Messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="mb-8 px-5 py-4 rounded-xl flex items-center justify-between shadow-sm {% if category == 'alert' %}bg-alert-50 dark:bg-alert/10 text-alert-600 dark:text-alert border border-alert-200 dark:border-alert/30{% else %}bg-safe-50 dark:bg-safe/10 text-safe-600 dark:text-safe border border-safe-200 dark:border-safe/30{% endif %}">
+                                <span class="font-medium flex items-center"><i class="fa-solid {% if category == 'alert' %}fa-triangle-exclamation{% else %}fa-circle-check{% endif %} mr-3"></i> {{ message }}</span>
+                                <button onclick="this.parentElement.style.display='none'" class="hover:opacity-70 transition-opacity"><i class="fa-solid fa-xmark"></i></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <form method="POST" action="{{ url_for('settings') }}" class="space-y-8">
                     
-                    <div class="space-y-6">
-                        <div>
-                            <label class="block font-medium text-slate-800 dark:text-white mb-1">Analysis Mode</label>
-                            <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">Choose the balance between scan speed and detection accuracy.</p>
-                            <select name="scan_mode" class="block w-full px-4 py-3 bg-white dark:bg-darkcard border border-slate-300 dark:border-slate-700 rounded-xl text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
-                                <option value="fast" {% if current_user.scan_mode == 'fast' %}selected{% endif %}>Fast (Quicker scan, potential for lower accuracy)</option>
-                                <option value="standard" {% if current_user.scan_mode == 'standard' %}selected{% endif %}>Standard (Recommended balance)</option>
-                                {% if current_user.is_pro %}
-                                    <option value="pro" {% if current_user.scan_mode == 'pro' %}selected{% endif %}>Pro Deep Scan (Maximum accuracy)</option>
-                                {% else %}
-                                    <option value="pro" disabled>Pro Deep Scan (Maximum accuracy) - Upgrade Required</option>
-                                {% endif %}
-                            </select>
-                        </div>
-                        <div class="flex items-center justify-between pt-2">
+                    <!-- Appearance Card -->
+                    <div class="bg-white/60 dark:bg-cardbg/40 backdrop-blur-xl border border-slate-200 dark:border-white/5 rounded-[2rem] p-8 shadow-sm transition-colors duration-300">
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6 border-b border-slate-200 dark:border-white/10 pb-4 flex items-center">
+                            <i class="fa-solid fa-palette text-slate-400 mr-3"></i> Appearance
+                        </h3>
+                        
+                        <div class="flex items-center justify-between">
                             <div>
-                                <p class="font-medium text-slate-800 dark:text-white">Secure Auto-Delete</p>
-                                <p class="text-sm text-slate-500 dark:text-slate-400">Immediately wipe uploaded audio files from the server after analysis.</p>
+                                <p class="font-bold text-slate-800 dark:text-white">Dark Mode</p>
+                                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Toggle the dark theme for the dashboard interface.</p>
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" name="auto_delete" class="sr-only peer" {% if current_user.auto_delete %}checked{% endif %}>
-                                <div class="w-11 h-6 bg-slate-300 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                                <input type="checkbox" id="theme-toggle" class="sr-only peer">
+                                <div class="w-12 h-6 bg-slate-200 dark:bg-deepbg border border-slate-300 dark:border-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary peer-checked:border-primary"></div>
                             </label>
                         </div>
                     </div>
-                </div>
 
-                <!-- Notifications -->
-                <div class="bg-slate-50 dark:bg-darkbg/50 border border-slate-200 dark:border-white/5 rounded-3xl p-8 transition-colors duration-300">
-                    <h3 class="text-xl font-semibold text-slate-900 dark:text-white mb-6 border-b border-slate-200 dark:border-white/10 pb-4 flex items-center">
-                        <i class="fa-regular fa-bell text-slate-500 dark:text-slate-400 mr-3"></i> Notifications
-                    </h3>
-                    
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="font-medium text-slate-800 dark:text-white">Scan Completion Alerts</p>
-                            <p class="text-sm text-slate-500 dark:text-slate-400">Receive an email notification when your audio analysis is finished.</p>
+                    <!-- Analysis Preferences Card -->
+                    <div class="bg-white/60 dark:bg-cardbg/40 backdrop-blur-xl border border-slate-200 dark:border-white/5 rounded-[2rem] p-8 shadow-sm transition-colors duration-300">
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6 border-b border-slate-200 dark:border-white/10 pb-4 flex items-center">
+                            <i class="fa-solid fa-microchip text-slate-400 mr-3"></i> Analysis Preferences
+                        </h3>
+                        
+                        <div class="space-y-8">
+                            <div>
+                                <label class="block font-bold text-slate-800 dark:text-white mb-1">Analysis Mode</label>
+                                <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">Choose the balance between scan speed and detection accuracy.</p>
+                                <div class="relative">
+                                    <select name="scan_mode" class="block w-full pl-4 pr-10 py-3 bg-slate-50 dark:bg-deepbg/50 border border-slate-200 dark:border-white/10 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all sm:text-sm appearance-none cursor-pointer">
+                                        <option value="fast" {% if current_user.scan_mode == 'fast' %}selected{% endif %}>Fast (Quicker scan, potential for lower accuracy)</option>
+                                        <option value="standard" {% if current_user.scan_mode == 'standard' %}selected{% endif %}>Standard (Recommended balance)</option>
+                                        {% if current_user.is_pro %}
+                                            <option value="pro" {% if current_user.scan_mode == 'pro' %}selected{% endif %}>Pro Deep Scan (Maximum accuracy)</option>
+                                        {% else %}
+                                            <option value="pro" disabled>Pro Deep Scan (Maximum accuracy) - Upgrade Required</option>
+                                        {% endif %}
+                                    </select>
+                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500 dark:text-slate-400">
+                                        <i class="fa-solid fa-chevron-down text-xs"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between pt-2">
+                                <div>
+                                    <p class="font-bold text-slate-800 dark:text-white">Secure Auto-Delete</p>
+                                    <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Immediately wipe uploaded audio files from the server after analysis.</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" name="auto_delete" class="sr-only peer" {% if current_user.auto_delete %}checked{% endif %}>
+                                    <div class="w-12 h-6 bg-slate-200 dark:bg-deepbg border border-slate-300 dark:border-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary peer-checked:border-primary"></div>
+                                </label>
+                            </div>
                         </div>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" name="email_alerts" class="sr-only peer" {% if current_user.email_alerts %}checked{% endif %}>
-                            <div class="w-11 h-6 bg-slate-300 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                        </label>
                     </div>
-                </div>
 
-                <!-- Submit Button -->
-                <div class="flex justify-end pt-4 pb-10">
-                    <button type="submit" class="bg-primary hover:bg-primary/90 text-white px-8 py-3.5 rounded-xl font-semibold transition-all shadow-lg hover:shadow-primary/30 flex items-center">
-                        <i class="fa-solid fa-floppy-disk mr-2"></i> Save Settings
-                    </button>
-                </div>
-            </form>
+                    <!-- Notifications Card -->
+                    <div class="bg-white/60 dark:bg-cardbg/40 backdrop-blur-xl border border-slate-200 dark:border-white/5 rounded-[2rem] p-8 shadow-sm transition-colors duration-300">
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6 border-b border-slate-200 dark:border-white/10 pb-4 flex items-center">
+                            <i class="fa-regular fa-bell text-slate-400 mr-3"></i> Notifications
+                        </h3>
+                        
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="font-bold text-slate-800 dark:text-white">Scan Completion Alerts</p>
+                                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Receive an email notification when your audio analysis is finished.</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" name="email_alerts" class="sr-only peer" {% if current_user.email_alerts %}checked{% endif %}>
+                                <div class="w-12 h-6 bg-slate-200 dark:bg-deepbg border border-slate-300 dark:border-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary peer-checked:border-primary"></div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="flex justify-end pt-2 pb-10">
+                        <button type="submit" class="bg-primary hover:bg-blue-600 text-white px-8 py-3.5 rounded-xl font-medium tracking-wide transition-all shadow-lg shadow-primary/30 flex items-center text-sm border border-transparent dark:border-white/10">
+                            <i class="fa-solid fa-floppy-disk mr-2.5"></i> Save Configurations
+                        </button>
+                    </div>
+                </form>
+
+            </div>
         </main>
     </div>
 

@@ -26,7 +26,6 @@
         }
     </script>
     <script>
-        // Check localStorage to sync theme with index.html
         if (localStorage.getItem('theme') === 'light') {
             document.documentElement.classList.remove('dark');
         } else {
@@ -36,18 +35,13 @@
 </head>
 <body class="bg-slate-50 dark:bg-deepbg text-slate-800 dark:text-slate-300 font-sans antialiased min-h-screen flex items-center justify-center relative overflow-hidden transition-colors duration-300 selection:bg-primary/30">
 
-    <!-- Ambient Background Grid (Adapts to Light/Dark) -->
     <div class="absolute inset-0 z-0 pointer-events-none flex items-center justify-center">
-        <!-- Dark Mode Grid -->
         <div class="absolute inset-0 hidden dark:block bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMCAwaDQwdjQwaC00MHoiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNMCAzOWg0MHYxSDB6TDM5IDB2NDBoMXoiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wMykiLz48L3N2Zz4=')]"></div>
-        <!-- Light Mode Grid -->
         <div class="absolute inset-0 block dark:hidden bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMCAwaDQwdjQwaC00MHoiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNMCAzOWg0MHYxSDB6TDM5IDB2NDBoMXoiIGZpbGw9InJnYmEoMCwwLDAsMC4wMykiLz48L3N2Zz4=')]"></div>
     </div>
 
-    <!-- Signup Card -->
     <div class="w-full max-w-md bg-white/80 dark:bg-cardbg/60 backdrop-blur-2xl border border-slate-200 dark:border-white/5 rounded-3xl p-8 sm:p-10 shadow-2xl relative z-10 mx-4 transition-colors duration-300">
         
-        <!-- Header -->
         <div class="text-center mb-8">
             <a href="{{ url_for('index') }}" class="inline-block mb-4 font-tech text-2xl font-bold tracking-wider text-primary">
                 DEEPGUARD
@@ -56,7 +50,6 @@
             <p class="text-slate-500 dark:text-slate-400 mt-2 text-sm">Join the defense against synthetic audio.</p>
         </div>
 
-        <!-- Flash Messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
@@ -68,10 +61,8 @@
             {% endif %}
         {% endwith %}
 
-        <!-- Form -->
         <form action="{{ url_for('signup') }}" method="POST" class="space-y-5">
             
-            <!-- Username -->
             <div>
                 <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Username</label>
                 <div class="relative">
@@ -84,7 +75,6 @@
                 </div>
             </div>
 
-            <!-- Email -->
             <div>
                 <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Email Address</label>
                 <div class="relative">
@@ -97,7 +87,6 @@
                 </div>
             </div>
 
-            <!-- Password -->
             <div>
                 <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Password</label>
                 <div class="relative">
@@ -114,7 +103,6 @@
                 </div>
             </div>
 
-            <!-- Confirm Password -->
             <div>
                 <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Confirm Password</label>
                 <div class="relative">
@@ -132,16 +120,15 @@
             </div>
 
             <button type="submit" class="w-full bg-primary hover:bg-blue-600 text-white py-3.5 rounded-xl font-medium tracking-wide transition-all shadow-lg shadow-primary/30 mt-4 border border-transparent dark:border-white/10">
-                Initialize Account
+                Create Account
             </button>
         </form>
 
         <p class="text-center text-sm text-slate-500 dark:text-slate-400 mt-8">
-            Already registered? <a href="{{ url_for('login') }}" class="text-primary dark:text-white hover:text-blue-600 dark:hover:text-primary font-medium transition-colors border-b border-primary/30 hover:border-primary pb-0.5">Initialize Login</a>
+            Already registered? <a href="{{ url_for('login') }}" class="text-primary dark:text-white hover:text-blue-600 dark:hover:text-primary font-medium transition-colors border-b border-primary/30 hover:border-primary pb-0.5">Log In</a>
         </p>
     </div>
 
-    <!-- Toggle Password Script -->
     <script>
         function togglePassword(inputId, iconId) {
             const input = document.getElementById(inputId);
