@@ -155,7 +155,7 @@
                 <!-- Dropzone Terminal -->
                 <div id="drop-zone" class="w-full bg-white/60 dark:bg-cardbg/40 backdrop-blur-md border border-slate-200 dark:border-white/10 rounded-2xl sm:rounded-3xl transition-all flex flex-col items-center justify-center p-6 sm:p-10 cursor-pointer relative overflow-hidden min-h-[400px] lg:min-h-[65vh] shadow-sm hover:shadow-lg dark:hover:shadow-primary/5 hover:border-primary/40 dark:hover:border-primary/40 group">
                     
-                    <input type="file" id="audio-input" accept=".wav,.mp3,.ogg,.opus,.m4a,.aac,.flac,.wma,.amr,.webm,audio/*" class="hidden">
+                    <input type="file" id="audio-input" accept=".mpeg,.wav,.mp3,.ogg,.opus,.m4a,.aac,.flac,.wma,.amr,.webm,audio/*" class="hidden">
                     
                     <!-- State 1: Idle -->
                     <div id="upload-idle" class="flex flex-col items-center justify-center text-center">
@@ -343,7 +343,7 @@
         });
 
         function preparePreview(file) {
-            const validExtensions = ['wav', 'mp3', 'ogg', 'opus', 'm4a', 'aac', 'flac', 'wma', 'amr', 'webm'];
+            const validExtensions = ['wav', 'mp3', 'ogg', 'mpeg', 'opus', 'm4a', 'aac', 'flac', 'wma', 'amr', 'webm'];
             const fileExt = file.name.split('.').pop().toLowerCase();
             
             if (!validExtensions.includes(fileExt)) {

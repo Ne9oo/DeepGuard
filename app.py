@@ -34,11 +34,9 @@ app = Flask(__name__)
 # ==========================================
 # VPS ENVIRONMENT TOGGLE & AI MODEL LOADING
 # ==========================================
-# Check if the app is running on the Namecheap server
 IS_VPS = os.environ.get('VPS_ENV') == 'True'
 
 if not IS_VPS:
-    # Local Windows Mode: Load the AI normally
     from tensorflow.keras.models import load_model
     MODEL_PATH = os.path.join(app.root_path, 'deepguard_cnn.h5')
     try:
@@ -48,7 +46,6 @@ if not IS_VPS:
         model = None
         print(f"[-] WARNING: Could not load 'deepguard_cnn.h5' locally. Error: {e}")
 else:
-    # Live Server Mode: Bypass TF to prevent CPU crashes
     model = None
     print("[!] VPS Mode Active: AI loading bypassed for hardware compatibility.")
 
@@ -58,8 +55,8 @@ else:
 limiter = Limiter(
     get_remote_address,
     app=app,
-    default_limits=["200 per day", "50 per hour"], # Global limits for the whole site
-    storage_uri="memory://" # Stores IP tracking in RAM
+    default_limits=["200 per day", "50 per hour"],
+    storage_uri="memory://"
 )
 
 # Configuration
@@ -73,7 +70,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-# SECURED: Pulling credentials from the hidden .env file
 app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
 app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
 app.config['MAIL_DEFAULT_SENDER'] = 'DeepGuard Security <noreply@deepguard.com>'
@@ -84,7 +80,7 @@ s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 # Upload & Storage Configuration
 UPLOAD_FOLDER = os.path.join(app.root_path, 'uploads')
 SPECTROGRAM_FOLDER = os.path.join(app.root_path, 'static', 'spectrograms')
-ALLOWED_EXTENSIONS = {'wav', 'mp3', 'ogg', 'opus', 'm4a', 'aac', 'flac', 'wma', 'amr', 'webm'}
+ALLOWED_EXTENSIONS = {'wav', 'mp3', 'ogg', 'opus', 'm4a', 'aac', 'flac', 'wma', 'amr', 'webm', 'mpeg', 'mp4'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024
 
@@ -98,6 +94,18 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.login_message_category = 'alert'
 
+# ==========================================
+# SYSTEM MAINTENANCE LOCK
+# ==========================================
+MAINTENANCE_MODE = os.environ.get('MAINTENANCE_MODE') == 'True'
+
+@app.before_request
+def check_maintenance_mode():
+    if MAINTENANCE_MODE:
+        # Allow access to static files so the maintenance page styling works
+        if request.endpoint != 'static':
+            return render_template('maintenance.html'), 503
+
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
@@ -110,15 +118,13 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
     
-    # Core Features
     scans_used = db.Column(db.Integer, default=0)
     is_pro = db.Column(db.Boolean, default=False)
     is_admin = db.Column(db.Boolean, default=False)
     is_verified = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
-    # System Settings Preferences
-    scan_mode = db.Column(db.String(20), default='standard') # 'fast', 'standard', 'pro'
+    scan_mode = db.Column(db.String(20), default='standard') 
     auto_delete = db.Column(db.Boolean, default=True)
     email_alerts = db.Column(db.Boolean, default=False)
     
@@ -150,18 +156,8 @@ def requires_verification(f):
 def send_verification_email(user_email):
     token = s.dumps(user_email, salt='email-verify')
     verify_url = url_for('verify_email', token=token, _external=True)
-    
     msg = Message('Verify Your DeepGuard Account', recipients=[user_email])
-    msg.body = f'''Welcome to DeepGuard!
-
-You are one step away from accessing our advanced audio forensics platform. Please verify your email address to activate your account by clicking the secure link below:
-
-{verify_url}
-
-SECURITY WARNING: If you did not sign up for a DeepGuard account, please ignore and delete this email. Do not click the link above.
-
-Stay secure,
-The DeepGuard Team'''
+    msg.body = f'''Welcome to DeepGuard!\nPlease verify your email address to activate your account by clicking the secure link below:\n\n{verify_url}\n\nStay secure,\nThe DeepGuard Team'''
     try:
         mail.send(msg)
     except Exception as e:
@@ -169,32 +165,28 @@ The DeepGuard Team'''
 
 def send_scan_alert_email(user_email, filename, result, risk):
     msg = Message('DeepGuard: Scan Completed', recipients=[user_email])
-    msg.body = f'''Hello!
-    
-Your DeepGuard audio analysis is complete.
-
-File: {filename}
-Verdict: {result}
-Risk Level: {risk}
-
-Log in to your DeepGuard dashboard to view the spectrogram and download the PDF forensic report.
-'''
+    msg.body = f'''Hello!\nYour DeepGuard audio analysis is complete.\nFile: {filename}\nVerdict: {result}\nRisk Level: {risk}\nLog in to your DeepGuard dashboard to view the report.'''
     try:
         mail.send(msg)
     except Exception as e:
         print(f"Scan alert email failed: {e}")
 
 # ==========================================
-# FORENSICS ANALYSIS PIPELINE
+# NEW DYNAMIC TRANSFER LEARNING PIPELINE
 # ==========================================
-def extract_mfcc(audio, sample_rate, max_pad_len=150):
-    mfccs = librosa.feature.mfcc(y=audio, sr=sample_rate, n_mfcc=40)
-    if mfccs.shape[1] > max_pad_len:
-        mfccs = mfccs[:, :max_pad_len]
-    else:
-        pad_width = max_pad_len - mfccs.shape[1]
-        mfccs = np.pad(mfccs, pad_width=((0, 0), (0, pad_width)), mode='constant')
-    return mfccs
+def extract_dynamic_features(y, sr):
+    """Generates a variable-width 3-channel Mel-spectrogram for MobileNetV2."""
+    # 1. Generate Mel-spectrogram
+    S = librosa.feature.melspectrogram(y=y, sr=sr, n_mels=128)
+    S_dB = librosa.power_to_db(S, ref=np.max)
+    
+    # 2. Normalize pixel values between 0 and 1
+    S_norm = (S_dB - S_dB.min()) / (S_dB.max() - S_dB.min() + 1e-8)
+    
+    # 3. Stack into 3 channels (RGB) to match ImageNet architectures
+    S_3channel = np.stack((S_norm,) * 3, axis=-1)
+    
+    return S_3channel
 
 def generate_spectrogram_image(y, sr):
     S = librosa.feature.melspectrogram(y=y, sr=sr, n_mels=128)
@@ -214,14 +206,15 @@ def generate_spectrogram_image(y, sr):
     return base64.b64encode(buf.read()).decode('utf-8')
 
 def analyze_audio_forensics(filepath, mode='standard'):
+    # Dynamic length scaling based on subscription tier
     if mode == 'fast':
-        duration = 3.0
+        duration_limit = 15.0   # Scans up to 15 seconds
     elif mode == 'pro':
-        duration = 10.0
+        duration_limit = 300.0  # Scans up to 5 full minutes
     else:
-        duration = 5.0
+        duration_limit = 60.0   # Scans up to 1 minute
         
-    y, sr = librosa.load(filepath, sr=16000, duration=duration)
+    y, sr = librosa.load(filepath, sr=22050, duration=duration_limit)
     spectrogram_b64 = generate_spectrogram_image(y, sr)
     
     if model is None:
@@ -229,8 +222,9 @@ def analyze_audio_forensics(filepath, mode='standard'):
         is_synthetic = random.choice([True, False])
         fake_prob = random.uniform(0.75, 0.99) if is_synthetic else random.uniform(0.01, 0.25)
     else:
-        features = extract_mfcc(y, sr)
-        features = features.reshape(1, features.shape[0], features.shape[1], 1)
+        # Extract features and add batch dimension: Shape becomes (1, 128, variable_time, 3)
+        features = extract_dynamic_features(y, sr)
+        features = np.expand_dims(features, axis=0) 
         prediction = model.predict(features)
         fake_prob = float(prediction[0][0])
         
@@ -265,7 +259,7 @@ def index():
     return render_template('index.html')
 
 @app.route('/signup', methods=['GET', 'POST'])
-@limiter.limit("5 per minute")  # Protect against bot signups
+@limiter.limit("5 per minute")
 def signup():
     if current_user.is_authenticated: return redirect(url_for('dashboard'))
     if request.method == 'POST':
@@ -292,7 +286,7 @@ def signup():
     return render_template('signup.html')
 
 @app.route('/login', methods=['GET', 'POST'])
-@limiter.limit("10 per minute")  # Protect against brute-force attacks
+@limiter.limit("10 per minute")
 def login():
     if current_user.is_authenticated: return redirect(url_for('dashboard'))
     if request.method == 'POST':
@@ -322,7 +316,7 @@ def unverified():
 
 @app.route('/resend_verification')
 @login_required
-@limiter.limit("3 per minute") # Prevent users from spamming the email server
+@limiter.limit("3 per minute")
 def resend_verification():
     if current_user.is_verified: return redirect(url_for('dashboard'))
     send_verification_email(current_user.email)
@@ -357,7 +351,7 @@ def dashboard():
 @app.route('/scan', methods=['POST'])
 @login_required
 @requires_verification
-@limiter.limit("3 per minute")  # Protect server RAM/CPU from spam uploads
+@limiter.limit("3 per minute")
 def scan_audio():
     if not current_user.is_pro and current_user.scans_used >= 5:
         return jsonify({'success': False, 'message': 'Daily scan limit reached (5/5). Please upgrade to Pro.'}), 403
@@ -373,15 +367,11 @@ def scan_audio():
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], f"{datetime.utcnow().strftime('%Y%m%d%H%M%S')}_{filename}")
     file.save(filepath)
 
-    # Bypass check for live VPS environment
     if model is None:
         print("[!] Running in simulation mode. Audio uploaded successfully.")
 
     try:
-        # Pass the user's preferred scan mode (Fast/Standard/Pro)
-        # This will automatically utilize the simulation fallback we created in analyze_audio_forensics
         analysis = analyze_audio_forensics(filepath, mode=current_user.scan_mode)
-        
         new_scan = ScanRecord(filename=filename, result=analysis['result'], confidence=analysis['confidence'], user_id=current_user.id)
         current_user.scans_used += 1
         db.session.add(new_scan)
@@ -395,11 +385,9 @@ def scan_audio():
         except Exception as e:
             print(f"Failed to save spectrogram image: {e}")
 
-        # APPLY SETTING: Auto-Delete File
         if current_user.auto_delete and os.path.exists(filepath):
             os.remove(filepath)
             
-        # APPLY SETTING: Email Alerts
         if current_user.email_alerts:
             send_scan_alert_email(current_user.email, filename, analysis['result'], analysis['risk_level'])
 
