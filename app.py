@@ -20,7 +20,6 @@ from fpdf import FPDF
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from dotenv import load_dotenv
-import tensorflow as tf
 
 load_dotenv()
 
@@ -46,7 +45,12 @@ limiter = Limiter(
 # ==========================================
 # CONFIGURATION
 # ==========================================
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'deepguard_super_secret_key_2026')
+_secret = os.environ.get('SECRET_KEY')
+if not _secret:
+    import secrets
+    _secret = secrets.token_hex(32)
+    print("[!] WARNING: SECRET_KEY not set in .env - using a temporary random key (logins reset on restart).")
+app.config['SECRET_KEY'] = _secret
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///deepguard.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -175,26 +179,21 @@ def generate_spectrogram_image(y, sr):
     return base64.b64encode(buf.read()).decode('utf-8')
 
 def analyze_audio_forensics(filepath, mode='standard'):
-    y, sr = librosa.load(filepath, sr=22050, duration=5.0)
-    
-    # Keep generating the Mel-Spectrogram exclusively for the visual UI dashboard
-    spectrogram_b64 = generate_spectrogram_image(y, sr)
-    
-    if model is None:
-        fake_prob = 0.5
+    # Scan length depends on the user's plan
+    if mode == 'fast':
+        duration_limit = 15.0
+    elif mode == 'pro':
+        duration_limit = 300.0
     else:
-        # Extract MFCCs exclusively for the CNN to analyze
-        mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40)
-        
-        if mfcc.shape[1] > 216:
-            mfcc = mfcc[:, :216]
-        else:
-            pad_width = 216 - mfcc.shape[1]
-            mfcc = np.pad(mfcc, pad_width=((0, 0), (0, pad_width)), mode='constant')
-            
-        features = np.expand_dims(np.expand_dims(mfcc, axis=-1), axis=0)
-        pred = model.predict(features, verbose=0)
-        fake_prob = float(pred[0][0])
+        duration_limit = 60.0
+
+    y, sr = librosa.load(filepath, sr=22050, duration=duration_limit)
+
+    # Spectrogram image for the dashboard only
+    spectrogram_b64 = generate_spectrogram_image(y, sr)
+
+    # Real detection by the new CNN (returns P(fake) between 0 and 1)
+    fake_prob = predict_fake_prob(detector, y, sr)
         
     if fake_prob > 0.5:
         result = 'Deepfake'
