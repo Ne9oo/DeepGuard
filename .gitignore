@@ -17,3 +17,8 @@ static/spectrograms/
 
 # Training Data (Keep off the live server)
 dataset/
+
+# Ignore raw ASVspoof data and AI model weights
+LA/
+*.pt
+*.h5
