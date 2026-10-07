@@ -1,4 +1,5 @@
 import os
+import json
 import numpy as np
 import librosa
 import librosa.display
@@ -28,8 +29,11 @@ app = Flask(__name__)
 # ==========================================
 # ENVIRONMENT & AI MODEL LOADING
 # ==========================================
-from deepguard_model import load_detector, predict_fake_prob
-detector = load_detector(os.path.join(app.root_path, 'best_model.pt'))
+from deepguard_model import load_detector, analyze_file
+from forensic_report import (sha256_file, probe_audio, build_evidence, build_report_pdf)
+MODEL_PATH = os.path.join(app.root_path, 'best_model.pt')
+detector = load_detector(MODEL_PATH)
+MODEL_SHA256 = sha256_file(MODEL_PATH)
 print("[+] DeepGuard detector loaded.")
 
 # ==========================================
@@ -74,6 +78,8 @@ app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(SPECTROGRAM_FOLDER, exist_ok=True)
+EVIDENCE_FOLDER = os.path.join(app.root_path, 'evidence')  # private, not served to the web
+os.makedirs(EVIDENCE_FOLDER, exist_ok=True)
 
 # Database & Authentication
 db = SQLAlchemy(app)
@@ -193,14 +199,12 @@ def analyze_audio_forensics(filepath, mode='standard'):
     spectrogram_b64 = generate_spectrogram_image(y, sr)
 
     # Real detection by the new CNN (returns P(fake) between 0 and 1)
-    fake_prob = predict_fake_prob(detector, y, sr)
+    details = analyze_file(detector, filepath, duration_limit)
+    fake_prob = details['fake_prob']
+    print(f"[debug] {os.path.basename(filepath)} -> P(fake)={fake_prob:.4f}")
         
-    if fake_prob > 0.5:
-        result = 'Deepfake'
-        confidence = round(fake_prob * 100, 1)
-    else:
-        result = 'Authentic'
-        confidence = round((1 - fake_prob) * 100, 1)
+    result = 'Deepfake' if fake_prob > 0.5 else 'Authentic'
+    confidence = round(fake_prob * 100, 1)  # synthetic probability, matches the dashboard
         
     if fake_prob >= 0.71:
         risk_level = 'High Risk'
@@ -213,7 +217,8 @@ def analyze_audio_forensics(filepath, mode='standard'):
         'result': result,
         'confidence': confidence,
         'risk_level': risk_level,
-        'spectrogram': spectrogram_b64
+        'spectrogram': spectrogram_b64,
+        'details': details
     }
 
 # ==========================================
@@ -339,6 +344,8 @@ def scan_audio():
     filename = secure_filename(file.filename)
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], f"{datetime.utcnow().strftime('%Y%m%d%H%M%S')}_{filename}")
     file.save(filepath)
+    upload_sha256 = sha256_file(filepath)   # evidence fingerprint, taken before any processing
+    upload_size = os.path.getsize(filepath)
 
     try:
         analysis = analyze_audio_forensics(filepath, mode=current_user.scan_mode)
@@ -354,6 +361,19 @@ def scan_audio():
                 img_file.write(image_data)
         except Exception as e:
             print(f"Failed to save spectrogram image: {e}")
+
+        try:
+            evidence = build_evidence(
+                scan_id=new_scan.id, original_filename=filename, sha256=upload_sha256,
+                size_bytes=upload_size, probe=probe_audio(filepath), uploaded_utc=new_scan.scan_date,
+                username=current_user.username, scan_mode=current_user.scan_mode,
+                file_retained=not current_user.auto_delete, details=analysis['details'],
+                result=analysis['result'], confidence=analysis['confidence'],
+                risk_level=analysis['risk_level'], model_sha256=MODEL_SHA256)
+            with open(os.path.join(EVIDENCE_FOLDER, f"scan_{new_scan.id}.json"), 'w', encoding='utf-8') as ef:
+                json.dump(evidence, ef, indent=2)
+        except Exception as e:
+            print(f"Failed to save evidence record: {e}")
 
         if current_user.auto_delete and os.path.exists(filepath):
             os.remove(filepath)
@@ -411,61 +431,31 @@ def download_report(scan_id):
         flash('Unauthorized access.', 'alert')
         return redirect(url_for('history'))
 
-    pdf = FPDF()
-    pdf.add_page()
-    pdf.set_font("Arial", 'B', 22)
-    pdf.cell(0, 15, txt="DeepGuard Security Incident Report", ln=True, align='C')
-    pdf.line(10, 25, 200, 25)
-    pdf.ln(10)
-    pdf.set_font("Arial", 'B', 12)
-    pdf.cell(40, 10, txt="Scan ID:", border=0)
-    pdf.set_font("Arial", '', 12)
-    pdf.cell(0, 10, txt=f"DG-{scan.id:06d}", border=0, ln=True)
-    pdf.set_font("Arial", 'B', 12)
-    pdf.cell(40, 10, txt="Timestamp:", border=0)
-    pdf.set_font("Arial", '', 12)
-    pdf.cell(0, 10, txt=scan.scan_date.strftime("%Y-%m-%d %H:%M:%S UTC"), border=0, ln=True)
-    pdf.set_font("Arial", 'B', 12)
-    pdf.cell(40, 10, txt="Target File:", border=0)
-    pdf.set_font("Arial", '', 12)
-    display_filename = (scan.filename[:65] + '...') if len(scan.filename) > 65 else scan.filename
-    pdf.cell(0, 10, txt=display_filename, border=0, ln=True)
-    pdf.set_font("Arial", 'B', 12)
-    pdf.cell(40, 10, txt="Requested By:", border=0)
-    pdf.set_font("Arial", '', 12)
-    pdf.cell(0, 10, txt=f"{current_user.username}", border=0, ln=True)
-    pdf.ln(10)
-    pdf.set_font("Arial", 'B', 16)
-    pdf.cell(0, 10, txt="Forensic Verdict", ln=True)
-    pdf.line(10, 85, 200, 85)
-    pdf.ln(5)
-    verdict = "Synthetic Deepfake" if scan.result == 'Deepfake' else "Authentic Human Voice"
-    risk = "HIGH RISK" if scan.result == 'Deepfake' else "LOW RISK"
-    pdf.set_font("Arial", 'B', 12)
-    pdf.cell(40, 10, txt="Classification:", border=0)
-    pdf.set_font("Arial", '', 12)
-    pdf.cell(0, 10, txt=verdict, border=0, ln=True)
-    pdf.set_font("Arial", 'B', 12)
-    pdf.cell(40, 10, txt="Confidence:", border=0)
-    pdf.set_font("Arial", '', 12)
-    pdf.cell(0, 10, txt=f"{scan.confidence}%", border=0, ln=True)
-    pdf.set_font("Arial", 'B', 12)
-    pdf.cell(40, 10, txt="Risk Level:", border=0)
-    pdf.set_font("Arial", '', 12)
-    pdf.cell(0, 10, txt=risk, border=0, ln=True)
-    pdf.ln(10)
-    spec_path = os.path.join(app.root_path, 'static', 'spectrograms', f"spectrogram_{scan.id}.png")
-    if os.path.exists(spec_path):
-        pdf.set_font("Arial", 'B', 16)
-        pdf.cell(0, 10, txt="Visual Spectrogram Analysis", ln=True)
-        y_before_img = pdf.get_y()
-        pdf.image(spec_path, x=10, y=y_before_img, w=190)
-        pdf.set_y(y_before_img + 75) 
-        pdf.ln(10)
-    pdf.set_font("Arial", 'I', 10)
-    pdf.multi_cell(0, 6, txt="Disclaimer: DeepGuard AI Analysis.")
-    pdf_bytes = pdf.output(dest='S').encode('latin1')
-    return send_file(io.BytesIO(pdf_bytes), as_attachment=True, download_name=f"DeepGuard_{scan.id}.pdf", mimetype='application/pdf')
+    evidence = None
+    ev_path = os.path.join(EVIDENCE_FOLDER, f"scan_{scan.id}.json")
+    if os.path.exists(ev_path):
+        with open(ev_path, encoding='utf-8') as ef:
+            evidence = json.load(ef)
+    spec_path = os.path.join(SPECTROGRAM_FOLDER, f"spectrogram_{scan.id}.png")
+    owner = db.session.get(User, scan.user_id)
+    pdf_bytes = build_report_pdf(scan, evidence, owner.username if owner else current_user.username, spec_path)
+    return send_file(io.BytesIO(pdf_bytes), as_attachment=True,
+                     download_name=f"DeepGuard_Forensic_Report_DG-{scan.id:06d}.pdf", mimetype='application/pdf')
+
+@app.route('/download_evidence/<int:scan_id>')
+@login_required
+@requires_verification
+def download_evidence(scan_id):
+    scan = ScanRecord.query.get_or_404(scan_id)
+    if scan.user_id != current_user.id and not current_user.is_admin:
+        flash('Unauthorized access.', 'alert')
+        return redirect(url_for('history'))
+    ev_path = os.path.join(EVIDENCE_FOLDER, f"scan_{scan.id}.json")
+    if not os.path.exists(ev_path):
+        flash('No evidence record exists for this scan (it was made before forensic logging).', 'alert')
+        return redirect(url_for('history'))
+    return send_file(ev_path, as_attachment=True,
+                     download_name=f"DeepGuard_Evidence_DG-{scan.id:06d}.json", mimetype='application/json')
 
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required

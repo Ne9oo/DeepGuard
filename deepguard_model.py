@@ -8,6 +8,7 @@ Usage inside app.py:
 """
 import librosa
 import numpy as np
+import soundfile as sf
 import torch
 import torch.nn as nn
 import torchaudio
@@ -86,3 +87,64 @@ def predict_fake_prob(detector, y, sr):
         batch = torch.from_numpy(windows[i:i + 32]).to(device)
         p_real.append(torch.softmax(model(batch), dim=1)[:, 1].cpu())
     return 1.0 - float(torch.cat(p_real).mean())
+
+
+def load_audio_16k(filepath, duration=None):
+    """Load audio exactly like the tested predict.py (soundfile + torchaudio resample).
+    Falls back to librosa for formats soundfile cannot read (.mpeg, .mp4, .m4a ...)."""
+    try:
+        info = sf.info(filepath)
+        frames = int(duration * info.samplerate) if duration else -1
+        wav, sr = sf.read(filepath, frames=frames, dtype="float32")
+        if wav.ndim > 1:
+            wav = wav.mean(axis=1)
+        if sr != SR:
+            wav = torchaudio.functional.resample(torch.from_numpy(wav), sr, SR).numpy()
+        return wav
+    except Exception:
+        y, _ = librosa.load(filepath, sr=SR, duration=duration)
+        return y
+
+
+def predict_fake_prob_file(detector, filepath, duration=None):
+    """Same as predict_fake_prob, but reads the file itself (recommended for the website)."""
+    y = load_audio_16k(filepath, duration)
+    return predict_fake_prob(detector, y, SR)
+
+
+def _window_starts(n):
+    if n < N_SAMPLES:
+        return [0]
+    starts = list(range(0, n - N_SAMPLES + 1, N_SAMPLES))
+    if (n - N_SAMPLES) % N_SAMPLES != 0:
+        starts.append(n - N_SAMPLES)
+    return starts
+
+
+@torch.no_grad()
+def analyze_file(detector, filepath, duration=None):
+    """Full analysis for the forensic report: overall P(fake) plus a score for every window."""
+    model, device = detector
+    y = load_audio_16k(filepath, duration)
+    if len(y) < SR // 2:
+        raise ValueError("Audio is too short to analyse (under 0.5 seconds).")
+    windows = _make_windows(y)
+    starts = _window_starts(len(y))
+    p_fake = []
+    for i in range(0, len(windows), 32):
+        batch = torch.from_numpy(windows[i:i + 32]).to(device)
+        p_fake.append(torch.softmax(model(batch), dim=1)[:, 0].cpu())  # class 0 = fake
+    p_fake = torch.cat(p_fake).numpy()
+    return {
+        "fake_prob": float(p_fake.mean()),
+        "audio_seconds": len(y) / SR,
+        "window_seconds": N_SAMPLES // SR,
+        "model_sample_rate_hz": SR,
+        "windows": [
+            {"index": i,
+             "start_s": round(s / SR, 2),
+             "end_s": round(min(s + N_SAMPLES, len(y)) / SR, 2),
+             "p_fake": round(float(p), 4)}
+            for i, (s, p) in enumerate(zip(starts, p_fake))
+        ],
+    }
