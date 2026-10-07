@@ -22,3 +22,7 @@ dataset/
 LA/
 *.pt
 *.h5
+
+raw_voices/
+raw_fake_voices/
+evidence/
