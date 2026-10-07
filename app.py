@@ -3,7 +3,7 @@ import numpy as np
 import librosa
 import librosa.display
 import matplotlib
-matplotlib.use('Agg') # Headless backend for server use
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import io
 import base64
@@ -17,40 +17,24 @@ from werkzeug.utils import secure_filename
 from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
 from fpdf import FPDF
-
-# Import Rate Limiting Libraries
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-
-# Import dotenv to keep your passwords secure
 from dotenv import load_dotenv
+import tensorflow as tf
 
-# Load environment variables from the .env file
 load_dotenv()
 
-# Initialize the Flask App
 app = Flask(__name__)
 
 # ==========================================
-# VPS ENVIRONMENT TOGGLE & AI MODEL LOADING
+# ENVIRONMENT & AI MODEL LOADING
 # ==========================================
-IS_VPS = os.environ.get('VPS_ENV') == 'True'
-
-if not IS_VPS:
-    from tensorflow.keras.models import load_model
-    MODEL_PATH = os.path.join(app.root_path, 'deepguard_cnn.h5')
-    try:
-        model = load_model(MODEL_PATH)
-        print("[+] DeepGuard CNN Model loaded successfully.")
-    except Exception as e:
-        model = None
-        print(f"[-] WARNING: Could not load 'deepguard_cnn.h5' locally. Error: {e}")
-else:
-    model = None
-    print("[!] VPS Mode Active: AI loading bypassed for hardware compatibility.")
+from deepguard_model import load_detector, predict_fake_prob
+detector = load_detector(os.path.join(app.root_path, 'best_model.pt'))
+print("[+] DeepGuard detector loaded.")
 
 # ==========================================
-# SECURITY: RATE LIMITER INITIALIZATION
+# RATE LIMITER INITIALIZATION
 # ==========================================
 limiter = Limiter(
     get_remote_address,
@@ -59,14 +43,14 @@ limiter = Limiter(
     storage_uri="memory://"
 )
 
-# Configuration
-app.config['SECRET_KEY'] = 'deepguard_super_secret_key_2026'
+# ==========================================
+# CONFIGURATION
+# ==========================================
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'deepguard_super_secret_key_2026')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///deepguard.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# ==========================================
-# EMAIL CONFIGURATION (SMTP)
-# ==========================================
+# Email Configuration
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
@@ -77,7 +61,7 @@ app.config['MAIL_DEFAULT_SENDER'] = 'DeepGuard Security <noreply@deepguard.com>'
 mail = Mail(app)
 s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 
-# Upload & Storage Configuration
+# Storage Directories
 UPLOAD_FOLDER = os.path.join(app.root_path, 'uploads')
 SPECTROGRAM_FOLDER = os.path.join(app.root_path, 'static', 'spectrograms')
 ALLOWED_EXTENSIONS = {'wav', 'mp3', 'ogg', 'opus', 'm4a', 'aac', 'flac', 'wma', 'amr', 'webm', 'mpeg', 'mp4'}
@@ -85,9 +69,9 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-os.makedirs(SPECTROGRAM_FOLDER, exist_ok=True) 
+os.makedirs(SPECTROGRAM_FOLDER, exist_ok=True)
 
-# Initialize Extensions
+# Database & Authentication
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
@@ -101,10 +85,8 @@ MAINTENANCE_MODE = os.environ.get('MAINTENANCE_MODE') == 'True'
 
 @app.before_request
 def check_maintenance_mode():
-    if MAINTENANCE_MODE:
-        # Allow access to static files so the maintenance page styling works
-        if request.endpoint != 'static':
-            return render_template('maintenance.html'), 503
+    if MAINTENANCE_MODE and request.endpoint != 'static':
+        return render_template('maintenance.html'), 503
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -172,23 +154,10 @@ def send_scan_alert_email(user_email, filename, result, risk):
         print(f"Scan alert email failed: {e}")
 
 # ==========================================
-# NEW DYNAMIC TRANSFER LEARNING PIPELINE
+# AUDIO FORENSICS ENGINE (CLEAN RESIZING)
 # ==========================================
-def extract_dynamic_features(y, sr):
-    """Generates a variable-width 3-channel Mel-spectrogram for MobileNetV2."""
-    # 1. Generate Mel-spectrogram
-    S = librosa.feature.melspectrogram(y=y, sr=sr, n_mels=128)
-    S_dB = librosa.power_to_db(S, ref=np.max)
-    
-    # 2. Normalize pixel values between 0 and 1
-    S_norm = (S_dB - S_dB.min()) / (S_dB.max() - S_dB.min() + 1e-8)
-    
-    # 3. Stack into 3 channels (RGB) to match ImageNet architectures
-    S_3channel = np.stack((S_norm,) * 3, axis=-1)
-    
-    return S_3channel
-
 def generate_spectrogram_image(y, sr):
+    """Generates the full visual Mel-spectrogram displayed on the UI dashboard."""
     S = librosa.feature.melspectrogram(y=y, sr=sr, n_mels=128)
     S_dB = librosa.power_to_db(S, ref=np.max)
     
@@ -206,27 +175,26 @@ def generate_spectrogram_image(y, sr):
     return base64.b64encode(buf.read()).decode('utf-8')
 
 def analyze_audio_forensics(filepath, mode='standard'):
-    # Dynamic length scaling based on subscription tier
-    if mode == 'fast':
-        duration_limit = 15.0   # Scans up to 15 seconds
-    elif mode == 'pro':
-        duration_limit = 300.0  # Scans up to 5 full minutes
-    else:
-        duration_limit = 60.0   # Scans up to 1 minute
-        
-    y, sr = librosa.load(filepath, sr=22050, duration=duration_limit)
+    y, sr = librosa.load(filepath, sr=22050, duration=5.0)
+    
+    # Keep generating the Mel-Spectrogram exclusively for the visual UI dashboard
     spectrogram_b64 = generate_spectrogram_image(y, sr)
     
     if model is None:
-        import random
-        is_synthetic = random.choice([True, False])
-        fake_prob = random.uniform(0.75, 0.99) if is_synthetic else random.uniform(0.01, 0.25)
+        fake_prob = 0.5
     else:
-        # Extract features and add batch dimension: Shape becomes (1, 128, variable_time, 3)
-        features = extract_dynamic_features(y, sr)
-        features = np.expand_dims(features, axis=0) 
-        prediction = model.predict(features)
-        fake_prob = float(prediction[0][0])
+        # Extract MFCCs exclusively for the CNN to analyze
+        mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40)
+        
+        if mfcc.shape[1] > 216:
+            mfcc = mfcc[:, :216]
+        else:
+            pad_width = 216 - mfcc.shape[1]
+            mfcc = np.pad(mfcc, pad_width=((0, 0), (0, pad_width)), mode='constant')
+            
+        features = np.expand_dims(np.expand_dims(mfcc, axis=-1), axis=0)
+        pred = model.predict(features, verbose=0)
+        fake_prob = float(pred[0][0])
         
     if fake_prob > 0.5:
         result = 'Deepfake'
@@ -261,7 +229,8 @@ def index():
 @app.route('/signup', methods=['GET', 'POST'])
 @limiter.limit("5 per minute")
 def signup():
-    if current_user.is_authenticated: return redirect(url_for('dashboard'))
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard'))
     if request.method == 'POST':
         username = request.form.get('username')
         email = request.form.get('email')
@@ -288,15 +257,18 @@ def signup():
 @app.route('/login', methods=['GET', 'POST'])
 @limiter.limit("10 per minute")
 def login():
-    if current_user.is_authenticated: return redirect(url_for('dashboard'))
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard'))
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
         user = User.query.filter_by(email=email).first()
         if user and bcrypt.check_password_hash(user.password, password):
             login_user(user)
-            if not user.is_verified: return redirect(url_for('unverified'))
-            if user.is_admin: return redirect(url_for('admin_dashboard'))
+            if not user.is_verified:
+                return redirect(url_for('unverified'))
+            if user.is_admin:
+                return redirect(url_for('admin_dashboard'))
             return redirect(url_for('dashboard'))
         else:
             flash('Login Unsuccessful. Please check email and password.', 'alert')
@@ -311,14 +283,16 @@ def logout():
 @app.route('/unverified')
 @login_required
 def unverified():
-    if current_user.is_verified: return redirect(url_for('dashboard'))
+    if current_user.is_verified:
+        return redirect(url_for('dashboard'))
     return render_template('unverified.html')
 
 @app.route('/resend_verification')
 @login_required
 @limiter.limit("3 per minute")
 def resend_verification():
-    if current_user.is_verified: return redirect(url_for('dashboard'))
+    if current_user.is_verified:
+        return redirect(url_for('dashboard'))
     send_verification_email(current_user.email)
     flash('A new verification email has been sent.', 'safe')
     return redirect(url_for('unverified'))
@@ -366,9 +340,6 @@ def scan_audio():
     filename = secure_filename(file.filename)
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], f"{datetime.utcnow().strftime('%Y%m%d%H%M%S')}_{filename}")
     file.save(filepath)
-
-    if model is None:
-        print("[!] Running in simulation mode. Audio uploaded successfully.")
 
     try:
         analysis = analyze_audio_forensics(filepath, mode=current_user.scan_mode)
@@ -528,11 +499,9 @@ def settings():
         current_user.scan_mode = request.form.get('scan_mode')
         current_user.auto_delete = 'auto_delete' in request.form
         current_user.email_alerts = 'email_alerts' in request.form
-        
         db.session.commit()
         flash('System settings updated and saved successfully!', 'safe')
         return redirect(url_for('settings'))
-        
     return render_template('settings.html')
 
 @app.route('/subscription', methods=['GET', 'POST'])
@@ -564,9 +533,7 @@ def admin_dashboard():
     for i in range(6, -1, -1):
         target_date = today - timedelta(days=i)
         next_date = target_date + timedelta(days=1)
-        
         traffic_labels.append(target_date.strftime('%a')) 
-        
         count = ScanRecord.query.filter(
             ScanRecord.scan_date >= target_date,
             ScanRecord.scan_date < next_date
@@ -575,9 +542,6 @@ def admin_dashboard():
 
     return render_template('admin.html', users=all_users, scans=recent_scans, traffic_labels=traffic_labels, traffic_data=traffic_data)
 
-# ==========================================
-# CUSTOM 404 ERROR HANDLER
-# ==========================================
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
