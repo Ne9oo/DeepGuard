@@ -12,6 +12,7 @@ import soundfile as sf
 import torch
 import torch.nn as nn
 import torchaudio
+torch.backends.mkldnn.enabled = False
 
 SR = 16000
 N_SAMPLES = 4 * SR  # 4-second windows, same as training
