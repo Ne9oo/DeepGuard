@@ -96,6 +96,33 @@
         /* Hide scrollbar globally but keep functionality */
         ::-webkit-scrollbar { display: none; }
         html, body { -ms-overflow-style: none; scrollbar-width: none; }
+        /* ---------- How It Works: animated walkthrough ---------- */
+        .hiw-scene { position:absolute; inset:0; opacity:0; pointer-events:none; transition:opacity .45s ease; }
+        .hiw-scene.is-on { opacity:1; }
+        .hiw-page { position:absolute; inset:0; opacity:0; transform:translateY(10px) scale(.985); transition:opacity .4s ease, transform .4s ease; pointer-events:none; }
+        .hiw-page.is-on { opacity:1; transform:none; }
+        .hiw-pop { opacity:0; transform:translateY(8px) scale(.95); pointer-events:none; transition:opacity .35s ease, transform .35s ease; }
+        .hiw-pop.is-on { opacity:1; transform:none; }
+        .hiw-sheet { transform:translateY(105%); transition:transform .6s cubic-bezier(.2,.8,.2,1); }
+        .hiw-sheet.is-on { transform:translateY(0); }
+        .hiw-step .hiw-desc { max-height:0; opacity:0; overflow:hidden; transition:max-height .5s ease, opacity .4s ease; }
+        .hiw-step.is-active .hiw-desc { max-height:140px; opacity:1; }
+        .hiw-step .hiw-prog { width:0; }
+        .hiw-tap { position:absolute; width:38px; height:38px; margin:-19px 0 0 -19px; border-radius:9999px; background:rgba(59,130,246,.35); border:2px solid rgba(59,130,246,.95); opacity:0; pointer-events:none; z-index:45; }
+        .hiw-tap.go { animation:hiwTap .7s ease-out; }
+        @keyframes hiwTap { 0% { opacity:.95; transform:scale(.4); } 100% { opacity:0; transform:scale(1.7); } }
+        #hiw-rewind { background:repeating-linear-gradient(0deg, rgba(0,0,0,.82) 0, rgba(0,0,0,.82) 3px, rgba(20,20,40,.82) 3px, rgba(20,20,40,.82) 6px); opacity:0; pointer-events:none; transition:opacity .3s ease; }
+        #hiw-rewind.is-on { opacity:1; }
+        #hiw-rewind.is-on .hiw-rw-icon { animation:hiwRw .6s ease-in-out infinite alternate; }
+        @keyframes hiwRw { 0% { transform:translateX(6px); opacity:.6; } 100% { transform:translateX(-6px); opacity:1; } }
+        .hiw-caret { display:inline-block; width:1px; height:12px; background:#94a3b8; margin-left:1px; vertical-align:middle; animation:hiwBlink 1s steps(1) infinite; }
+        @keyframes hiwBlink { 50% { opacity:0; } }
+        #hiw-file { position:absolute; left:50%; bottom:-80px; transform:translateX(-50%); opacity:0; transition:bottom .9s cubic-bezier(.2,.8,.2,1), opacity .4s ease, transform .5s ease; z-index:5; }
+        #hiw-file.fly { bottom:250px; opacity:1; }
+        #hiw-file.drop { bottom:250px; opacity:1; transform:translateX(-50%) scale(.94); }
+        #hiw-drop.is-over { border-style:solid; border-color:#3b82f6; background:rgba(59,130,246,.08); }
+        #hiw-result-scroll { transition:transform 2.4s ease-in-out; }
+        @media (prefers-reduced-motion: reduce) { .hiw-pop, .hiw-page, .hiw-scene, .hiw-sheet { transition:none; } }
     </style>
 </head>
 <body class="bg-lightbg dark:bg-darkbg text-slate-700 dark:text-slate-300 antialiased overflow-x-hidden selection:bg-primary/30 w-full">
@@ -116,6 +143,7 @@
             <!-- Desktop Links -->
             <div class="hidden md:flex space-x-8 text-xs font-semibold tracking-widest uppercase text-slate-500 dark:text-slate-400">
                 <a href="#about" class="hover:text-slate-900 dark:hover:text-white transition-colors">About</a>
+                <a href="#how-it-works" class="hover:text-slate-900 dark:hover:text-white transition-colors">How It Works</a>
                 <a href="#features" class="hover:text-slate-900 dark:hover:text-white transition-colors">Features</a>
                 <a href="#pricing" class="hover:text-slate-900 dark:hover:text-white transition-colors">Pricing</a>
                 <a href="#team" class="hover:text-slate-900 dark:hover:text-white transition-colors">Team</a>
@@ -146,6 +174,7 @@
         <!-- Mobile Dropdown Menu -->
         <div id="mobileMenu" class="absolute top-full left-0 w-full mt-2 bg-white/95 dark:bg-[#1e1e1e]/95 backdrop-blur-xl border border-slate-200 dark:border-border rounded-3xl shadow-xl flex-col space-y-2 p-5 hidden z-40 origin-top transform transition-all duration-300 opacity-0 scale-95">
             <a href="#about" class="mobile-link block px-4 py-3 text-sm font-semibold tracking-widest uppercase text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">About</a>
+            <a href="#how-it-works" class="mobile-link block px-4 py-3 text-sm font-semibold tracking-widest uppercase text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">How It Works</a>
             <a href="#features" class="mobile-link block px-4 py-3 text-sm font-semibold tracking-widest uppercase text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">Features</a>
             <a href="#pricing" class="mobile-link block px-4 py-3 text-sm font-semibold tracking-widest uppercase text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">Pricing</a>
             <a href="#team" class="mobile-link block px-4 py-3 text-sm font-semibold tracking-widest uppercase text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">Team</a>
@@ -249,6 +278,382 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works: animated walkthrough (rewind of the vishing attack) -->
+    <section id="how-it-works" class="py-20 lg:py-32 px-4 sm:px-6 bg-white/40 dark:bg-darkbg/40 backdrop-blur-sm relative overflow-hidden">
+        <div class="max-w-[1200px] mx-auto">
+
+            <div class="text-center mb-12 lg:mb-16 reveal">
+                <h2 class="text-xs font-bold text-primary tracking-widest uppercase mb-4">How To Use</h2>
+                <h3 class="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-5 leading-tight">Rewind. Check the voice. Don't pay.</h3>
+                <p class="max-w-2xl mx-auto text-base sm:text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
+                    Go back to the moment before the transfer. Here is what the victim does differently with DeepGuard, in five steps.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+
+                <!-- Steps -->
+                <div class="order-2 lg:order-1 reveal">
+                    <div class="space-y-3" id="hiw-steps">
+
+                        <button type="button" data-step="0" class="hiw-step is-active w-full text-left rounded-2xl border border-slate-200 dark:border-border bg-white/60 dark:bg-[#1a1a1a]/60 p-4 sm:p-5 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+                            <div class="flex items-center gap-4">
+                                <span class="shrink-0 w-8 h-8 rounded-full bg-primary/10 text-primary text-sm font-bold flex items-center justify-center">1</span>
+                                <span class="text-base sm:text-lg font-semibold text-slate-900 dark:text-white">Don't pay. Save the audio.</span>
+                            </div>
+                            <div class="hiw-desc pl-12 pr-2">
+                                <p class="text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed pt-2">Stop before the money moves. Save the voice note the caller sent you.</p>
+                            </div>
+                            <div class="mt-3 h-[3px] rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden"><div class="hiw-prog h-full bg-primary rounded-full"></div></div>
+                        </button>
+
+                        <button type="button" data-step="1" class="hiw-step w-full text-left rounded-2xl border border-slate-200 dark:border-border bg-white/60 dark:bg-[#1a1a1a]/60 p-4 sm:p-5 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+                            <div class="flex items-center gap-4">
+                                <span class="shrink-0 w-8 h-8 rounded-full bg-primary/10 text-primary text-sm font-bold flex items-center justify-center">2</span>
+                                <span class="text-base sm:text-lg font-semibold text-slate-900 dark:text-white">Open deepguard.my</span>
+                            </div>
+                            <div class="hiw-desc pl-12 pr-2">
+                                <p class="text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed pt-2">Open any browser and log in. Your forensics dashboard opens in seconds.</p>
+                            </div>
+                            <div class="mt-3 h-[3px] rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden"><div class="hiw-prog h-full bg-primary rounded-full"></div></div>
+                        </button>
+
+                        <button type="button" data-step="2" class="hiw-step w-full text-left rounded-2xl border border-slate-200 dark:border-border bg-white/60 dark:bg-[#1a1a1a]/60 p-4 sm:p-5 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+                            <div class="flex items-center gap-4">
+                                <span class="shrink-0 w-8 h-8 rounded-full bg-primary/10 text-primary text-sm font-bold flex items-center justify-center">3</span>
+                                <span class="text-base sm:text-lg font-semibold text-slate-900 dark:text-white">Upload the audio file</span>
+                            </div>
+                            <div class="hiw-desc pl-12 pr-2">
+                                <p class="text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed pt-2">Drag the file in, or tap Select Audio File. WAV, MP3, OGG, M4A, FLAC and more, up to 10 MB.</p>
+                            </div>
+                            <div class="mt-3 h-[3px] rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden"><div class="hiw-prog h-full bg-primary rounded-full"></div></div>
+                        </button>
+
+                        <button type="button" data-step="3" class="hiw-step w-full text-left rounded-2xl border border-slate-200 dark:border-border bg-white/60 dark:bg-[#1a1a1a]/60 p-4 sm:p-5 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+                            <div class="flex items-center gap-4">
+                                <span class="shrink-0 w-8 h-8 rounded-full bg-primary/10 text-primary text-sm font-bold flex items-center justify-center">4</span>
+                                <span class="text-base sm:text-lg font-semibold text-slate-900 dark:text-white">The CNN scans it</span>
+                            </div>
+                            <div class="hiw-desc pl-12 pr-2">
+                                <p class="text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed pt-2">DeepGuard turns the audio into a mel-spectrogram and a neural network scores it for synthetic speech patterns. You get a verdict, a risk level and the spectrogram.</p>
+                            </div>
+                            <div class="mt-3 h-[3px] rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden"><div class="hiw-prog h-full bg-primary rounded-full"></div></div>
+                        </button>
+
+                        <button type="button" data-step="4" class="hiw-step w-full text-left rounded-2xl border border-slate-200 dark:border-border bg-white/60 dark:bg-[#1a1a1a]/60 p-4 sm:p-5 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+                            <div class="flex items-center gap-4">
+                                <span class="shrink-0 w-8 h-8 rounded-full bg-primary/10 text-primary text-sm font-bold flex items-center justify-center">5</span>
+                                <span class="text-base sm:text-lg font-semibold text-slate-900 dark:text-white">Download a forensic report</span>
+                            </div>
+                            <div class="hiw-desc pl-12 pr-2">
+                                <p class="text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed pt-2">Open Scan History and download a PDF with the verdict, the file's SHA-256 fingerprint and the spectrogram. Keep it as evidence when you report the scam.</p>
+                            </div>
+                            <div class="mt-3 h-[3px] rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden"><div class="hiw-prog h-full bg-primary rounded-full"></div></div>
+                        </button>
+
+                    </div>
+                    <p class="mt-6 text-xs text-slate-500 dark:text-slate-500 leading-relaxed text-center lg:text-left">
+                        Demo with sample data. DeepGuard gives a likelihood, not proof, so use it alongside other checks.
+                    </p>
+                </div>
+
+                <!-- Phone -->
+                <div class="order-1 lg:order-2 reveal delay-200 relative w-full flex items-center justify-center overflow-hidden py-4">
+                    <div role="img" aria-label="Animated phone demo: a victim saves a suspicious voice note, scans it on deepguard.my, sees an AI voice verdict and downloads a forensic report."
+                         class="relative w-full max-w-[300px] h-[610px] bg-white dark:bg-[#050505] border-[6px] border-slate-200 dark:border-[#222] rounded-[2.5rem] sm:rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.05)] dark:shadow-none flex flex-col overflow-hidden">
+                        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-6 bg-slate-200 dark:bg-[#222] rounded-b-2xl z-40"></div>
+
+                        <div id="hiw-screen" class="relative flex-1 overflow-hidden">
+
+                            <!-- Scene A: the chat -->
+                            <div class="hiw-scene is-on bg-white dark:bg-[#050505]" data-scene="chat">
+                                <div class="absolute inset-0 flex flex-col">
+                                    <div class="bg-slate-50 dark:bg-[#111] pt-8 pb-3 px-4 border-b border-slate-100 dark:border-[#222] flex items-center space-x-3 z-10">
+                                        <div class="w-10 h-10 bg-slate-300 dark:bg-slate-700 rounded-full flex items-center justify-center">
+                                            <i class="fa-solid fa-user-tie text-white dark:text-slate-400 text-[14px]"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-bold text-slate-900 dark:text-white leading-tight">CEO (Urgent)</p>
+                                            <p class="text-[10px] text-slate-500 font-medium">Online</p>
+                                        </div>
+                                    </div>
+                                    <div class="relative flex-1 p-4 flex flex-col space-y-3 overflow-hidden text-xs">
+                                        <div id="hiw-voice" class="self-start bg-slate-100 dark:bg-[#1a1a1a] text-slate-800 dark:text-slate-300 rounded-2xl rounded-tl-sm p-3 max-w-[85%] transition-shadow">
+                                            <div class="flex items-center space-x-3">
+                                                <i class="fa-solid fa-play text-primary text-lg"></i>
+                                                <div class="flex items-center space-x-[3px] h-4 opacity-60">
+                                                    <div class="w-1 h-full bg-current rounded-full"></div>
+                                                    <div class="w-1 h-1/2 bg-current rounded-full"></div>
+                                                    <div class="w-1 h-3/4 bg-current rounded-full"></div>
+                                                    <div class="w-1 h-full bg-current rounded-full"></div>
+                                                    <div class="w-1 h-1/4 bg-current rounded-full"></div>
+                                                    <div class="w-1 h-3/4 bg-current rounded-full"></div>
+                                                </div>
+                                                <span class="text-[10px] font-mono">0:14</span>
+                                            </div>
+                                        </div>
+                                        <div class="self-end bg-primary text-white rounded-2xl rounded-tr-sm p-3 max-w-[85%] shadow-sm">
+                                            Are you sure? Your voice sounds slightly muffled...
+                                        </div>
+                                        <div class="self-start bg-slate-100 dark:bg-[#1a1a1a] text-slate-800 dark:text-slate-300 rounded-2xl rounded-tl-sm p-3 max-w-[85%]">
+                                            I'm at the airport. Need you to wire $5,000 to the vendor immediately or we lose the contract.
+                                        </div>
+                                        <div id="hiw-done" class="hiw-pop is-on self-end bg-slate-800 dark:bg-white text-white dark:text-slate-900 rounded-xl p-4 w-[85%] flex flex-col items-center shadow-md mt-auto mb-16">
+                                            <i class="fa-solid fa-circle-check text-safe text-2xl mb-2"></i>
+                                            <p class="font-bold text-sm">Transfer Complete</p>
+                                            <p class="text-[10px] opacity-80 mt-1">-$5,000.00 USD</p>
+                                        </div>
+
+                                        <!-- long-press menu -->
+                                        <div id="hiw-menu" class="hiw-pop absolute left-4 top-[66px] w-40 rounded-xl bg-white dark:bg-[#1a1a1a] border border-slate-200 dark:border-[#2a2a2a] shadow-xl z-20 text-[11px] overflow-hidden text-slate-700 dark:text-slate-300">
+                                            <div class="px-3 py-2.5"><i class="fa-solid fa-reply mr-2 opacity-60"></i>Reply</div>
+                                            <div class="px-3 py-2.5"><i class="fa-solid fa-share mr-2 opacity-60"></i>Forward</div>
+                                            <div id="hiw-save" class="px-3 py-2.5 bg-primary/10 text-primary font-semibold"><i class="fa-solid fa-download mr-2"></i>Save audio</div>
+                                            <div class="px-3 py-2.5 text-alert"><i class="fa-solid fa-trash mr-2"></i>Delete</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Scene B: the browser -->
+                            <div class="hiw-scene" data-scene="browser" style="background:#030712;">
+                                <div class="absolute inset-0 flex flex-col">
+                                    <div class="pt-8 pb-2 px-3 z-10" style="background:#0B1120; border-bottom:1px solid #1e293b;">
+                                        <div class="flex items-center gap-2 rounded-full px-3 py-1.5" style="background:#030712; border:1px solid #1e293b;">
+                                            <i class="fa-solid fa-lock text-[9px] text-safe"></i>
+                                            <span class="text-[11px] text-slate-200 font-medium tracking-wide"><span id="hiw-url"></span><span class="hiw-caret"></span></span>
+                                        </div>
+                                        <div class="h-[2px] mt-2 overflow-hidden rounded"><div id="hiw-load" class="h-full bg-primary" style="width:0;"></div></div>
+                                    </div>
+
+                                    <div class="relative flex-1 overflow-hidden">
+
+                                        <!-- blank tab -->
+                                        <div class="hiw-page is-on" data-page="blank">
+                                            <div class="h-full flex flex-col items-center justify-center text-slate-600">
+                                                <i class="fa-solid fa-magnifying-glass text-2xl mb-2 opacity-60"></i>
+                                                <p class="text-[10px]">New tab</p>
+                                            </div>
+                                        </div>
+
+                                        <!-- dashboard, empty -->
+                                        <div class="hiw-page" data-page="dash">
+                                            <div class="px-3 pt-3">
+                                                <div class="flex items-center justify-between mb-3">
+                                                    <span class="font-tech text-[11px] tracking-widest text-white">DEEPGUARD</span>
+                                                    <span class="flex items-center gap-2"><span class="text-[9px] text-slate-400">Pro Tier</span><i class="fa-solid fa-bars text-slate-400 text-xs"></i></span>
+                                                </div>
+                                                <p class="text-sm font-bold text-white leading-tight">Forensics Terminal</p>
+                                                <p class="text-[9px] text-slate-500 mb-3">CNN Interface &amp; Probability Analysis</p>
+                                                <div id="hiw-drop" class="relative rounded-2xl border border-dashed h-[330px] flex flex-col items-center justify-center text-center px-4 transition" style="background:#0B1120; border-color:rgba(59,130,246,.4);">
+                                                    <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-3" style="background:#030712; border:1px solid #1e293b;"><i class="fa-solid fa-arrow-up-from-bracket text-primary"></i></div>
+                                                    <p class="text-[13px] font-bold text-white mb-1">Initialize Scan Sequence</p>
+                                                    <p class="text-[9px] text-slate-400 mb-3 leading-snug">Drag and drop a suspected audio file, or tap to browse.</p>
+                                                    <span class="bg-white text-slate-900 text-[10px] font-semibold px-3 py-1.5 rounded-lg">Select Audio File</span>
+                                                    <p class="text-[8px] text-slate-600 mt-3">WAV, MP3, OGG, M4A, FLAC and more</p>
+                                                </div>
+                                            </div>
+                                            <div id="hiw-file" class="rounded-xl px-3 py-2 w-[210px]" style="background:#111827; border:1px solid #334155; box-shadow:0 10px 25px rgba(0,0,0,.5);">
+                                                <div class="flex items-center gap-2">
+                                                    <span class="w-7 h-7 rounded-lg bg-primary/15 text-primary flex items-center justify-center text-[11px]"><i class="fa-solid fa-file-audio"></i></span>
+                                                    <span class="min-w-0">
+                                                        <span class="block text-[10px] font-semibold text-white truncate">ceo_voice_note.ogg</span>
+                                                        <span class="block text-[8px] text-slate-400">14 KB</span>
+                                                    </span>
+                                                </div>
+                                                <div class="mt-2 h-[3px] rounded-full overflow-hidden" style="background:#1e293b;"><div id="hiw-up" class="h-full bg-primary" style="width:0; transition:width 1.4s ease;"></div></div>
+                                            </div>
+                                        </div>
+
+                                        <!-- analysing -->
+                                        <div class="hiw-page" data-page="scan">
+                                            <div class="h-full flex flex-col items-center justify-center px-6 text-center">
+                                                <div class="relative w-16 h-16 mb-4">
+                                                    <div class="absolute inset-0 rounded-full border-2 border-primary/20"></div>
+                                                    <div class="absolute inset-0 rounded-full border-2 border-transparent border-t-primary animate-spin"></div>
+                                                    <span class="absolute inset-0 flex items-center justify-center"><i class="fa-solid fa-wave-square text-primary"></i></span>
+                                                </div>
+                                                <p class="text-[14px] font-bold text-white mb-1">Analyzing Acoustics</p>
+                                                <p id="hiw-status" class="text-[9px] text-slate-400 h-3 mb-4">Decoding audio...</p>
+                                                <div class="w-full h-1.5 rounded-full overflow-hidden" style="background:#1e293b;"><div id="hiw-bar" class="h-full bg-primary rounded-full" style="width:0;"></div></div>
+                                            </div>
+                                        </div>
+
+                                        <!-- result -->
+                                        <div class="hiw-page" data-page="result">
+                                            <div id="hiw-result-scroll" class="px-3 pt-3 pb-4 space-y-2.5">
+                                                <div class="flex items-center justify-between gap-2">
+                                                    <div class="flex items-center gap-2 min-w-0">
+                                                        <span class="shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-primary text-[12px]" style="background:#0B1120; border:1px solid #1e293b;"><i class="fa-solid fa-file-audio"></i></span>
+                                                        <span class="min-w-0">
+                                                            <span class="block text-[11px] font-bold text-white truncate">ceo_voice_note.ogg</span>
+                                                            <span class="block text-[8px] text-slate-500">Threat Classification Complete</span>
+                                                        </span>
+                                                    </div>
+                                                    <span class="shrink-0 text-[9px] font-semibold text-alert px-2 py-1 rounded-lg" style="background:rgba(239,68,68,.1); border:1px solid rgba(239,68,68,.3);"><i class="fa-solid fa-shield-halved mr-1"></i>Synthetic Deepfake</span>
+                                                </div>
+
+                                                <div class="rounded-xl p-3" style="background:#0B1120; border:1px solid #1e293b;">
+                                                    <div class="flex items-center justify-between mb-1">
+                                                        <span class="text-[8px] font-bold tracking-widest text-slate-500">PROBABILITY SCORE</span>
+                                                        <span class="text-[8px] font-semibold text-alert px-1.5 py-0.5 rounded" style="background:rgba(239,68,68,.12);">Critical Threat</span>
+                                                    </div>
+                                                    <div class="flex items-baseline gap-1.5">
+                                                        <span class="font-tech text-3xl font-bold text-white"><span id="hiw-num">0.0</span>%</span>
+                                                        <span class="text-[8px] text-slate-400">Synthetic Probability</span>
+                                                    </div>
+                                                    <div class="mt-2 h-1.5 rounded-full overflow-hidden" style="background:#1e293b;"><div id="hiw-prob" class="h-full bg-alert rounded-full" style="width:0; transition:width 1.4s ease;"></div></div>
+                                                </div>
+
+                                                <div class="rounded-xl p-3" style="background:#0B1120; border:1px solid #1e293b;">
+                                                    <p class="text-[8px] font-bold tracking-widest text-slate-500 mb-1">RISK CLASSIFICATION</p>
+                                                    <p class="text-[14px] font-bold text-alert leading-tight mb-1">High Risk (Critical Threat)</p>
+                                                    <p class="text-[9px] text-slate-400 leading-snug">High probability of synthetic generation. Strong vocal cloning artifacts identified.</p>
+                                                </div>
+
+                                                <div class="grid grid-cols-3 gap-1.5 text-center">
+                                                    <div class="rounded-lg py-1.5" style="background:#0B1120; border:1px solid #1e293b;"><p class="text-[7px] font-bold text-safe">0% - 30%</p><p class="text-[7px] text-slate-500">Low Risk</p></div>
+                                                    <div class="rounded-lg py-1.5" style="background:#0B1120; border:1px solid #1e293b;"><p class="text-[7px] font-bold text-caution">31% - 70%</p><p class="text-[7px] text-slate-500">Caution</p></div>
+                                                    <div class="rounded-lg py-1.5" style="background:#0B1120; border:1px solid #1e293b;"><p class="text-[7px] font-bold text-alert">71% - 100%</p><p class="text-[7px] text-slate-500">Critical</p></div>
+                                                </div>
+
+                                                <div class="rounded-xl p-3" style="background:#0B1120; border:1px solid #1e293b;">
+                                                    <p class="text-[8px] font-bold tracking-widest text-slate-500 mb-2"><i class="fa-solid fa-chart-area mr-1"></i>VISUAL MEL-SPECTROGRAM</p>
+                                                    <canvas id="hiw-spec" class="w-full rounded-md block" style="height:110px; background:#000;"></canvas>
+                                                    <div class="flex justify-between text-[7px] text-slate-500 mt-1"><span>0 s</span><span>Time</span><span>4.5 s</span></div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- scan history -->
+                                        <div class="hiw-page" data-page="history">
+                                            <div class="px-3 pt-3">
+                                                <div class="flex items-center justify-between mb-3">
+                                                    <span class="font-tech text-[11px] tracking-widest text-white">DEEPGUARD</span>
+                                                    <i class="fa-solid fa-bars text-slate-400 text-xs"></i>
+                                                </div>
+                                                <p class="text-sm font-bold text-white leading-tight">Scan History</p>
+                                                <p class="text-[9px] text-slate-500 mb-3">Archived Forensic Reports &amp; PDF Exports</p>
+
+                                                <div class="rounded-xl overflow-hidden" style="background:#0B1120; border:1px solid #1e293b;">
+                                                    <div class="flex items-center gap-2 px-3 py-2.5" style="background:rgba(59,130,246,.06);">
+                                                        <i class="fa-solid fa-file-audio text-primary text-[11px]"></i>
+                                                        <span class="min-w-0 flex-1">
+                                                            <span class="block text-[10px] font-semibold text-white truncate">ceo_voice_note.ogg</span>
+                                                            <span class="block text-[8px] text-slate-500">Just now</span>
+                                                        </span>
+                                                        <span class="text-[8px] font-semibold text-alert px-1.5 py-0.5 rounded" style="background:rgba(239,68,68,.12);">High Risk</span>
+                                                        <span class="font-tech text-[10px] text-white w-9 text-right">97.3%</span>
+                                                        <span id="hiw-pdf" class="text-[8px] font-semibold text-slate-200 px-2 py-1 rounded-md" style="background:#111827; border:1px solid #334155;"><i class="fa-solid fa-file-pdf mr-1"></i>PDF</span>
+                                                    </div>
+                                                    <div class="flex items-center gap-2 px-3 py-2.5" style="border-top:1px solid #1e293b;">
+                                                        <i class="fa-solid fa-file-audio text-slate-500 text-[11px]"></i>
+                                                        <span class="min-w-0 flex-1">
+                                                            <span class="block text-[10px] font-semibold text-slate-300 truncate">team_meeting.wav</span>
+                                                            <span class="block text-[8px] text-slate-500">Yesterday</span>
+                                                        </span>
+                                                        <span class="text-[8px] font-semibold text-safe px-1.5 py-0.5 rounded" style="background:rgba(16,185,129,.12);">Low Risk</span>
+                                                        <span class="font-tech text-[10px] text-slate-300 w-9 text-right">4.2%</span>
+                                                        <span class="text-[8px] font-semibold text-slate-400 px-2 py-1 rounded-md" style="background:#111827; border:1px solid #1e293b;"><i class="fa-solid fa-file-pdf mr-1"></i>PDF</span>
+                                                    </div>
+                                                    <div class="flex items-center gap-2 px-3 py-2.5" style="border-top:1px solid #1e293b;">
+                                                        <i class="fa-solid fa-file-audio text-slate-500 text-[11px]"></i>
+                                                        <span class="min-w-0 flex-1">
+                                                            <span class="block text-[10px] font-semibold text-slate-300 truncate">voice_memo.mp3</span>
+                                                            <span class="block text-[8px] text-slate-500">2 days ago</span>
+                                                        </span>
+                                                        <span class="text-[8px] font-semibold text-safe px-1.5 py-0.5 rounded" style="background:rgba(16,185,129,.12);">Low Risk</span>
+                                                        <span class="font-tech text-[10px] text-slate-300 w-9 text-right">7.6%</span>
+                                                        <span class="text-[8px] font-semibold text-slate-400 px-2 py-1 rounded-md" style="background:#111827; border:1px solid #1e293b;"><i class="fa-solid fa-file-pdf mr-1"></i>PDF</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Rewind overlay -->
+                            <div id="hiw-rewind" class="absolute inset-0 z-30 flex flex-col items-center justify-center text-center">
+                                <i class="hiw-rw-icon fa-solid fa-backward text-white text-5xl mb-4"></i>
+                                <p class="text-white font-bold tracking-[0.3em] text-sm">REWIND</p>
+                                <p class="text-slate-300 text-[10px] mt-2">Back to before the transfer...</p>
+                            </div>
+
+                            <!-- Forensic report sheet -->
+                            <div id="hiw-report" class="hiw-sheet absolute inset-x-3 bottom-0 top-14 z-30 rounded-t-2xl bg-white text-slate-900 shadow-[0_-10px_30px_rgba(0,0,0,0.4)] overflow-hidden">
+                                <div class="px-3 py-2.5 text-white" style="background:#0f172a;">
+                                    <p class="font-tech text-[10px] tracking-widest">DEEPGUARD</p>
+                                    <p class="text-[8px] text-slate-300">Digital Audio Forensic Examination Report</p>
+                                </div>
+                                <div class="px-3 pt-3 pb-2 space-y-1.5 text-[8px]">
+                                    <div class="flex gap-2"><span class="w-14 font-bold text-slate-600">Report No.</span><span>DG-000123</span></div>
+                                    <div class="flex gap-2"><span class="w-14 font-bold text-slate-600">File</span><span>ceo_voice_note.ogg</span></div>
+                                    <div class="flex gap-2"><span class="w-14 font-bold text-slate-600 shrink-0">SHA-256</span><span class="font-mono break-all text-[7px] leading-snug">9f2c7a1eb3d04c58a6e1f0d9b277c43e5a18d6f02b9c34e7d1a05f8c63b2e41a</span></div>
+                                </div>
+                                <div class="mx-3 rounded-lg px-3 py-2 text-white" style="background:#c0392b;">
+                                    <p class="text-[10px] font-bold">Synthetic Deepfake</p>
+                                    <p class="text-[8px] opacity-90">HIGH RISK &nbsp;|&nbsp; Synthetic probability 97.3%</p>
+                                </div>
+                                <div class="px-3 pt-3">
+                                    <p class="text-[8px] font-bold text-slate-600 mb-1">Segment-level analysis</p>
+                                    <div class="flex items-end gap-1 h-12 rounded-md px-2 pb-1" style="background:#f1f5f9;">
+                                        <div class="flex-1 rounded-sm" style="height:92%; background:#c0392b;"></div>
+                                        <div class="flex-1 rounded-sm" style="height:97%; background:#c0392b;"></div>
+                                        <div class="flex-1 rounded-sm" style="height:99%; background:#c0392b;"></div>
+                                        <div class="flex-1 rounded-sm" style="height:95%; background:#c0392b;"></div>
+                                    </div>
+                                    <div class="mt-3 space-y-1.5">
+                                        <div class="h-1.5 rounded bg-slate-200 w-full"></div>
+                                        <div class="h-1.5 rounded bg-slate-200 w-5/6"></div>
+                                        <div class="h-1.5 rounded bg-slate-200 w-2/3"></div>
+                                    </div>
+                                    <p class="text-[7px] text-slate-500 mt-3 leading-snug">Includes methodology, limitations and integrity verification steps.</p>
+                                </div>
+                            </div>
+
+                            <!-- toasts / banners -->
+                            <div id="hiw-toast1" class="hiw-pop absolute bottom-6 inset-x-0 z-30 flex justify-center">
+                                <div class="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-4 py-2 rounded-full flex items-center gap-2 shadow-lg">
+                                    <i class="fa-solid fa-circle-check text-safe text-[12px]"></i>
+                                    <p class="text-[10px] font-bold leading-none">Audio saved to phone</p>
+                                </div>
+                            </div>
+                            <div id="hiw-toast-dl" class="hiw-pop absolute bottom-6 inset-x-0 z-20 flex justify-center">
+                                <div class="px-4 py-2 rounded-full flex items-center gap-2 shadow-lg" style="background:#111827; border:1px solid #334155;">
+                                    <i class="fa-solid fa-file-arrow-down text-primary text-[12px]"></i>
+                                    <p class="text-[10px] font-bold leading-none text-white">Forensic report downloaded</p>
+                                </div>
+                            </div>
+                            <div id="hiw-fail" class="hiw-pop is-on absolute bottom-6 inset-x-0 z-20 flex justify-center">
+                                <div class="bg-alert px-4 py-2 rounded-full flex items-center space-x-2 shadow-[0_5px_15px_rgba(239,68,68,0.3)]">
+                                    <i class="fa-solid fa-triangle-exclamation text-white text-[12px]"></i>
+                                    <p class="text-white text-[10px] font-bold uppercase tracking-wider leading-none mt-[1px]">Vishing Attack Successful</p>
+                                </div>
+                            </div>
+                            <div id="hiw-success" class="hiw-pop absolute bottom-6 inset-x-0 z-40 flex justify-center">
+                                <div class="bg-safe px-4 py-2 rounded-full flex items-center space-x-2 shadow-[0_5px_15px_rgba(16,185,129,0.35)]">
+                                    <i class="fa-solid fa-circle-check text-white text-[12px]"></i>
+                                    <p class="text-white text-[10px] font-bold uppercase tracking-wider leading-none mt-[1px]">Scam avoided. Evidence ready.</p>
+                                </div>
+                            </div>
+
+                            <div id="hiw-tap" class="hiw-tap"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="mt-12 flex justify-center reveal">
+                <a href="/signup" class="inline-flex items-center justify-center px-8 py-3.5 text-sm sm:text-base font-medium rounded-full bg-primary hover:bg-primaryHover text-white transition-colors shadow-md">
+                    Try It Free <i class="fa-solid fa-arrow-right ml-3 text-sm"></i>
+                </a>
             </div>
         </div>
     </section>
@@ -722,6 +1127,206 @@
                 });
             });
         });
+    </script>
+    <!-- How It Works: walkthrough controller -->
+    <script>
+    (function () {
+        const root = document.getElementById('how-it-works');
+        if (!root) return;
+
+        const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const $ = (id) => document.getElementById(id);
+        const scenes = Array.from(root.querySelectorAll('.hiw-scene'));
+        const pages = Array.from(root.querySelectorAll('.hiw-page'));
+        const stepEls = Array.from(root.querySelectorAll('.hiw-step'));
+        const screen = $('hiw-screen');
+
+        let timers = [], cur = -1, inView = false, countId = 0;
+
+        /* ---------- helpers ---------- */
+        const at = (ms, fn) => timers.push(setTimeout(fn, reduce ? 0 : ms));
+        const clearAll = () => { timers.forEach(clearTimeout); timers = []; countId++; };
+        const show = (id, on) => { const n = $(id); if (n) n.classList.toggle('is-on', !!on); };
+        const showScene = (name) => scenes.forEach(s => s.classList.toggle('is-on', s.dataset.scene === name));
+        const showPage = (name) => pages.forEach(p => p.classList.toggle('is-on', p.dataset.page === name));
+        const setUrl = (t) => { $('hiw-url').textContent = t; };
+
+        function typeText(text, start, per) {
+            for (let i = 0; i < text.length; i++) at(start + i * per, () => setUrl(text.slice(0, i + 1)));
+        }
+
+        function load(pct, instant) {
+            const bar = $('hiw-load');
+            bar.style.transition = instant ? 'none' : 'width .6s ease';
+            bar.style.width = pct + '%';
+        }
+
+        function tap(target) {
+            const t = $('hiw-tap');
+            const a = target.getBoundingClientRect(), b = screen.getBoundingClientRect();
+            t.style.left = (a.left - b.left + a.width / 2) + 'px';
+            t.style.top = (a.top - b.top + a.height / 2) + 'px';
+            t.classList.remove('go');
+            void t.offsetWidth;
+            t.classList.add('go');
+        }
+
+        function countTo(node, to, ms) {
+            const id = ++countId;
+            if (reduce) { node.textContent = to.toFixed(1); return; }
+            const t0 = performance.now();
+            (function frame(t) {
+                if (id !== countId) return;
+                const p = Math.min(1, (t - t0) / ms);
+                node.textContent = (to * (1 - Math.pow(1 - p, 3))).toFixed(1);
+                if (p < 1) requestAnimationFrame(frame);
+            })(t0);
+        }
+
+        function resetChat() {
+            show('hiw-menu', false); show('hiw-toast1', false);
+            show('hiw-done', true); show('hiw-fail', true);
+            $('hiw-rewind').classList.remove('is-on');
+            $('hiw-voice').classList.remove('ring-2', 'ring-primary');
+        }
+        function resetOverlays() {
+            show('hiw-report', false); show('hiw-toast-dl', false);
+            show('hiw-success', false); show('hiw-toast1', false); show('hiw-fail', false);
+            $('hiw-rewind').classList.remove('is-on');
+        }
+        function resetDash() {
+            const f = $('hiw-file'), d = $('hiw-drop'), u = $('hiw-up');
+            f.classList.remove('fly', 'drop'); d.classList.remove('is-over');
+            u.style.transition = 'none'; u.style.width = '0%'; void u.offsetWidth; u.style.transition = 'width 1.4s ease';
+        }
+        function resetScan() {
+            const b = $('hiw-bar');
+            b.style.transition = 'none'; b.style.width = '0%'; void b.offsetWidth;
+            $('hiw-status').textContent = 'Decoding audio...';
+            const p = $('hiw-prob');
+            p.style.transition = 'none'; p.style.width = '0%'; void p.offsetWidth; p.style.transition = 'width 1.4s ease';
+            $('hiw-num').textContent = '0.0';
+            const s = $('hiw-result-scroll');
+            s.style.transition = 'none'; s.style.transform = 'translateY(0)'; void s.offsetWidth; s.style.transition = '';
+        }
+
+        /* ---------- the five steps ---------- */
+        const STEPS = [
+            { dur: 8600, run() {
+                resetOverlays(); resetChat(); showScene('chat');
+                at(1800, () => $('hiw-rewind').classList.add('is-on'));
+                at(3000, () => { show('hiw-done', false); show('hiw-fail', false); });
+                at(3700, () => $('hiw-rewind').classList.remove('is-on'));
+                at(4400, () => { $('hiw-voice').classList.add('ring-2', 'ring-primary'); show('hiw-menu', true); });
+                at(6000, () => tap($('hiw-save')));
+                at(6400, () => { show('hiw-menu', false); $('hiw-voice').classList.remove('ring-2', 'ring-primary'); show('hiw-toast1', true); });
+            } },
+            { dur: 6400, run() {
+                resetOverlays(); resetDash(); showScene('browser'); showPage('blank'); setUrl(''); load(0, true);
+                typeText('deepguard.my', 600, 95);
+                at(2000, () => load(100));
+                at(2700, () => { showPage('dash'); });
+                at(3300, () => load(0, true));
+            } },
+            { dur: 5400, run() {
+                resetOverlays(); resetDash(); showScene('browser'); showPage('dash'); setUrl('deepguard.my'); load(0, true);
+                at(500, () => $('hiw-file').classList.add('fly'));
+                at(1700, () => { $('hiw-drop').classList.add('is-over'); $('hiw-file').classList.add('drop'); });
+                at(2300, () => { $('hiw-up').style.width = '100%'; });
+            } },
+            { dur: 11200, run() {
+                resetOverlays(); resetScan(); showScene('browser'); setUrl('deepguard.my'); load(0, true); showPage('scan');
+                at(60, () => { const b = $('hiw-bar'); b.style.transition = 'width 3.4s ease-in-out'; b.style.width = '100%'; });
+                at(1300, () => { $('hiw-status').textContent = 'Extracting mel-spectrogram...'; });
+                at(2500, () => { $('hiw-status').textContent = 'Running CNN inference...'; });
+                at(3900, () => { showPage('result'); $('hiw-prob').style.width = '97.3%'; countTo($('hiw-num'), 97.3, 1400); });
+                at(6300, () => {
+                    const s = $('hiw-result-scroll'), box = s.parentElement;
+                    const dist = Math.max(0, s.offsetHeight - box.offsetHeight + 12);
+                    s.style.transform = 'translateY(-' + dist + 'px)';
+                });
+            } },
+            { dur: 10200, run() {
+                resetOverlays(); showScene('browser'); setUrl('deepguard.my/history'); load(0, true); showPage('history');
+                at(1700, () => tap($('hiw-pdf')));
+                at(2300, () => show('hiw-toast-dl', true));
+                at(3400, () => { show('hiw-toast-dl', false); show('hiw-report', true); });
+                at(7200, () => show('hiw-report', false));
+                at(7800, () => show('hiw-success', true));
+            } }
+        ];
+
+        function progress(i, dur) {
+            stepEls.forEach((s, k) => {
+                const p = s.querySelector('.hiw-prog');
+                p.style.transition = 'none';
+                p.style.width = k < i ? '100%' : '0%';
+            });
+            const p = stepEls[i].querySelector('.hiw-prog');
+            void p.offsetWidth;
+            if (!reduce) p.style.transition = 'width ' + dur + 'ms linear';
+            p.style.width = '100%';
+        }
+
+        function go(i) {
+            clearAll();
+            cur = i;
+            stepEls.forEach((s, k) => {
+                s.classList.toggle('is-active', k === i);
+                if (k === i) s.setAttribute('aria-current', 'step'); else s.removeAttribute('aria-current');
+            });
+            progress(i, STEPS[i].dur);
+            STEPS[i].run();
+            if (!reduce && inView) timers.push(setTimeout(() => go((i + 1) % STEPS.length), STEPS[i].dur));
+        }
+
+        /* ---------- spectrogram (illustrative, drawn once) ---------- */
+        function drawSpec() {
+            const c = $('hiw-spec');
+            if (!c || !c.getContext) return;
+            const W = c.width = 300, H = c.height = 110, ctx = c.getContext('2d');
+            if (!ctx) return;
+            const img = ctx.createImageData(W, H), d = img.data;
+            const S = [[0,0,4],[28,16,68],[79,18,123],[129,37,129],[181,54,122],[229,80,100],[251,135,97],[254,194,135],[252,253,191]];
+            const col = (v) => {
+                v = Math.max(0, Math.min(1, v));
+                const p = v * (S.length - 1), i = Math.min(S.length - 2, Math.floor(p)), f = p - i, a = S[i], b = S[i + 1];
+                return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f];
+            };
+            let seed = 7;
+            const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+            for (let x = 0; x < W; x++) {
+                const t = x / W;
+                const env = Math.pow(Math.max(0, Math.sin(t * Math.PI * 8 + 0.4)), 0.6) * (0.7 + 0.3 * Math.sin(t * 19));
+                const f0 = 0.045 + 0.012 * Math.sin(t * Math.PI * 5);
+                for (let y = 0; y < H; y++) {
+                    const f = 1 - y / H;
+                    let e = 0;
+                    for (let k = 1; k <= 16; k++) { const q = (f - k * f0) / 0.006; e += Math.exp(-q * q) / Math.pow(k, 0.45); }
+                    const form = Math.exp(-Math.pow((f - 0.12) / 0.09, 2)) * 0.5 + Math.exp(-Math.pow((f - 0.3) / 0.12, 2)) * 0.25;
+                    const v = env * (0.55 * e + 0.25 * form) + 0.04 * rnd() * env;
+                    const rgb = col(v * 1.2 - 0.02), i = (y * W + x) * 4;
+                    d[i] = rgb[0]; d[i + 1] = rgb[1]; d[i + 2] = rgb[2]; d[i + 3] = 255;
+                }
+            }
+            ctx.putImageData(img, 0, 0);
+        }
+        drawSpec();
+
+        /* ---------- controls ---------- */
+        stepEls.forEach((btn, i) => btn.addEventListener('click', () => { inView = true; go(i); }));
+
+        if ('IntersectionObserver' in window) {
+            new IntersectionObserver((entries) => {
+                entries.forEach((en) => {
+                    if (en.isIntersecting && !inView) { inView = true; go(cur < 0 ? 0 : cur); }
+                    else if (!en.isIntersecting && inView) { inView = false; clearAll(); }
+                });
+            }, { threshold: 0.3 }).observe(root);
+        } else {
+            inView = true; go(0);
+        }
+    })();
     </script>
 </body>
 </html>
