@@ -46,6 +46,7 @@
 </head>
 <body class="bg-slate-50 dark:bg-deepbg text-slate-800 dark:text-slate-300 font-sans antialiased h-screen overflow-hidden flex transition-colors duration-300 selection:bg-primary/30 relative w-full">
 
+    <!-- Ambient Background Grid -->
     <div class="absolute inset-0 z-0 pointer-events-none flex items-center justify-center">
         <div class="absolute inset-0 hidden dark:block bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMCAwaDQwdjQwaC00MHoiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNMCAzOWg0MHYxSDB6TDM5IDB2NDBoMXoiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wMykiLz48L3N2Zz4=')]"></div>
         <div class="absolute inset-0 block dark:hidden bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMCAwaDQwdjQwaC00MHoiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNMCAzOWg0MHYxSDB6TDM5IDB2NDBoMXoiIGZpbGw9InJnYmEoMCwwLDAsMC4wMykiLz48L3N2Zz4=')]"></div>
@@ -54,6 +55,7 @@
     <!-- Mobile Overlay -->
     <div id="mobile-overlay" class="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-sm z-40 hidden lg:hidden transition-opacity" onclick="toggleSidebar()"></div>
 
+    <!-- Sidebar -->
     <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 h-full bg-white/95 dark:bg-cardbg/95 backdrop-blur-3xl border-r border-slate-200 dark:border-white/5 flex flex-col justify-between transform -translate-x-full lg:relative lg:translate-x-0 transition-transform duration-300">
         <div>
             <div class="h-24 flex items-center justify-between px-8 border-b border-slate-200 dark:border-white/5">
@@ -71,11 +73,11 @@
                 <a href="/history" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl font-medium transition-all group">
                     <i class="fa-solid fa-clock-rotate-left w-5 text-center group-hover:text-primary transition-colors"></i><span class="text-sm">Scan History</span>
                 </a>
-                <a href="/subscription" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl font-medium transition-all group">
-                    <i class="fa-solid fa-crown w-5 text-center group-hover:text-primary transition-colors"></i><span class="text-sm">Subscription</span>
+                <a href="/topup" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl font-medium transition-all group">
+                    <i class="fa-solid fa-coins w-5 text-center group-hover:text-primary transition-colors"></i><span class="text-sm">Top Up Credits</span>
                 </a>
                 
-                <a href="/profile" class="flex items-center space-x-4 px-4 py-3 bg-primary/10 dark:bg-primary/20 text-primary-600 dark:text-primary rounded-xl font-medium border border-primary/20 transition-all">
+                <a href="/profile" class="flex items-center space-x-4 px-4 py-3 bg-primary/10 dark:bg-primary/20 text-primary-600 dark:text-primary rounded-xl font-medium border border-primary/20 transition-all mt-6">
                     <i class="fa-regular fa-id-badge w-5 text-center"></i><span class="text-sm">Profile</span>
                 </a>
                 <a href="/settings" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl font-medium transition-all group">
@@ -91,23 +93,20 @@
         </div>
 
         <div class="p-6 border-t border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-deepbg/30">
-            <div class="flex justify-between items-end mb-2">
-                <span class="text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Scan Limit</span>
-                <span id="scan-count-text" class="text-xs text-primary font-bold">{% if current_user.is_pro %}Unlimited{% else %}{{ current_user.scans_used }} / 5{% endif %}</span>
+            <div class="flex flex-col items-center justify-center p-4 bg-white dark:bg-[#1a1a1a] border border-slate-200 dark:border-[#2a2a2a] rounded-2xl mb-4">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Available Credits</span>
+                <span class="text-3xl font-tech font-bold text-primary">{{ current_user.credits }}</span>
             </div>
-            <div class="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-1.5 mb-3 overflow-hidden">
-                <div id="scan-progress-bar" class="bg-primary h-full rounded-full transition-all duration-500" style="width: {% if current_user.is_pro %}100%{% else %}{{ (current_user.scans_used / 5) * 100 }}%{% endif %}"></div>
-            </div>
-            {% if not current_user.is_pro %}
-            <a href="/subscription" class="text-xs text-slate-500 dark:text-slate-400 hover:text-primary font-medium transition-colors flex items-center group">
-                Upgrade to Pro <i class="fa-solid fa-arrow-right ml-1.5 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all"></i>
+            <a href="/topup" class="w-full block text-center bg-primary hover:bg-primaryHover text-white py-2.5 rounded-xl text-sm font-semibold transition-colors shadow-md">
+                Add Credits
             </a>
-            {% endif %}
         </div>
     </aside>
 
+    <!-- Main Workspace -->
     <div class="flex-1 flex flex-col relative z-10 h-full overflow-hidden w-full">
         
+        <!-- Header -->
         <header class="h-24 px-4 sm:px-10 flex items-center justify-between border-b border-slate-200/50 dark:border-white/5 bg-white/40 dark:bg-cardbg/40 backdrop-blur-xl">
             <div class="flex items-center space-x-4">
                 <button onclick="toggleSidebar()" class="lg:hidden text-slate-600 dark:text-slate-300 hover:text-primary focus:outline-none">
@@ -115,14 +114,14 @@
                 </button>
                 <div>
                     <h2 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">Account Profile</h2>
-                    <p class="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 hidden sm:block">Manage personal information and security configurations</p>
+                    <p class="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 hidden sm:block">Manage your identity and authentication</p>
                 </div>
             </div>
             
             <div class="flex items-center space-x-3 sm:space-x-5">
                 <div class="text-right hidden sm:block">
                     <p class="text-sm font-semibold text-slate-900 dark:text-white">{{ current_user.username }}</p>
-                    <p class="text-xs text-primary font-medium">{% if current_user.is_pro %}Pro Tier{% else %}Basic Tier{% endif %}</p>
+                    <p class="text-xs text-primary font-medium">Credits: {{ current_user.credits }}</p>
                 </div>
                 <div class="h-10 w-px bg-slate-200 dark:bg-white/10 hidden sm:block"></div>
                 <a href="/logout" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-deepbg border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-500 hover:text-alert hover:border-alert/30 transition-all" title="Log Out">
@@ -132,12 +131,13 @@
         </header>
 
         <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-10 w-full">
-            <div class="max-w-5xl mx-auto">
+            <div class="max-w-5xl mx-auto space-y-6 sm:space-y-8">
 
+                <!-- Flash Messages -->
                 {% with messages = get_flashed_messages(with_categories=true) %}
                     {% if messages %}
                         {% for category, message in messages %}
-                            <div class="mb-8 px-5 py-4 rounded-xl flex items-center justify-between shadow-sm {% if category == 'alert' %}bg-alert-50 dark:bg-alert/10 text-alert-600 dark:text-alert border border-alert-200 dark:border-alert/30{% else %}bg-safe-50 dark:bg-safe/10 text-safe-600 dark:text-safe border border-safe-200 dark:border-safe/30{% endif %}">
+                            <div class="px-5 py-4 rounded-xl flex items-center justify-between shadow-sm {% if category == 'alert' %}bg-alert-50 dark:bg-alert/10 text-alert-600 dark:text-alert border border-alert-200 dark:border-alert/30{% else %}bg-safe-50 dark:bg-safe/10 text-safe-600 dark:text-safe border border-safe-200 dark:border-safe/30{% endif %}">
                                 <span class="font-medium flex items-center"><i class="fa-solid {% if category == 'alert' %}fa-triangle-exclamation{% else %}fa-circle-check{% endif %} mr-3"></i> {{ message }}</span>
                                 <button onclick="this.parentElement.style.display='none'" class="hover:opacity-70 transition-opacity"><i class="fa-solid fa-xmark"></i></button>
                             </div>
@@ -145,57 +145,49 @@
                     {% endif %}
                 {% endwith %}
 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Full-Width Profile Banner -->
+                <div class="relative bg-white/80 dark:bg-cardbg/60 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] p-8 shadow-sm overflow-hidden flex flex-col sm:flex-row items-center sm:items-start justify-between gap-6 transition-colors duration-300">
+                    <div class="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
                     
-                    <div class="space-y-8">
-                        <div class="bg-white/60 dark:bg-cardbg/40 backdrop-blur-xl border border-slate-200 dark:border-white/5 rounded-2xl sm:rounded-[2rem] p-6 sm:p-8 shadow-sm transition-colors duration-300">
-                            <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white mb-6 border-b border-slate-200 dark:border-white/10 pb-4">Personal Details</h3>
-                            
-                            <div class="flex items-center space-x-4 sm:space-x-6 mb-8">
-                                <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-slate-100 dark:bg-deepbg border border-slate-200 dark:border-white/10 flex items-center justify-center flex-shrink-0 shadow-inner">
-                                    <span class="text-3xl sm:text-4xl font-extrabold text-primary">{{ current_user.username[0] | upper }}</span>
-                                </div>
-                                <div class="min-w-0 flex-1">
-                                    <p class="text-slate-900 dark:text-white font-bold text-xl sm:text-2xl tracking-wide truncate">{{ current_user.username }}</p>
-                                    <p class="text-slate-500 dark:text-slate-400 text-xs sm:text-sm mt-1 truncate">{{ current_user.email }}</p>
-                                    <div class="inline-block mt-3 bg-slate-100 dark:bg-deepbg text-slate-600 dark:text-slate-400 px-3.5 py-1.5 rounded-lg text-xs font-semibold border border-slate-200 dark:border-white/5">
-                                        Joined {{ current_user.created_at.strftime('%B %Y') }}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <button onclick="openEditModal()" class="w-full bg-slate-100 dark:bg-deepbg hover:bg-slate-200 dark:hover:bg-white/5 text-slate-700 dark:text-slate-300 py-3 rounded-xl text-sm font-semibold transition-colors border border-slate-200 dark:border-white/10">
-                                Edit Profile Name
-                            </button>
+                    <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6 z-10">
+                        <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-[1.5rem] bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20 flex items-center justify-center flex-shrink-0 shadow-inner">
+                            <span class="text-4xl sm:text-5xl font-extrabold text-primary">{{ current_user.username[0] | upper }}</span>
                         </div>
-
-                        <div class="bg-white/60 dark:bg-cardbg/40 backdrop-blur-xl border border-slate-200 dark:border-white/5 rounded-2xl sm:rounded-[2rem] p-6 sm:p-8 shadow-sm relative overflow-hidden transition-colors duration-300">
-                            <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white mb-6 border-b border-slate-200 dark:border-white/10 pb-4">Current Plan</h3>
-                            <div class="flex justify-between items-center mb-6">
-                                <div>
-                                    <p class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">{% if current_user.is_pro %}Pro Tier{% else %}Basic Tier{% endif %}</p>
-                                    <p class="text-slate-500 dark:text-slate-400 text-xs sm:text-sm mt-1">{% if current_user.is_pro %}Unlimited Scans{% else %}5 Scans per day limit{% endif %}</p>
-                                </div>
-                                <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center border border-primary/20 flex-shrink-0">
-                                    <i class="fa-solid fa-crown text-xl text-primary"></i>
-                                </div>
+                        <div class="text-center sm:text-left pt-2">
+                            <h3 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">{{ current_user.username }}</h3>
+                            <p class="text-slate-500 dark:text-slate-400 text-sm mt-1 flex items-center justify-center sm:justify-start">
+                                <i class="fa-regular fa-envelope mr-2 opacity-70"></i> {{ current_user.email }}
+                            </p>
+                            <div class="mt-4 flex flex-wrap items-center justify-center sm:justify-start gap-3">
+                                {% if current_user.is_admin %}
+                                <span class="px-3 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-primary text-white shadow-sm border border-primary-600">
+                                    Administrator
+                                </span>
+                                {% else %}
+                                <span class="px-3 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-white/10">
+                                    Standard User
+                                </span>
+                                {% endif %}
+                                <span class="text-xs text-slate-400 dark:text-slate-500 font-medium">Joined {{ current_user.created_at.strftime('%B %Y') }}</span>
                             </div>
-                            {% if not current_user.is_pro %}
-                            <a href="/subscription" class="w-full bg-primary hover:bg-blue-600 text-white py-3 rounded-xl font-medium tracking-wide transition-all shadow-lg shadow-primary/30 flex justify-center items-center text-sm border border-transparent dark:border-white/10">
-                                Upgrade to Pro <i class="fa-solid fa-arrow-right ml-2.5"></i>
-                            </a>
-                            {% else %}
-                            <a href="/subscription" class="w-full bg-slate-100 dark:bg-deepbg hover:bg-slate-200 dark:hover:bg-white/5 text-slate-700 dark:text-slate-300 py-3 rounded-xl font-medium tracking-wide transition-colors border border-slate-200 dark:border-white/10 flex justify-center items-center text-sm">
-                                Manage Billing
-                            </a>
-                            {% endif %}
                         </div>
                     </div>
+                    
+                    <div class="z-10 w-full sm:w-auto mt-4 sm:mt-0">
+                        <button onclick="openEditModal()" class="w-full sm:w-auto bg-slate-100 dark:bg-deepbg hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 px-6 py-3 rounded-xl text-sm font-semibold transition-all border border-slate-200 dark:border-white/10 shadow-sm flex items-center justify-center">
+                            <i class="fa-solid fa-pen-to-square mr-2"></i> Edit Profile
+                        </button>
+                    </div>
+                </div>
 
-                    <div>
+                <!-- Settings Grid Layout -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
+                    
+                    <!-- Left Column: Security Settings (Takes up more space) -->
+                    <div class="lg:col-span-8">
                         <div class="bg-white/60 dark:bg-cardbg/40 backdrop-blur-xl border border-slate-200 dark:border-white/5 rounded-2xl sm:rounded-[2rem] p-6 sm:p-8 h-full shadow-sm transition-colors duration-300">
                             <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white mb-6 border-b border-slate-200 dark:border-white/10 pb-4 flex items-center">
-                                <i class="fa-solid fa-lock text-slate-400 mr-3"></i> Security Settings
+                                <i class="fa-solid fa-shield-halved text-slate-400 mr-3"></i> Security & Authentication
                             </h3>
                             
                             <form action="{{ url_for('profile') }}" method="POST" class="space-y-5">
@@ -214,39 +206,76 @@
                                     </div>
                                 </div>
                                 
-                                <div class="pt-2">
-                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">New Password</label>
-                                    <div class="relative">
-                                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                            <i class="fa-solid fa-lock text-slate-400 dark:text-slate-500 text-sm"></i>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-2">
+                                    <div>
+                                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">New Password</label>
+                                        <div class="relative">
+                                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                                <i class="fa-solid fa-lock text-slate-400 dark:text-slate-500 text-sm"></i>
+                                            </div>
+                                            <input type="password" name="new_password" id="new-password" required class="block w-full pl-11 pr-12 py-3 bg-slate-50 dark:bg-deepbg/50 border border-slate-200 dark:border-white/10 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all sm:text-sm">
+                                            <button type="button" onclick="togglePassword('new-password', 'eye-new')" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition-colors focus:outline-none">
+                                                <i id="eye-new" class="fa-regular fa-eye"></i>
+                                            </button>
                                         </div>
-                                        <input type="password" name="new_password" id="new-password" required class="block w-full pl-11 pr-12 py-3 bg-slate-50 dark:bg-deepbg/50 border border-slate-200 dark:border-white/10 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all sm:text-sm">
-                                        <button type="button" onclick="togglePassword('new-password', 'eye-new')" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition-colors focus:outline-none">
-                                            <i id="eye-new" class="fa-regular fa-eye"></i>
-                                        </button>
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Confirm New Password</label>
+                                        <div class="relative">
+                                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                                <i class="fa-solid fa-lock-open text-slate-400 dark:text-slate-500 text-sm"></i>
+                                            </div>
+                                            <input type="password" name="confirm_new_password" id="confirm-new-password" required class="block w-full pl-11 pr-12 py-3 bg-slate-50 dark:bg-deepbg/50 border border-slate-200 dark:border-white/10 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all sm:text-sm">
+                                            <button type="button" onclick="togglePassword('confirm-new-password', 'eye-confirm')" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition-colors focus:outline-none">
+                                                <i id="eye-confirm" class="fa-regular fa-eye"></i>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                                 
-                                <div>
-                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Confirm New Password</label>
-                                    <div class="relative">
-                                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                            <i class="fa-solid fa-shield-halved text-slate-400 dark:text-slate-500 text-sm"></i>
-                                        </div>
-                                        <input type="password" name="confirm_new_password" id="confirm-new-password" required class="block w-full pl-11 pr-12 py-3 bg-slate-50 dark:bg-deepbg/50 border border-slate-200 dark:border-white/10 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all sm:text-sm">
-                                        <button type="button" onclick="togglePassword('confirm-new-password', 'eye-confirm')" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition-colors focus:outline-none">
-                                            <i id="eye-confirm" class="fa-regular fa-eye"></i>
-                                        </button>
-                                    </div>
+                                <div class="pt-4">
+                                    <button type="submit" class="w-full sm:w-auto bg-slate-900 dark:bg-slate-100 hover:bg-primary dark:hover:bg-primary text-white dark:text-slate-900 dark:hover:text-white px-8 py-3.5 rounded-xl font-medium tracking-wide transition-colors text-sm shadow-sm border border-transparent dark:border-white/5">
+                                        Update Credentials
+                                    </button>
                                 </div>
-                                
-                                <button type="submit" class="w-full bg-slate-900 dark:bg-slate-100 hover:bg-primary dark:hover:bg-primary text-white dark:text-slate-900 dark:hover:text-white py-3.5 rounded-xl font-medium tracking-wide transition-colors mt-6 text-sm">
-                                    Update Credentials
-                                </button>
                             </form>
                         </div>
                     </div>
 
+                    <!-- Right Column: Account Stats & Danger Zone -->
+                    <div class="lg:col-span-4 space-y-6">
+                        
+                        <!-- Mini Stat Cards -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-white/60 dark:bg-cardbg/40 backdrop-blur-md border border-slate-200 dark:border-white/5 rounded-2xl p-5 shadow-sm text-center">
+                                <i class="fa-solid fa-coins text-primary mb-2 text-xl"></i>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Credits</p>
+                                <p class="text-2xl font-tech font-bold text-slate-900 dark:text-white">{{ current_user.credits }}</p>
+                            </div>
+                            <div class="bg-white/60 dark:bg-cardbg/40 backdrop-blur-md border border-slate-200 dark:border-white/5 rounded-2xl p-5 shadow-sm text-center">
+                                <i class="fa-solid fa-chart-simple text-safe mb-2 text-xl"></i>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Total Scans</p>
+                                <p class="text-2xl font-tech font-bold text-slate-900 dark:text-white">{{ current_user.scans_used }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Danger Zone -->
+                        <div class="bg-alert/5 dark:bg-alert/10 border border-alert/20 dark:border-alert/30 rounded-2xl p-6 shadow-sm">
+                            <h3 class="text-sm font-bold text-alert mb-2 flex items-center">
+                                <i class="fa-solid fa-triangle-exclamation mr-2"></i> Danger Zone
+                            </h3>
+                            <p class="text-xs text-slate-600 dark:text-slate-400 mb-5 leading-relaxed">
+                                Permanently delete your account, wipe your scan history, and forfeit any remaining credits. This action cannot be undone.
+                            </p>
+                            <form action="/delete_account" method="POST" onsubmit="return confirm('Are you absolutely sure you want to permanently delete your DeepGuard account? All data and credits will be lost.');">
+                                <button type="submit" class="w-full bg-white dark:bg-deepbg text-alert hover:bg-alert hover:text-white border border-alert/30 dark:border-alert/40 py-2.5 rounded-xl text-sm font-bold transition-colors">
+                                    Delete Account
+                                </button>
+                            </form>
+                        </div>
+                        
+                    </div>
                 </div>
 
             </div>
@@ -257,7 +286,7 @@
     <div id="edit-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-900/50 dark:bg-black/80 backdrop-blur-sm transition-opacity">
         <div class="bg-white dark:bg-cardbg border border-slate-200 dark:border-white/10 rounded-[2rem] p-6 sm:p-8 max-w-md w-full shadow-2xl relative mx-4">
             
-            <button onclick="closeEditModal()" class="absolute top-6 right-6 text-slate-400 hover:text-alert transition-colors">
+            <button onclick="closeEditModal()" class="absolute top-6 right-6 text-slate-400 hover:text-alert transition-colors focus:outline-none">
                 <i class="fa-solid fa-xmark text-xl"></i>
             </button>
             
@@ -284,8 +313,8 @@
                 </div>
                 
                 <div class="flex justify-end space-x-3 pt-4">
-                    <button type="button" onclick="closeEditModal()" class="px-5 py-2.5 rounded-xl font-medium text-slate-500 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors text-sm">Cancel</button>
-                    <button type="submit" class="bg-primary hover:bg-blue-600 text-white px-6 py-2.5 rounded-xl font-medium transition-all shadow-lg shadow-primary/30 text-sm border border-transparent dark:border-white/10">Save Changes</button>
+                    <button type="button" onclick="closeEditModal()" class="px-5 py-2.5 rounded-xl font-medium text-slate-500 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors text-sm focus:outline-none">Cancel</button>
+                    <button type="submit" class="bg-primary hover:bg-blue-600 text-white px-6 py-2.5 rounded-xl font-medium transition-all shadow-lg shadow-primary/30 text-sm border border-transparent dark:border-white/10 focus:outline-none">Save Changes</button>
                 </div>
             </form>
         </div>

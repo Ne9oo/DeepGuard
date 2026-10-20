@@ -78,7 +78,7 @@ app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(SPECTROGRAM_FOLDER, exist_ok=True)
-EVIDENCE_FOLDER = os.path.join(app.root_path, 'evidence')  # private, not served to the web
+EVIDENCE_FOLDER = os.path.join(app.root_path, 'evidence')  
 os.makedirs(EVIDENCE_FOLDER, exist_ok=True)
 
 # Database & Authentication
@@ -110,8 +110,10 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
     
-    scans_used = db.Column(db.Integer, default=0)
-    is_pro = db.Column(db.Boolean, default=False)
+    # NEW CREDIT SYSTEM 
+    credits = db.Column(db.Integer, default=2) 
+    scans_used = db.Column(db.Integer, default=0) 
+    
     is_admin = db.Column(db.Boolean, default=False)
     is_verified = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -163,8 +165,22 @@ def send_scan_alert_email(user_email, filename, result, risk):
     except Exception as e:
         print(f"Scan alert email failed: {e}")
 
+def send_reset_email(user):
+    token = s.dumps(user.email, salt='password-reset')
+    reset_url = url_for('reset_token', token=token, _external=True)
+    msg = Message('DeepGuard: Password Reset Request', recipients=[user.email])
+    msg.body = f'''To reset your password, visit the following link:
+{reset_url}
+
+If you did not make this request, simply ignore this email and no changes will be made.
+'''
+    try:
+        mail.send(msg)
+    except Exception as e:
+        print(f"Password reset email failed: {e}")
+
 # ==========================================
-# AUDIO FORENSICS ENGINE (CLEAN RESIZING)
+# AUDIO FORENSICS ENGINE 
 # ==========================================
 def generate_spectrogram_image(y, sr):
     """Generates the full visual Mel-spectrogram displayed on the UI dashboard."""
@@ -185,26 +201,22 @@ def generate_spectrogram_image(y, sr):
     return base64.b64encode(buf.read()).decode('utf-8')
 
 def analyze_audio_forensics(filepath, mode='standard'):
-    # Scan length depends on the user's plan
     if mode == 'fast':
         duration_limit = 15.0
-    elif mode == 'pro':
+    elif mode == 'deep' or mode == 'pro':
         duration_limit = 300.0
     else:
         duration_limit = 60.0
 
     y, sr = librosa.load(filepath, sr=22050, duration=duration_limit)
-
-    # Spectrogram image for the dashboard only
     spectrogram_b64 = generate_spectrogram_image(y, sr)
 
-    # Real detection by the new CNN (returns P(fake) between 0 and 1)
     details = analyze_file(detector, filepath, duration_limit)
     fake_prob = details['fake_prob']
     print(f"[debug] {os.path.basename(filepath)} -> P(fake)={fake_prob:.4f}")
         
     result = 'Deepfake' if fake_prob > 0.5 else 'Authentic'
-    confidence = round(fake_prob * 100, 1)  # synthetic probability, matches the dashboard
+    confidence = round(fake_prob * 100, 1) 
         
     if fake_prob >= 0.71:
         risk_level = 'High Risk'
@@ -320,6 +332,52 @@ def verify_email(token):
         flash('Your account has been successfully verified!', 'safe')
     return redirect(url_for('login'))
 
+@app.route('/reset_password', methods=['GET', 'POST'])
+@limiter.limit("3 per minute")
+def reset_request():
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard'))
+    if request.method == 'POST':
+        email = request.form.get('email')
+        user = User.query.filter_by(email=email).first()
+        if user:
+            send_reset_email(user)
+        # We always show the same message whether the email exists or not to prevent bad actors from guessing valid emails
+        flash('If an account with that email exists, a password reset link has been sent.', 'safe')
+        return redirect(url_for('login'))
+    return render_template('reset_request.html')
+
+@app.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_token(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard'))
+    try:
+        # Token expires after 30 minutes (1800 seconds)
+        email = s.loads(token, salt='password-reset', max_age=1800)
+    except SignatureExpired:
+        flash('The password reset link has expired. Please request a new one.', 'alert')
+        return redirect(url_for('reset_request'))
+    except BadTimeSignature:
+        flash('Invalid password reset link.', 'alert')
+        return redirect(url_for('reset_request'))
+        
+    user = User.query.filter_by(email=email).first_or_404()
+    
+    if request.method == 'POST':
+        password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
+        if password != confirm_password:
+            flash('Passwords do not match.', 'alert')
+            return redirect(url_for('reset_token', token=token))
+            
+        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+        user.password = hashed_password
+        db.session.commit()
+        flash('Your password has been successfully updated! You can now log in.', 'safe')
+        return redirect(url_for('login'))
+        
+    return render_template('reset_token.html', token=token)
+
 @app.route('/dashboard')
 @login_required
 @requires_verification
@@ -331,8 +389,10 @@ def dashboard():
 @requires_verification
 @limiter.limit("3 per minute")
 def scan_audio():
-    if not current_user.is_pro and current_user.scans_used >= 5:
-        return jsonify({'success': False, 'message': 'Daily scan limit reached (5/5). Please upgrade to Pro.'}), 403
+    scan_cost = 2 if current_user.scan_mode in ['pro', 'deep'] else 1
+    
+    if current_user.credits < scan_cost:
+        return jsonify({'success': False, 'message': f'Insufficient credits. This scan requires {scan_cost} credit(s). Please top up your balance.'}), 403
 
     if 'audio_file' not in request.files:
         return jsonify({'success': False, 'message': 'No audio file found.'}), 400
@@ -344,13 +404,16 @@ def scan_audio():
     filename = secure_filename(file.filename)
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], f"{datetime.utcnow().strftime('%Y%m%d%H%M%S')}_{filename}")
     file.save(filepath)
-    upload_sha256 = sha256_file(filepath)   # evidence fingerprint, taken before any processing
+    upload_sha256 = sha256_file(filepath)   
     upload_size = os.path.getsize(filepath)
 
     try:
         analysis = analyze_audio_forensics(filepath, mode=current_user.scan_mode)
         new_scan = ScanRecord(filename=filename, result=analysis['result'], confidence=analysis['confidence'], user_id=current_user.id)
+        
+        current_user.credits -= scan_cost
         current_user.scans_used += 1
+        
         db.session.add(new_scan)
         db.session.commit() 
         
@@ -388,8 +451,7 @@ def scan_audio():
             'confidence': analysis['confidence'], 
             'risk_level': analysis['risk_level'], 
             'spectrogram': analysis['spectrogram'],
-            'scans_used': current_user.scans_used, 
-            'is_pro': current_user.is_pro
+            'credits': current_user.credits
         })
 
     except Exception as e:
@@ -452,7 +514,7 @@ def download_evidence(scan_id):
         return redirect(url_for('history'))
     ev_path = os.path.join(EVIDENCE_FOLDER, f"scan_{scan.id}.json")
     if not os.path.exists(ev_path):
-        flash('No evidence record exists for this scan (it was made before forensic logging).', 'alert')
+        flash('No evidence record exists for this scan.', 'alert')
         return redirect(url_for('history'))
     return send_file(ev_path, as_attachment=True,
                      download_name=f"DeepGuard_Evidence_DG-{scan.id:06d}.json", mimetype='application/json')
@@ -493,16 +555,58 @@ def settings():
         return redirect(url_for('settings'))
     return render_template('settings.html')
 
-@app.route('/subscription', methods=['GET', 'POST'])
+@app.route('/topup', methods=['GET', 'POST'])
 @login_required
 @requires_verification
-def subscription():
+def topup():
     if request.method == 'POST':
-        current_user.is_pro = True
+        package = request.form.get('package')
+        if package == 'single':
+            current_user.credits += 1
+            flash('1 Credit added to your balance!', 'safe')
+        elif package == 'starter':
+            current_user.credits += 5
+            flash('5 Credits added to your balance!', 'safe')
+        elif package == 'value':
+            current_user.credits += 15
+            flash('15 Credits added to your balance!', 'safe')
+        else:
+            flash('Invalid package selected.', 'alert')
+            
         db.session.commit()
-        flash('Upgraded to Pro!', 'safe')
-        return redirect(url_for('subscription'))
-    return render_template('subscription.html')
+        return redirect(url_for('topup'))
+        
+    return render_template('topup.html')
+
+@app.route('/delete_account', methods=['POST'])
+@login_required
+def delete_account():
+    user = current_user
+    
+    # 1. Find all scans belonging to this user
+    user_scans = ScanRecord.query.filter_by(user_id=user.id).all()
+    
+    # 2. Loop through and delete the physical files from the server
+    for scan in user_scans:
+        spec_path = os.path.join(SPECTROGRAM_FOLDER, f"spectrogram_{scan.id}.png")
+        if os.path.exists(spec_path):
+            os.remove(spec_path)
+            
+        ev_path = os.path.join(EVIDENCE_FOLDER, f"scan_{scan.id}.json")
+        if os.path.exists(ev_path):
+            os.remove(ev_path)
+            
+    # 3. Delete the scan records from the database
+    ScanRecord.query.filter_by(user_id=user.id).delete()
+    
+    # 4. Delete the user account itself
+    db.session.delete(user)
+    db.session.commit()
+    
+    # 5. Log them out and redirect to home
+    logout_user()
+    flash('Your account and all associated data have been permanently deleted.', 'safe')
+    return redirect(url_for('index'))
 
 @app.route('/admin')
 @login_required
@@ -541,7 +645,7 @@ if __name__ == '__main__':
         admin_email = 'admin@deepguard.com'
         if not User.query.filter_by(email=admin_email).first():
             hashed_pw = bcrypt.generate_password_hash('admin123').decode('utf-8')
-            admin_user = User(username='Admin', email=admin_email, password=hashed_pw, is_admin=True, is_verified=True)
+            admin_user = User(username='Admin', email=admin_email, password=hashed_pw, is_admin=True, is_verified=True, credits=9999)
             db.session.add(admin_user)
             db.session.commit()
     app.run(debug=True)

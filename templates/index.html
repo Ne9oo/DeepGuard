@@ -27,6 +27,7 @@
                         primaryHover: '#4338ca',
                         alert: '#ef4444', 
                         safe: '#10b981', 
+                        caution: '#f59e0b',
                         darkbg: '#121212', 
                         darkcard: '#1a1a1a', 
                         border: '#2a2a2a',
@@ -123,6 +124,9 @@
         #hiw-drop.is-over { border-style:solid; border-color:#3b82f6; background:rgba(59,130,246,.08); }
         #hiw-result-scroll { transition:transform 2.4s ease-in-out; }
         @media (prefers-reduced-motion: reduce) { .hiw-pop, .hiw-page, .hiw-scene, .hiw-sheet { transition:none; } }
+        
+        /* Stop CSS Animations globally when paused */
+        .is-paused *, .is-paused { animation-play-state: paused !important; }
     </style>
 </head>
 <body class="bg-lightbg dark:bg-darkbg text-slate-700 dark:text-slate-300 antialiased overflow-x-hidden selection:bg-primary/30 w-full">
@@ -208,7 +212,7 @@
         </div>
     </section>
 
-    <!-- About Section with Simulated Phone Attack (Cleaned of duplicate animation IDs) -->
+    <!-- About Section with Simulated Phone Attack -->
     <section id="about" class="py-20 lg:py-32 px-4 sm:px-6 bg-white/40 dark:bg-darkbg/40 backdrop-blur-sm relative overflow-hidden">
         <div class="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             
@@ -225,7 +229,6 @@
                 </p>
             </div>
 
-            <!-- Custom Phone UI -->
             <div class="reveal delay-200 relative w-full flex items-center justify-center overflow-hidden py-8">
                 <div class="relative w-full max-w-[280px] h-[550px] sm:h-[600px] bg-white dark:bg-[#050505] border-[6px] border-slate-200 dark:border-[#222] rounded-[2.5rem] sm:rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.05)] dark:shadow-none flex flex-col overflow-hidden transform scale-95 sm:scale-100">
                     <div class="absolute top-0 left-1/2 -translate-x-1/2 w-20 sm:w-24 h-5 sm:h-6 bg-slate-200 dark:bg-[#222] rounded-b-2xl z-20"></div>
@@ -240,7 +243,7 @@
                         </div>
                     </div>
 
-                    <div class="flex-1 p-4 flex flex-col space-y-4 overflow-hidden text-xs">
+                    <div class="relative flex-1 p-4 flex flex-col space-y-3 overflow-hidden text-xs">
                         <div class="sync-anim opacity-0 animate-pop-in self-start bg-slate-100 dark:bg-[#1a1a1a] text-slate-800 dark:text-slate-300 rounded-2xl rounded-tl-sm p-3 max-w-[85%] transition-shadow" style="animation-delay: 1s;">
                             <div class="flex items-center space-x-3">
                                 <i class="fa-solid fa-play text-primary text-lg"></i>
@@ -354,9 +357,17 @@
                             <div class="mt-3 h-[3px] rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden"><div class="hiw-prog h-full bg-primary rounded-full"></div></div>
                         </button>
                     </div>
-                    <p class="mt-6 text-xs text-slate-500 dark:text-slate-500 leading-relaxed text-center lg:text-left">
-                        Demo with sample data. DeepGuard gives a likelihood, not proof, so use it alongside other checks.
-                    </p>
+
+                    <!-- Updated Play/Pause Control Bar -->
+                    <div class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 bg-white/60 dark:bg-[#1a1a1a]/60 p-4 rounded-2xl border border-slate-200 dark:border-border">
+                        <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed text-center sm:text-left m-0">
+                            Demo with sample data. DeepGuard gives a likelihood, not proof, so use it alongside other checks.
+                        </p>
+                        <button id="hiw-playpause" class="shrink-0 flex items-center justify-center space-x-2 px-4 py-2 rounded-xl bg-white dark:bg-[#252525] border border-slate-200 dark:border-[#333] text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary shadow-sm" aria-label="Pause animation">
+                            <i class="fa-solid fa-pause"></i>
+                            <span class="text-xs font-bold uppercase tracking-wider" id="hiw-playpause-text">Pause</span>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Phone Animation -->
@@ -793,7 +804,7 @@
         </div>
     </section>
 
-    <!-- The Team Section (FULL COLOR) -->
+<!-- The Team Section -->
     <section id="team" class="min-h-screen flex flex-col justify-center py-20 lg:py-24 px-4 sm:px-6 bg-white/40 dark:bg-darkbg/40 backdrop-blur-sm">
         <div class="max-w-[1200px] w-full mx-auto">
             <div class="text-center mb-12 sm:mb-16 reveal">
@@ -801,14 +812,15 @@
                 <p class="text-base sm:text-lg text-slate-600 dark:text-slate-400">The cybersecurity minds behind the DeepGuard engine.</p>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+            <!-- Developers Top Row -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mb-6 sm:mb-8">
                 <!-- Team Member 1: Afiq -->
                 <div class="group bg-white dark:bg-darkcard border border-slate-200 dark:border-border p-8 sm:p-10 rounded-3xl text-center hover:border-slate-400 dark:hover:border-slate-600 reveal delay-100 flex flex-col items-center shadow-lg transition-all duration-300 hover:-translate-y-2 cursor-pointer">
                     <div class="relative w-32 h-32 sm:w-48 sm:h-48 shrink-0 rounded-full overflow-hidden border-4 border-slate-100 dark:border-slate-800 shadow-md mb-6 sm:mb-8">
-                        <img src="{{ url_for('static', filename='Afiq Picture.jpeg') }}" onerror="this.onerror=null; this.src='{{ url_for('static', filename='Afiq Picture.jpg') }}';" alt="Afiq Danish" class="w-full h-full object-cover transition-all duration-500 group-hover:scale-105">
+                        <img src="{{ url_for('static', filename='Afiq Picture.jpeg') }}" onerror="this.onerror=null; this.src='{{ url_for('static', filename='Afiq Picture.jpg') }}';" alt="Muhammad Afiq Danish Bin Mohd Faizal" class="w-full h-full object-cover transition-all duration-500 group-hover:scale-105">
                     </div>
                     <div>
-                        <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mb-1 sm:mb-2">Afiq Danish</h3>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-1 sm:mb-2">Muhammad Afiq Danish Bin Mohd Faizal</h3>
                         <p class="text-blue-500 text-xs sm:text-sm font-bold mb-4 uppercase tracking-wider">Lead Developer</p>
                         <p class="text-slate-600 dark:text-slate-400 text-sm sm:text-base leading-relaxed">Specializing in machine learning integration, full-stack architecture, and cybersecurity protocols.</p>
                     </div>
@@ -817,10 +829,10 @@
                 <!-- Team Member 2: Haris -->
                 <div class="group bg-white dark:bg-darkcard border border-slate-200 dark:border-border p-8 sm:p-10 rounded-3xl text-center hover:border-slate-400 dark:hover:border-slate-600 reveal delay-200 flex flex-col items-center shadow-lg transition-all duration-300 hover:-translate-y-2 cursor-pointer">
                     <div class="relative w-32 h-32 sm:w-48 sm:h-48 shrink-0 rounded-full overflow-hidden border-4 border-slate-100 dark:border-slate-800 shadow-md mb-6 sm:mb-8">
-                        <img src="{{ url_for('static', filename='Haris Picture.jpeg') }}" onerror="this.onerror=null; this.src='{{ url_for('static', filename='Haris Picture.jpg') }}';" alt="Haris Iskandar" class="w-full h-full object-cover transition-all duration-500 group-hover:scale-105">
+                        <img src="{{ url_for('static', filename='Haris Picture.jpeg') }}" onerror="this.onerror=null; this.src='{{ url_for('static', filename='Haris Picture.jpg') }}';" alt="Haris Iskandar Bin Mokhtar Idham" class="w-full h-full object-cover transition-all duration-500 group-hover:scale-105">
                     </div>
                     <div>
-                        <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mb-1 sm:mb-2">Haris Iskandar</h3>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-1 sm:mb-2">Haris Iskandar Bin Mokhtar Idham</h3>
                         <p class="text-purple-500 text-xs sm:text-sm font-bold mb-4 uppercase tracking-wider">Security Engineer</p>
                         <p class="text-slate-600 dark:text-slate-400 text-sm sm:text-base leading-relaxed">Focused on data forensics, neural network training datasets, and threat detection algorithms.</p>
                     </div>
@@ -829,15 +841,30 @@
                 <!-- Team Member 3: Megat -->
                 <div class="group bg-white dark:bg-darkcard border border-slate-200 dark:border-border p-8 sm:p-10 rounded-3xl text-center hover:border-slate-400 dark:hover:border-slate-600 reveal delay-300 flex flex-col items-center shadow-lg transition-all duration-300 hover:-translate-y-2 cursor-pointer">
                     <div class="relative w-32 h-32 sm:w-48 sm:h-48 shrink-0 rounded-full overflow-hidden border-4 border-slate-100 dark:border-slate-800 shadow-md mb-6 sm:mb-8">
-                        <img src="{{ url_for('static', filename='Megat Picture.jpeg') }}" onerror="this.onerror=null; this.src='{{ url_for('static', filename='Megat Picture.jpg') }}';" alt="Megat Daniel" class="w-full h-full object-cover transition-all duration-500 group-hover:scale-105">
+                        <img src="{{ url_for('static', filename='Megat Picture.jpeg') }}" onerror="this.onerror=null; this.src='{{ url_for('static', filename='Megat Picture.jpg') }}';" alt="Megat Daniel Iskandar Bin Megat Badrul Hisham Iskandar" class="w-full h-full object-cover transition-all duration-500 group-hover:scale-105">
                     </div>
                     <div>
-                        <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mb-1 sm:mb-2">Megat Daniel</h3>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-1 sm:mb-2">Megat Daniel Iskandar Bin Megat Badrul Hisham Iskandar</h3>
                         <p class="text-emerald-500 text-xs sm:text-sm font-bold mb-4 uppercase tracking-wider">Systems Architect</p>
                         <p class="text-slate-600 dark:text-slate-400 text-sm sm:text-base leading-relaxed">Managing cloud infrastructure, model deployment pipelines, and database optimization.</p>
                     </div>
                 </div>
             </div>
+
+            <!-- Supervisor Bottom Row (Centered) -->
+            <div class="flex justify-center reveal delay-400 w-full">
+                <div class="group bg-white dark:bg-darkcard border border-slate-200 dark:border-border p-8 sm:p-10 rounded-3xl text-center hover:border-slate-400 dark:hover:border-slate-600 flex flex-col items-center shadow-lg transition-all duration-300 hover:-translate-y-2 cursor-pointer w-full md:w-1/3 min-w-[280px]">
+                    <div class="relative w-32 h-32 sm:w-48 sm:h-48 shrink-0 rounded-full overflow-hidden border-4 border-slate-100 dark:border-slate-800 shadow-md mb-6 sm:mb-8">
+                        <img src="{{ url_for('static', filename='ms_dayana.webp') }}" onerror="this.onerror=null; this.src='{{ url_for('static', filename='ms_dayana.jpg') }}';" alt="Nur Dayana Bt Ahmad Daud" class="w-full h-full object-cover transition-all duration-500 group-hover:scale-105">
+                    </div>
+                    <div>
+                        <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mb-1 sm:mb-2">Nur Dayana Bt Ahmad Daud</h3>
+                        <p class="text-amber-500 text-xs sm:text-sm font-bold mb-4 uppercase tracking-wider">Project Supervisor</p>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm sm:text-base leading-relaxed">Providing strategic oversight and ensuring academic excellence for the DeepGuard project.</p>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </section>
 
@@ -926,7 +953,7 @@
                         <span class="text-lg font-bold text-slate-900 dark:text-white tracking-widest uppercase font-sans">DeepGuard</span>
                     </div>
                     <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed max-w-sm">
-                        Let AI protect you from vishing scams. Built by GMI students to keep Malaysians a step ahead of voice fraud.
+                        Defending against synthetic audio threats through advanced deep learning. A German-Malaysian Institute (GMI) student project dedicated to combating next-generation vishing attacks.
                     </p>
                 </div>
 
@@ -959,9 +986,6 @@
                         <div class="flex space-x-4">
                             <a href="mailto:deepguard.my@gmail.com" class="w-11 h-11 rounded-full border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all">
                                 <i class="fa-regular fa-envelope"></i>
-                            </a>
-                            <a href="https://github.com/Ne9oo/DeepGuard" target="_blank" class="w-11 h-11 rounded-full border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all">
-                                <i class="fa-brands fa-github"></i>
                             </a>
                         </div>
                     </div>
@@ -1018,7 +1042,6 @@
             function toggleMobileMenu() {
                 if (mobileMenu.classList.contains('hidden')) {
                     mobileMenu.classList.remove('hidden');
-                    // Small delay to allow display block to apply before animating opacity/transform
                     setTimeout(() => {
                         mobileMenu.classList.remove('opacity-0', 'scale-95');
                         mobileMenu.classList.add('opacity-100', 'scale-100');
@@ -1029,14 +1052,13 @@
                     mobileMenu.classList.add('opacity-0', 'scale-95');
                     setTimeout(() => {
                         mobileMenu.classList.add('hidden');
-                    }, 300); // Wait for transition to finish
+                    }, 300);
                     mobileMenuIcon.classList.replace('fa-xmark', 'fa-bars');
                 }
             }
 
             mobileMenuBtn.addEventListener('click', toggleMobileMenu);
 
-            // Close mobile menu when clicking a link
             mobileLinks.forEach(link => {
                 link.addEventListener('click', toggleMobileMenu);
             });
@@ -1057,7 +1079,6 @@
                     if (diff === -3) diff = 1; 
                     if (Math.abs(diff) === 2) diff = 2; 
 
-                    // Adjust translation percentage for mobile to keep cards on screen
                     const translateAmount = isMobile ? '103%' : '110%';
 
                     if (diff === 0) {
@@ -1115,7 +1136,6 @@
                  });
             });
 
-            // Update on resize to fix carousel spacing dynamically
             window.addEventListener('resize', updateCarousel);
             updateCarousel();
 
@@ -1164,13 +1184,11 @@
                 ctx.clearRect(0, 0, width, height);
                 
                 const isMobile = window.innerWidth < 768;
-                // Speed up slightly on mobile for a tighter effect
                 time += isMobile ? 0.02 : 0.015; 
                 
                 ctx.globalCompositeOperation = 'screen';
                 ctx.lineWidth = isMobile ? 1.5 : 2;
 
-                // Dynamically scale wave height down for mobile viewports
                 const baseAmp1 = isMobile ? 60 : 150;
                 const stepAmp1 = isMobile ? 8 : 15;
                 const baseAmp2 = isMobile ? 50 : 120;
@@ -1222,15 +1240,20 @@
         const stepEls = Array.from(root.querySelectorAll('.hiw-step'));
         const screen = $('hiw-screen');
 
-        let timers = [], cur = -1, inView = false, countId = 0;
+        let timers = [], cur = -1, inView = false, countId = 0, isPaused = false;
+        let stepStartTime = 0, pausedElapsed = 0, currentStepActions = [];
 
         /* ---------- helpers ---------- */
-        const at = (ms, fn) => timers.push(setTimeout(fn, reduce ? 0 : ms));
-        const clearAll = () => { timers.forEach(clearTimeout); timers = []; countId++; };
+        const clearAll = (clearCount = true) => { timers.forEach(clearTimeout); timers = []; if(clearCount) countId++; };
         const show = (id, on) => { const n = $(id); if (n) n.classList.toggle('is-on', !!on); };
         const showScene = (name) => scenes.forEach(s => s.classList.toggle('is-on', s.dataset.scene === name));
         const showPage = (name) => pages.forEach(p => p.classList.toggle('is-on', p.dataset.page === name));
         const setUrl = (t) => { $('hiw-url').textContent = t; };
+
+        const at = (ms, fn) => {
+            currentStepActions.push({ ms, fn });
+            if (pausedElapsed === 0) timers.push(setTimeout(fn, reduce ? 0 : ms));
+        };
 
         function typeText(text, start, per) {
             for (let i = 0; i < text.length; i++) at(start + i * per, () => setUrl(text.slice(0, i + 1)));
@@ -1255,19 +1278,29 @@
         function countTo(node, to, ms) {
             const id = ++countId;
             if (reduce) { node.textContent = to.toFixed(1); return; }
-            const t0 = performance.now();
-            (function frame(t) {
+            let t0 = performance.now();
+            let elapsedBeforePause = 0;
+            
+            function frame(t) {
                 if (id !== countId) return;
-                const p = Math.min(1, (t - t0) / ms);
+                if (isPaused) {
+                    t0 = t - elapsedBeforePause;
+                    requestAnimationFrame(frame);
+                    return;
+                }
+                elapsedBeforePause = t - t0;
+                const p = Math.min(1, elapsedBeforePause / ms);
                 node.textContent = (to * (1 - Math.pow(1 - p, 3))).toFixed(1);
                 if (p < 1) requestAnimationFrame(frame);
-            })(t0);
+            }
+            requestAnimationFrame(frame);
         }
 
         function resetChat() {
             show('hiw-menu', false); show('hiw-toast1', false);
             show('hiw-done', true); show('hiw-fail', true);
-            $('hiw-rewind').classList.remove('is-on');$('hiw-voice').classList.remove('ring-2', 'ring-primary');
+            $('hiw-rewind').classList.remove('is-on');
+            $('hiw-voice').classList.remove('ring-2', 'ring-primary');
         }
         function resetOverlays() {
             show('hiw-report', false); show('hiw-toast-dl', false);
@@ -1275,7 +1308,7 @@
             $('hiw-rewind').classList.remove('is-on');
         }
         function resetDash() {
-            const f = $('hiw-file'), d = $('hiw-drop'), u =$('hiw-up');
+            const f = $('hiw-file'), d = $('hiw-drop'), u = $('hiw-up');
             f.classList.remove('fly', 'drop'); d.classList.remove('is-over');
             u.style.transition = 'none'; u.style.width = '0%'; void u.offsetWidth; u.style.transition = 'width 1.4s ease';
         }
@@ -1311,7 +1344,7 @@
             { dur: 5400, run() {
                 resetOverlays(); resetDash(); showScene('browser'); showPage('dash'); setUrl('deepguard.my'); load(0, true);
                 at(500, () => $('hiw-file').classList.add('fly'));
-                at(1700, () => { $('hiw-drop').classList.add('is-over');$('hiw-file').classList.add('drop'); });
+                at(1700, () => { $('hiw-drop').classList.add('is-over'); $('hiw-file').classList.add('drop'); });
                 at(2300, () => { $('hiw-up').style.width = '100%'; });
             } },
             { dur: 11200, run() {
@@ -1319,7 +1352,7 @@
                 at(60, () => { const b = $('hiw-bar'); b.style.transition = 'width 3.4s ease-in-out'; b.style.width = '100%'; });
                 at(1300, () => { $('hiw-status').textContent = 'Extracting mel-spectrogram...'; });
                 at(2500, () => { $('hiw-status').textContent = 'Running CNN inference...'; });
-                at(3900, () => { showPage('result'); $('hiw-prob').style.width = '97.3\%'; countTo($('hiw-num'), 97.3, 1400); });
+                at(3900, () => { showPage('result'); $('hiw-prob').style.width = '97.3%'; countTo($('hiw-num'), 97.3, 1400); });
                 at(6300, () => {
                     const s = $('hiw-result-scroll'), box = s.parentElement;
                     const dist = Math.max(0, s.offsetHeight - box.offsetHeight + 12);
@@ -1336,29 +1369,109 @@
             } }
         ];
 
-        function progress(i, dur) {
+        function progress(i, dur, resumeElapsed = 0) {
             stepEls.forEach((s, k) => {
                 const p = s.querySelector('.hiw-prog');
-                p.style.transition = 'none';
-                p.style.width = k < i ? '100%' : '0%';
+                if (k !== i) {
+                    p.style.transition = 'none';
+                    p.style.width = k < i ? '100%' : '0%';
+                }
             });
             const p = stepEls[i].querySelector('.hiw-prog');
-            void p.offsetWidth;
-            if (!reduce) p.style.transition = 'width ' + dur + 'ms linear';
-            p.style.width = '100%';
+            if (resumeElapsed === 0) {
+                p.style.transition = 'none';
+                p.style.width = '0%';
+                void p.offsetWidth;
+                if (!reduce) p.style.transition = 'width ' + dur + 'ms linear';
+                p.style.width = '100%';
+            } else {
+                const remainingTime = dur - resumeElapsed;
+                if (!reduce && remainingTime > 0) {
+                    p.style.transition = 'width ' + remainingTime + 'ms linear';
+                    p.style.width = '100%';
+                }
+            }
         }
 
         function go(i) {
-            clearAll();
+            clearAll(true);
             cur = i;
+            pausedElapsed = 0;
+            currentStepActions = [];
+            stepStartTime = Date.now();
+            
             stepEls.forEach((s, k) => {
                 s.classList.toggle('is-active', k === i);
                 if (k === i) s.setAttribute('aria-current', 'step'); else s.removeAttribute('aria-current');
             });
             progress(i, STEPS[i].dur);
             STEPS[i].run();
-            if (!reduce && inView) timers.push(setTimeout(() => go((i + 1) % STEPS.length), STEPS[i].dur));
+            if (!reduce && inView && !isPaused) {
+                timers.push(setTimeout(() => {
+                    if (!isPaused) go((i + 1) % STEPS.length);
+                }, STEPS[i].dur));
+            }
         }
+
+        /* ---------- Custom Pause/Resume Control ---------- */
+        const playPauseBtn = $('hiw-playpause');
+        const playPauseIcon = playPauseBtn ? playPauseBtn.querySelector('i') : null;
+        const playPauseText = $('hiw-playpause-text');
+
+        function togglePlayPause() {
+            isPaused = !isPaused;
+            if (playPauseIcon && playPauseText) {
+                if (isPaused) {
+                    // Pause Triggered
+                    playPauseIcon.classList.replace('fa-pause', 'fa-play');
+                    playPauseText.textContent = 'Play';
+                    
+                    // Track exactly how much time elapsed before they paused
+                    pausedElapsed += Date.now() - stepStartTime;
+                    
+                    clearAll(false); // Stop all future setTimeouts, but DO NOT clear counter ID
+                    
+                    // Freeze the master progress bar physically exactly where it is
+                    const p = stepEls[cur] ? stepEls[cur].querySelector('.hiw-prog') : null;
+                    if (p) {
+                        const computedWidth = window.getComputedStyle(p).width;
+                        p.style.transition = 'none';
+                        p.style.width = computedWidth;
+                    }
+                    
+                    // Pause CSS keyframe animations globally on the screen
+                    screen.classList.add('is-paused');
+                    
+                } else {
+                    // Resume Triggered
+                    playPauseIcon.classList.replace('fa-play', 'fa-pause');
+                    playPauseText.textContent = 'Pause';
+                    
+                    stepStartTime = Date.now(); // Reset the start clock for the remainder
+                    
+                    // Resume progress bar with new calculated time
+                    progress(cur, STEPS[cur].dur, pausedElapsed);
+                    
+                    // Un-pause CSS animations
+                    screen.classList.remove('is-paused');
+                    
+                    // Instantly calculate and reschedule only the actions that haven't happened yet
+                    currentStepActions.forEach(action => {
+                        if (action.ms > pausedElapsed) {
+                            timers.push(setTimeout(action.fn, action.ms - pausedElapsed));
+                        }
+                    });
+                    
+                    // Reschedule the jump to the next step
+                    const remainingStepTime = STEPS[cur].dur - pausedElapsed;
+                    timers.push(setTimeout(() => {
+                        if (!isPaused) go((cur + 1) % STEPS.length);
+                    }, remainingStepTime > 0 ? remainingStepTime : 0));
+                }
+            }
+        }
+
+        if (playPauseBtn) playPauseBtn.addEventListener('click', togglePlayPause);
 
         /* ---------- spectrogram (illustrative, drawn once) ---------- */
         function drawSpec() {
@@ -1394,15 +1507,30 @@
         drawSpec();
 
         /* ---------- controls ---------- */
-        stepEls.forEach((btn, i) => btn.addEventListener('click', () => { inView = true; go(i); }));
+        stepEls.forEach((btn, i) => btn.addEventListener('click', () => { 
+            inView = true; 
+            isPaused = false;
+            if (playPauseIcon && playPauseText) {
+                playPauseIcon.classList.replace('fa-play', 'fa-pause');
+                playPauseText.textContent = 'Pause';
+            }
+            screen.classList.remove('is-paused');
+            go(i); 
+        }));
 
         if ('IntersectionObserver' in window) {
             new IntersectionObserver((entries) => {
                 entries.forEach((en) => {
-                    if (en.isIntersecting && !inView) { inView = true; go(cur < 0 ? 0 : cur); }
-                    else if (!en.isIntersecting && inView) { inView = false; clearAll(); }
+                    if (en.isIntersecting && !inView) { 
+                        inView = true; 
+                        if (!isPaused) go(cur < 0 ? 0 : cur); 
+                    }
+                    else if (!en.isIntersecting && inView) { 
+                        inView = false; 
+                        clearAll(); 
+                    }
                 });
-            }, { threshold: 0.3 }).observe(root);
+            }, { threshold: 0.05 }).observe(root); 
         } else {
             inView = true; go(0);
         }

@@ -71,11 +71,11 @@
                 <a href="/history" class="flex items-center space-x-4 px-4 py-3 bg-primary/10 dark:bg-primary/20 text-primary-600 dark:text-primary rounded-xl font-medium border border-primary/20 transition-all">
                     <i class="fa-solid fa-clock-rotate-left w-5 text-center"></i><span class="text-sm">Scan History</span>
                 </a>
-                <a href="/subscription" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl font-medium transition-all group">
-                    <i class="fa-solid fa-crown w-5 text-center group-hover:text-primary transition-colors"></i><span class="text-sm">Subscription</span>
+                <a href="/topup" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl font-medium transition-all group">
+                    <i class="fa-solid fa-coins w-5 text-center group-hover:text-primary transition-colors"></i><span class="text-sm">Top Up Credits</span>
                 </a>
                 
-                <a href="/profile" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl font-medium transition-all group">
+                <a href="/profile" class="flex items-center space-x-4 px-4 py-3 mt-6 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl font-medium transition-all group">
                     <i class="fa-regular fa-id-badge w-5 text-center group-hover:text-primary transition-colors"></i><span class="text-sm">Profile</span>
                 </a>
                 <a href="/settings" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl font-medium transition-all group">
@@ -91,18 +91,13 @@
         </div>
 
         <div class="p-6 border-t border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-deepbg/30">
-            <div class="flex justify-between items-end mb-2">
-                <span class="text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Scan Limit</span>
-                <span id="scan-count-text" class="text-xs text-primary font-bold">{% if current_user.is_pro %}Unlimited{% else %}{{ current_user.scans_used }} / 5{% endif %}</span>
+            <div class="flex flex-col items-center justify-center p-4 bg-white dark:bg-[#1a1a1a] border border-slate-200 dark:border-[#2a2a2a] rounded-2xl mb-4">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Available Credits</span>
+                <span class="text-3xl font-tech font-bold text-primary">{{ current_user.credits }}</span>
             </div>
-            <div class="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-1.5 mb-3 overflow-hidden">
-                <div id="scan-progress-bar" class="bg-primary h-full rounded-full transition-all duration-500" style="width: {% if current_user.is_pro %}100%{% else %}{{ (current_user.scans_used / 5) * 100 }}%{% endif %}"></div>
-            </div>
-            {% if not current_user.is_pro %}
-            <a href="/subscription" class="text-xs text-slate-500 dark:text-slate-400 hover:text-primary font-medium transition-colors flex items-center group">
-                Upgrade to Pro <i class="fa-solid fa-arrow-right ml-1.5 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all"></i>
+            <a href="/topup" class="w-full block text-center bg-primary hover:bg-primaryHover text-white py-2.5 rounded-xl text-sm font-semibold transition-colors shadow-md">
+                Add Credits
             </a>
-            {% endif %}
         </div>
     </aside>
 
@@ -122,7 +117,7 @@
             <div class="flex items-center space-x-3 sm:space-x-5">
                 <div class="text-right hidden sm:block">
                     <p class="text-sm font-semibold text-slate-900 dark:text-white">{{ current_user.username }}</p>
-                    <p class="text-xs text-primary font-medium">{% if current_user.is_pro %}Pro Tier{% else %}Basic Tier{% endif %}</p>
+                    <p class="text-xs text-primary font-medium">Credits: {{ current_user.credits }}</p>
                 </div>
                 <div class="h-10 w-px bg-slate-200 dark:bg-white/10 hidden sm:block"></div>
                 <a href="/logout" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-deepbg border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-500 hover:text-alert hover:border-alert/30 transition-all" title="Log Out">

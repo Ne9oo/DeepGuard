@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepGuard | Top Up Credits</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = { 
+            darkMode: 'class', 
+            theme: { 
+                extend: { 
+                    colors: { 
+                        deepbg: '#030712', 
+                        cardbg: '#0B1120',
+                        primary: '#3b82f6', 
+                        alert: '#ef4444', 
+                        safe: '#10b981',
+                        caution: '#f59e0b'
+                    }, 
+                    fontFamily: { 
+                        sans: ['Inter', 'sans-serif'], 
+                        tech: ['Orbitron', 'sans-serif'] 
+                    }
+                } 
+            } 
+        }
+    </script>
+    <script>
+        if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.classList.remove('dark');
+        } else {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+</head>
+<body class="bg-slate-50 dark:bg-deepbg text-slate-800 dark:text-slate-300 font-sans antialiased h-screen overflow-hidden flex transition-colors duration-300 relative w-full">
+
+    <div class="absolute inset-0 z-0 pointer-events-none flex items-center justify-center">
+        <div class="absolute inset-0 hidden dark:block bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMCAwaDQwdjQwaC00MHoiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNMCAzOWg0MHYxSDB6TDM5IDB2NDBoMXoiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wMykiLz48L3N2Zz4=')]"></div>
+    </div>
+
+    <!-- Mobile Overlay -->
+    <div id="mobile-overlay" class="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-sm z-40 hidden lg:hidden transition-opacity" onclick="toggleSidebar()"></div>
+
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 h-full bg-white/95 dark:bg-cardbg/95 backdrop-blur-3xl border-r border-slate-200 dark:border-white/5 flex flex-col justify-between transform -translate-x-full lg:relative lg:translate-x-0 transition-transform duration-300">
+        <div>
+            <div class="h-24 flex items-center justify-between px-8 border-b border-slate-200 dark:border-white/5">
+                <span class="text-xl font-bold text-slate-900 dark:text-white tracking-wider font-tech pt-1">DEEPGUARD</span>
+                <button onclick="toggleSidebar()" class="lg:hidden text-slate-500 hover:text-alert transition-colors focus:outline-none">
+                    <i class="fa-solid fa-xmark text-2xl"></i>
+                </button>
+            </div>
+
+            <div class="p-6 space-y-2 overflow-y-auto">
+                <p class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4 px-4">Core Engine</p>
+                <a href="/dashboard" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl font-medium transition-all group">
+                    <i class="fa-solid fa-wave-square w-5 text-center group-hover:text-primary transition-colors"></i><span class="text-sm">Audio Scanner</span>
+                </a>
+                <a href="/history" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl font-medium transition-all group">
+                    <i class="fa-solid fa-clock-rotate-left w-5 text-center group-hover:text-primary transition-colors"></i><span class="text-sm">Scan History</span>
+                </a>
+                <a href="/topup" class="flex items-center space-x-4 px-4 py-3 bg-primary/10 dark:bg-primary/20 text-primary-600 dark:text-primary rounded-xl font-medium border border-primary/20 transition-all">
+                    <i class="fa-solid fa-coins w-5 text-center"></i><span class="text-sm">Top Up Credits</span>
+                </a>
+                
+                <a href="/profile" class="flex items-center space-x-4 px-4 py-3 mt-6 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl font-medium transition-all group">
+                    <i class="fa-regular fa-id-badge w-5 text-center group-hover:text-primary transition-colors"></i><span class="text-sm">Profile</span>
+                </a>
+                <a href="/settings" class="flex items-center space-x-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl font-medium transition-all group">
+                    <i class="fa-solid fa-gear w-5 text-center group-hover:text-primary transition-colors"></i><span class="text-sm">Settings</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="p-6 border-t border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-deepbg/30">
+            <div class="flex flex-col items-center justify-center p-4 bg-white dark:bg-[#1a1a1a] border border-slate-200 dark:border-[#2a2a2a] rounded-2xl mb-4">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Available Credits</span>
+                <span class="text-3xl font-tech font-bold text-primary">{{ current_user.credits }}</span>
+            </div>
+        </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col relative z-10 h-full overflow-hidden w-full">
+        
+        <header class="h-24 px-4 sm:px-10 flex items-center justify-between border-b border-slate-200/50 dark:border-white/5 bg-white/40 dark:bg-cardbg/40 backdrop-blur-xl">
+            <div class="flex items-center space-x-4">
+                <button onclick="toggleSidebar()" class="lg:hidden text-slate-600 dark:text-slate-300 hover:text-primary focus:outline-none">
+                    <i class="fa-solid fa-bars text-2xl"></i>
+                </button>
+                <div>
+                    <h2 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">Top Up Credits</h2>
+                    <p class="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 hidden sm:block">Purchase forensic analysis tokens.</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-3 sm:space-x-5">
+                <div class="text-right hidden sm:block">
+                    <p class="text-sm font-semibold text-slate-900 dark:text-white">{{ current_user.username }}</p>
+                    <p class="text-xs text-primary font-medium">Credits: {{ current_user.credits }}</p>
+                </div>
+                <div class="h-10 w-px bg-slate-200 dark:bg-white/10 hidden sm:block"></div>
+                <a href="/logout" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-deepbg border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-500 hover:text-alert hover:border-alert/30 transition-all" title="Log Out">
+                    <i class="fa-solid fa-power-off text-sm"></i>
+                </a>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-10 w-full">
+            <div class="max-w-6xl mx-auto">
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="mb-8 px-5 py-4 rounded-xl flex items-center justify-between shadow-sm {% if category == 'alert' %}bg-alert-50 dark:bg-alert/10 text-alert-600 dark:text-alert border border-alert-200 dark:border-alert/30{% else %}bg-safe-50 dark:bg-safe/10 text-safe-600 dark:text-safe border border-safe-200 dark:border-safe/30{% endif %}">
+                                <span class="font-medium flex items-center"><i class="fa-solid fa-circle-check mr-3"></i> {{ message }}</span>
+                                <button onclick="this.parentElement.style.display='none'" class="hover:opacity-70 transition-opacity"><i class="fa-solid fa-xmark"></i></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
+                    <!-- Single Pack -->
+                    <div class="bg-white/60 dark:bg-cardbg/40 backdrop-blur-xl border border-slate-200 dark:border-white/5 p-8 rounded-3xl text-center flex flex-col justify-between shadow-sm hover:border-slate-300 dark:hover:border-slate-600 transition-colors">
+                        <div>
+                            <h4 class="text-slate-500 dark:text-slate-400 text-sm font-bold uppercase tracking-widest mb-2">Single</h4>
+                            <div class="text-3xl font-bold text-slate-900 dark:text-white mb-2">RM 5</div>
+                            <p class="text-xs text-slate-500 mb-6">Pay as you go.</p>
+                        </div>
+                        <div class="mb-10">
+                            <span class="text-5xl font-black text-slate-800 dark:text-slate-100 font-tech">1</span>
+                            <span class="block text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-widest mt-2">Credit</span>
+                        </div>
+                        <form action="{{ url_for('topup') }}" method="POST">
+                            <input type="hidden" name="package" value="single">
+                            <button type="submit" class="w-full block py-3 px-4 rounded-xl bg-slate-100 dark:bg-[#1e1e1e] text-slate-800 dark:text-white hover:bg-slate-200 dark:hover:bg-[#2a2a2a] text-sm font-bold tracking-wide transition-colors border border-slate-200 dark:border-white/5">Purchase</button>
+                        </form>
+                    </div>
+
+                    <!-- Starter Bundle -->
+                    <div class="relative bg-gradient-to-b from-white to-slate-50 dark:from-cardbg dark:to-deepbg backdrop-blur-xl border border-primary/50 dark:border-primary p-8 rounded-3xl text-center flex flex-col justify-between shadow-[0_0_30px_rgba(59,130,246,0.15)] shadow-primary/20 scale-[1.02] z-10">
+                        <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-primary text-white px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border border-primary-600 shadow-lg shadow-primary/30">Popular</div>
+                        <div>
+                            <h4 class="text-primary text-sm font-bold uppercase tracking-widest mb-2">Starter</h4>
+                            <div class="text-3xl font-bold text-slate-900 dark:text-white mb-2">RM 20</div>
+                            <p class="text-xs text-safe font-medium mb-6">Save RM 5 (RM 4/credit)</p>
+                        </div>
+                        <div class="mb-10">
+                            <span class="text-5xl font-black text-slate-800 dark:text-white font-tech">5</span>
+                            <span class="block text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-widest mt-2">Credits</span>
+                        </div>
+                        <form action="{{ url_for('topup') }}" method="POST">
+                            <input type="hidden" name="package" value="starter">
+                            <button type="submit" class="w-full block py-3 px-4 rounded-xl bg-primary hover:bg-primaryHover text-white text-sm font-bold tracking-wide transition-colors shadow-md">Purchase Bundle</button>
+                        </form>
+                    </div>
+
+                    <!-- Value Bundle -->
+                    <div class="bg-white/60 dark:bg-cardbg/40 backdrop-blur-xl border border-slate-200 dark:border-white/5 p-8 rounded-3xl text-center flex flex-col justify-between shadow-sm hover:border-slate-300 dark:hover:border-slate-600 transition-colors">
+                        <div>
+                            <h4 class="text-slate-500 dark:text-slate-400 text-sm font-bold uppercase tracking-widest mb-2">Value</h4>
+                            <div class="text-3xl font-bold text-slate-900 dark:text-white mb-2">RM 50</div>
+                            <p class="text-xs text-safe font-medium mb-6">Save RM 25 (RM 3.3/credit)</p>
+                        </div>
+                        <div class="mb-10">
+                            <span class="text-5xl font-black text-slate-800 dark:text-slate-100 font-tech">15</span>
+                            <span class="block text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-widest mt-2">Credits</span>
+                        </div>
+                        <form action="{{ url_for('topup') }}" method="POST">
+                            <input type="hidden" name="package" value="value">
+                            <button type="submit" class="w-full block py-3 px-4 rounded-xl bg-slate-100 dark:bg-[#1e1e1e] text-slate-800 dark:text-white hover:bg-slate-200 dark:hover:bg-[#2a2a2a] text-sm font-bold tracking-wide transition-colors border border-slate-200 dark:border-white/5">Purchase Bundle</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="mt-10 bg-slate-100 dark:bg-deepbg border border-slate-200 dark:border-white/5 rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-1"><i class="fa-solid fa-circle-info text-primary mr-2"></i>Token Economy</h4>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Standard scans consume <strong class="text-slate-700 dark:text-slate-300">1 Credit</strong>. High-accuracy Deep Scans consume <strong class="text-slate-700 dark:text-slate-300">2 Credits</strong>. Credits never expire.</p>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+    </script>
+</body>
+</html>
