@@ -342,7 +342,6 @@ def reset_request():
         user = User.query.filter_by(email=email).first()
         if user:
             send_reset_email(user)
-        # We always show the same message whether the email exists or not to prevent bad actors from guessing valid emails
         flash('If an account with that email exists, a password reset link has been sent.', 'safe')
         return redirect(url_for('login'))
     return render_template('reset_request.html')
@@ -352,7 +351,6 @@ def reset_token(token):
     if current_user.is_authenticated:
         return redirect(url_for('dashboard'))
     try:
-        # Token expires after 30 minutes (1800 seconds)
         email = s.loads(token, salt='password-reset', max_age=1800)
     except SignatureExpired:
         flash('The password reset link has expired. Please request a new one.', 'alert')
@@ -639,13 +637,17 @@ def admin_dashboard():
 def page_not_found(e):
     return render_template('404.html'), 404
 
+# ==========================================
+# DATABASE INITIALIZATION & STARTUP
+# ==========================================
+with app.app_context():
+    db.create_all()
+    admin_email = 'admin@deepguard.com'
+    if not User.query.filter_by(email=admin_email).first():
+        hashed_pw = bcrypt.generate_password_hash('admin123').decode('utf-8')
+        admin_user = User(username='Admin', email=admin_email, password=hashed_pw, is_admin=True, is_verified=True, credits=9999)
+        db.session.add(admin_user)
+        db.session.commit()
+
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-        admin_email = 'admin@deepguard.com'
-        if not User.query.filter_by(email=admin_email).first():
-            hashed_pw = bcrypt.generate_password_hash('admin123').decode('utf-8')
-            admin_user = User(username='Admin', email=admin_email, password=hashed_pw, is_admin=True, is_verified=True, credits=9999)
-            db.session.add(admin_user)
-            db.session.commit()
     app.run(debug=True)
