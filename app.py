@@ -290,6 +290,13 @@ def login():
         password = request.form.get('password')
         user = User.query.filter_by(email=email).first()
         if user and bcrypt.check_password_hash(user.password, password):
+            
+            # SECURE ADMIN PROMOTION: Auto-grant admin rights to the group email
+            if user.email == 'deepguard.my@gmail.com' and not user.is_admin:
+                user.is_admin = True
+                user.is_verified = True # Auto-verify the admin account
+                db.session.commit()
+                
             login_user(user)
             if not user.is_verified:
                 return redirect(url_for('unverified'))
@@ -399,7 +406,8 @@ def dashboard():
 def scan_audio():
     scan_cost = 2 if current_user.scan_mode in ['pro', 'deep'] else 1
     
-    if current_user.credits < scan_cost:
+    # 1. Bypass the insufficient funds check for admins
+    if not current_user.is_admin and current_user.credits < scan_cost:
         return jsonify({'success': False, 'message': f'Insufficient credits. This scan requires {scan_cost} credit(s). Please top up your balance.'}), 403
 
     if 'audio_file' not in request.files:
@@ -419,7 +427,10 @@ def scan_audio():
         analysis = analyze_audio_forensics(filepath, mode=current_user.scan_mode)
         new_scan = ScanRecord(filename=filename, result=analysis['result'], confidence=analysis['confidence'], user_id=current_user.id)
         
-        current_user.credits -= scan_cost
+        # 2. Only deduct credits if the user is a regular user
+        if not current_user.is_admin:
+            current_user.credits -= scan_cost
+            
         current_user.scans_used += 1
         
         db.session.add(new_scan)
@@ -696,12 +707,7 @@ def page_not_found(e):
 # ==========================================
 with app.app_context():
     db.create_all()
-    admin_email = 'admin@deepguard.com'
-    if not User.query.filter_by(email=admin_email).first():
-        hashed_pw = bcrypt.generate_password_hash('admin123').decode('utf-8')
-        admin_user = User(username='Admin', email=admin_email, password=hashed_pw, is_admin=True, is_verified=True, credits=9999)
-        db.session.add(admin_user)
-        db.session.commit()
+    # The hardcoded admin123 account has been permanently removed for security.
 
 if __name__ == '__main__':
     app.run(debug=True)

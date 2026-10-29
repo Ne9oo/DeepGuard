@@ -95,7 +95,11 @@
         <div class="p-6 border-t border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-deepbg/30">
             <div class="flex flex-col items-center justify-center p-4 bg-white dark:bg-[#1a1a1a] border border-slate-200 dark:border-[#2a2a2a] rounded-2xl mb-4">
                 <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Available Credits</span>
+                {% if current_user.is_admin %}
+                <span class="text-3xl font-tech font-bold text-primary"><i class="fa-solid fa-infinity"></i></span>
+                {% else %}
                 <span class="text-3xl font-tech font-bold text-primary">{{ current_user.credits }}</span>
+                {% endif %}
             </div>
             <a href="/topup" class="w-full block text-center bg-primary hover:bg-primaryHover text-white py-2.5 rounded-xl text-sm font-semibold transition-colors shadow-md">
                 Add Credits
@@ -121,7 +125,13 @@
             <div class="flex items-center space-x-3 sm:space-x-5">
                 <div class="text-right hidden sm:block">
                     <p class="text-sm font-semibold text-slate-900 dark:text-white">{{ current_user.username }}</p>
-                    <p class="text-xs text-primary font-medium">Credits: {{ current_user.credits }}</p>
+                    <p class="text-xs text-primary font-medium">
+                        {% if current_user.is_admin %}
+                            Credits: <i class="fa-solid fa-infinity ml-1"></i>
+                        {% else %}
+                            Credits: {{ current_user.credits }}
+                        {% endif %}
+                    </p>
                 </div>
                 <div class="h-10 w-px bg-slate-200 dark:bg-white/10 hidden sm:block"></div>
                 <a href="/logout" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-deepbg border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-500 hover:text-alert hover:border-alert/30 transition-all" title="Log Out">
@@ -251,7 +261,11 @@
                             <div class="bg-white/60 dark:bg-cardbg/40 backdrop-blur-md border border-slate-200 dark:border-white/5 rounded-2xl p-5 shadow-sm text-center">
                                 <i class="fa-solid fa-coins text-primary mb-2 text-xl"></i>
                                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Credits</p>
-                                <p class="text-2xl font-tech font-bold text-slate-900 dark:text-white">{{ current_user.credits }}</p>
+                                {% if current_user.is_admin %}
+                                    <p class="text-2xl font-tech font-bold text-slate-900 dark:text-white"><i class="fa-solid fa-infinity"></i></p>
+                                {% else %}
+                                    <p class="text-2xl font-tech font-bold text-slate-900 dark:text-white">{{ current_user.credits }}</p>
+                                {% endif %}
                             </div>
                             <div class="bg-white/60 dark:bg-cardbg/40 backdrop-blur-md border border-slate-200 dark:border-white/5 rounded-2xl p-5 shadow-sm text-center">
                                 <i class="fa-solid fa-chart-simple text-safe mb-2 text-xl"></i>
