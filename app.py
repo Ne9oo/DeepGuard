@@ -8,6 +8,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import io
 import base64
+import stripe
 from datetime import datetime, timedelta
 from functools import wraps
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, send_file
@@ -69,6 +70,15 @@ app.config['MAIL_DEFAULT_SENDER'] = 'DeepGuard Security <noreply@deepguard.com>'
 mail = Mail(app)
 s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 
+# Stripe Configuration
+stripe.api_key = os.environ.get('STRIPE_SECRET_KEY')
+
+PACKAGES = {
+    'single': {'name': 'Single Credit', 'price': 500, 'credits': 1},
+    'starter': {'name': 'Starter Bundle', 'price': 2000, 'credits': 5},
+    'value': {'name': 'Value Bundle', 'price': 5000, 'credits': 15}
+}
+
 # Storage Directories
 UPLOAD_FOLDER = os.path.join(app.root_path, 'uploads')
 SPECTROGRAM_FOLDER = os.path.join(app.root_path, 'static', 'spectrograms')
@@ -110,7 +120,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
     
-    # NEW CREDIT SYSTEM 
+    # CREDIT SYSTEM 
     credits = db.Column(db.Integer, default=2) 
     scans_used = db.Column(db.Integer, default=0) 
     
@@ -553,28 +563,73 @@ def settings():
         return redirect(url_for('settings'))
     return render_template('settings.html')
 
-@app.route('/topup', methods=['GET', 'POST'])
+@app.route('/topup')
 @login_required
 @requires_verification
 def topup():
-    if request.method == 'POST':
-        package = request.form.get('package')
-        if package == 'single':
-            current_user.credits += 1
-            flash('1 Credit added to your balance!', 'safe')
-        elif package == 'starter':
-            current_user.credits += 5
-            flash('5 Credits added to your balance!', 'safe')
-        elif package == 'value':
-            current_user.credits += 15
-            flash('15 Credits added to your balance!', 'safe')
-        else:
-            flash('Invalid package selected.', 'alert')
-            
-        db.session.commit()
-        return redirect(url_for('topup'))
-        
     return render_template('topup.html')
+
+@app.route('/create-checkout-session', methods=['POST'])
+@login_required
+@requires_verification
+def create_checkout_session():
+    package_id = request.form.get('package')
+    if package_id not in PACKAGES:
+        flash('Invalid package selected.', 'alert')
+        return redirect(url_for('topup'))
+
+    package = PACKAGES[package_id]
+
+    try:
+        checkout_session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[{
+                'price_data': {
+                    'currency': 'myr',
+                    'unit_amount': package['price'],
+                    'product_data': {
+                        'name': f"DeepGuard: {package['name']} ({package['credits']} Credits)",
+                    },
+                },
+                'quantity': 1,
+            }],
+            mode='payment',
+            success_url=url_for('payment_success', package_id=package_id, _external=True) + '&session_id={CHECKOUT_SESSION_ID}',
+            cancel_url=url_for('topup', _external=True),
+            client_reference_id=str(current_user.id)
+        )
+        return redirect(checkout_session.url, code=303)
+    except Exception as e:
+        flash(f"Payment gateway error: {str(e)}", 'alert')
+        return redirect(url_for('topup'))
+
+@app.route('/payment-success')
+@login_required
+@requires_verification
+def payment_success():
+    session_id = request.args.get('session_id')
+    package_id = request.args.get('package_id')
+
+    if not session_id or package_id not in PACKAGES:
+        flash("Invalid payment session.", 'alert')
+        return redirect(url_for('topup'))
+
+    try:
+        session = stripe.checkout.Session.retrieve(session_id)
+        
+        if session.payment_status == 'paid' and session.client_reference_id == str(current_user.id):
+            credits_to_add = PACKAGES[package_id]['credits']
+            current_user.credits += credits_to_add
+            db.session.commit()
+            
+            flash(f"Payment successful! {credits_to_add} credits have been added to your account.", 'safe')
+        else:
+            flash("Payment could not be verified.", 'alert')
+            
+        return redirect(url_for('topup'))
+    except Exception as e:
+        flash("An error occurred verifying your payment.", 'alert')
+        return redirect(url_for('topup'))
 
 @app.route('/delete_account', methods=['POST'])
 @login_required

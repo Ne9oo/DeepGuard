@@ -134,7 +134,7 @@
                             <span class="text-5xl font-black text-slate-800 dark:text-slate-100 font-tech">1</span>
                             <span class="block text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-widest mt-2">Credit</span>
                         </div>
-                        <form action="{{ url_for('topup') }}" method="POST">
+                        <form action="{{ url_for('create_checkout_session') }}" method="POST">
                             <input type="hidden" name="package" value="single">
                             <button type="submit" class="w-full block py-3 px-4 rounded-xl bg-slate-100 dark:bg-[#1e1e1e] text-slate-800 dark:text-white hover:bg-slate-200 dark:hover:bg-[#2a2a2a] text-sm font-bold tracking-wide transition-colors border border-slate-200 dark:border-white/5">Purchase</button>
                         </form>
@@ -152,7 +152,7 @@
                             <span class="text-5xl font-black text-slate-800 dark:text-white font-tech">5</span>
                             <span class="block text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-widest mt-2">Credits</span>
                         </div>
-                        <form action="{{ url_for('topup') }}" method="POST">
+                        <form action="{{ url_for('create_checkout_session') }}" method="POST">
                             <input type="hidden" name="package" value="starter">
                             <button type="submit" class="w-full block py-3 px-4 rounded-xl bg-primary hover:bg-primaryHover text-white text-sm font-bold tracking-wide transition-colors shadow-md">Purchase Bundle</button>
                         </form>
@@ -169,7 +169,7 @@
                             <span class="text-5xl font-black text-slate-800 dark:text-slate-100 font-tech">15</span>
                             <span class="block text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-widest mt-2">Credits</span>
                         </div>
-                        <form action="{{ url_for('topup') }}" method="POST">
+                        <form action="{{ url_for('create_checkout_session') }}" method="POST">
                             <input type="hidden" name="package" value="value">
                             <button type="submit" class="w-full block py-3 px-4 rounded-xl bg-slate-100 dark:bg-[#1e1e1e] text-slate-800 dark:text-white hover:bg-slate-200 dark:hover:bg-[#2a2a2a] text-sm font-bold tracking-wide transition-colors border border-slate-200 dark:border-white/5">Purchase Bundle</button>
                         </form>
