@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepGuard | Terms of Service</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <script>
+        if (localStorage.getItem('theme') === 'light' || (!('theme' in localStorage) && !window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.remove('dark');
+        } else {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+
+    <script>
+        tailwind.config = { 
+            darkMode: 'class', 
+            theme: { 
+                extend: { 
+                    colors: { 
+                        primary: '#4f46e5', 
+                        primaryHover: '#4338ca',
+                        alert: '#ef4444', 
+                        safe: '#10b981', 
+                        caution: '#f59e0b',
+                        darkbg: '#121212', 
+                        darkcard: '#1a1a1a', 
+                        border: '#2a2a2a',
+                        lightbg: '#f5f5f7'
+                    }, 
+                    fontFamily: { sans: ['Inter', 'sans-serif'], tech: ['Orbitron', 'sans-serif'] }
+                } 
+            } 
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar { display: none; }
+        html, body { -ms-overflow-style: none; scrollbar-width: none; }
+        body, nav, p, h1, h2, h3, a, button, li, i, span {
+            transition-property: background-color, border-color, color;
+            transition-duration: 500ms;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .toc-link.active { color: #white; }
+        .toc-link.active .toc-num { color: #4f46e5; opacity: 1; }
+    </style>
+</head>
+<body class="bg-lightbg dark:bg-darkbg text-slate-700 dark:text-slate-300 antialiased overflow-x-hidden selection:bg-primary/30 w-full flex flex-col min-h-screen">
+
+    <!-- Floating Pill Navbar -->
+    <nav class="fixed top-4 sm:top-6 left-1/2 -translate-x-1/2 w-[95%] max-w-[1100px] z-50 transition-all duration-300">
+        <div class="bg-white/80 dark:bg-[#1e1e1e]/80 backdrop-blur-xl border border-slate-200 dark:border-border rounded-full shadow-sm px-5 sm:px-6 py-3 sm:py-3.5 flex items-center justify-between relative z-50">
+            <div class="flex items-center cursor-pointer" onclick="window.location.href='/'">
+                <span class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white tracking-widest uppercase font-sans">DeepGuard</span>
+            </div>
+            
+            <div class="hidden md:flex space-x-8 text-xs font-semibold tracking-widest uppercase text-slate-500 dark:text-slate-400">
+                <a href="/#about" class="hover:text-slate-900 dark:hover:text-white transition-colors">About</a>
+                <a href="/#how-it-works" class="hover:text-slate-900 dark:hover:text-white transition-colors">How It Works</a>
+                <a href="/#features" class="hover:text-slate-900 dark:hover:text-white transition-colors">Features</a>
+                <a href="/#pricing" class="hover:text-slate-900 dark:hover:text-white transition-colors">Pricing</a>
+                <a href="/#team" class="hover:text-slate-900 dark:hover:text-white transition-colors">Team</a>
+            </div>
+            
+            <div class="hidden md:flex items-center space-x-6">
+                <button class="theme-toggle-btn text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors focus:outline-none">
+                    <i class="theme-icon fa-solid fa-sun text-lg"></i>
+                </button>
+                <a href="/login" class="text-xs font-bold tracking-widest uppercase text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">Log In</a>
+                <a href="/signup" class="bg-transparent border border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800 px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-colors">
+                    Get Started
+                </a>
+            </div>
+
+            <div class="flex md:hidden items-center space-x-4">
+                <button class="theme-toggle-btn text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors focus:outline-none">
+                    <i class="theme-icon fa-solid fa-sun text-lg"></i>
+                </button>
+                <button id="mobileMenuBtn" class="text-slate-600 dark:text-slate-300 focus:outline-none">
+                    <i id="mobileMenuIcon" class="fa-solid fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <div id="mobileMenu" class="absolute top-full left-0 w-full mt-2 bg-white/95 dark:bg-[#1e1e1e]/95 backdrop-blur-xl border border-slate-200 dark:border-border rounded-3xl shadow-xl flex-col space-y-2 p-5 hidden z-40 origin-top transform transition-all duration-300 opacity-0 scale-95">
+            <a href="/#about" class="block px-4 py-3 text-sm font-semibold tracking-widest uppercase text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">About</a>
+            <a href="/#how-it-works" class="block px-4 py-3 text-sm font-semibold tracking-widest uppercase text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">How It Works</a>
+            <a href="/#features" class="block px-4 py-3 text-sm font-semibold tracking-widest uppercase text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">Features</a>
+            <a href="/#pricing" class="block px-4 py-3 text-sm font-semibold tracking-widest uppercase text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">Pricing</a>
+            <a href="/#team" class="block px-4 py-3 text-sm font-semibold tracking-widest uppercase text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">Team</a>
+            <hr class="border-slate-200 dark:border-border my-2">
+            <a href="/login" class="block px-4 py-3 text-sm font-semibold tracking-widest uppercase text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">Log In</a>
+            <a href="/signup" class="block mt-2 text-center w-full bg-primary hover:bg-primaryHover text-white px-5 py-3.5 rounded-xl text-sm font-bold uppercase tracking-widest transition-colors shadow-md">
+                Get Started
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-[1200px] mx-auto w-full pt-40 pb-24 px-6 md:px-12 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
+        
+        <!-- Sticky Sidebar (Table of Contents) -->
+        <aside class="hidden lg:block lg:col-span-3">
+            <div class="sticky top-40">
+                <h4 class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-6">On this page</h4>
+                <nav class="flex flex-col border-t border-slate-200 dark:border-border">
+                    <a href="#acceptance" class="toc-link group flex items-center py-3.5 text-sm text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border-b border-slate-200 dark:border-border transition-colors">
+                        <span class="toc-num font-tech text-xs w-8 opacity-50 transition-opacity">01.</span>
+                        <span class="font-medium">Acceptance</span>
+                    </a>
+                    <a href="#service" class="toc-link group flex items-center py-3.5 text-sm text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border-b border-slate-200 dark:border-border transition-colors">
+                        <span class="toc-num font-tech text-xs w-8 opacity-50 transition-opacity">02.</span>
+                        <span class="font-medium">The Service</span>
+                    </a>
+                    <a href="#economy" class="toc-link group flex items-center py-3.5 text-sm text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border-b border-slate-200 dark:border-border transition-colors">
+                        <span class="toc-num font-tech text-xs w-8 opacity-50 transition-opacity">03.</span>
+                        <span class="font-medium">Credit Economy</span>
+                    </a>
+                    <a href="#acceptable-use" class="toc-link group flex items-center py-3.5 text-sm text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border-b border-slate-200 dark:border-border transition-colors">
+                        <span class="toc-num font-tech text-xs w-8 opacity-50 transition-opacity">04.</span>
+                        <span class="font-medium">Acceptable Use</span>
+                    </a>
+                    <a href="#termination" class="toc-link group flex items-center py-3.5 text-sm text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border-b border-slate-200 dark:border-border transition-colors">
+                        <span class="toc-num font-tech text-xs w-8 opacity-50 transition-opacity">05.</span>
+                        <span class="font-medium">Termination</span>
+                    </a>
+                    <a href="#contact" class="toc-link group flex items-center py-3.5 text-sm text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border-b border-slate-200 dark:border-border transition-colors">
+                        <span class="toc-num font-tech text-xs w-8 opacity-50 transition-opacity">06.</span>
+                        <span class="font-medium">Contact</span>
+                    </a>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Document Body -->
+        <article class="col-span-1 lg:col-span-9">
+            <header class="mb-16">
+                <div class="flex flex-wrap items-center gap-3 sm:gap-4 text-[9px] sm:text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-6">
+                    <span>Legal</span>
+                    <span class="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-700"></span>
+                    <span>Last Updated October 2026</span>
+                    <span class="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-700"></span>
+                    <span class="text-primary">V1.0</span>
+                </div>
+                <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold text-slate-900 dark:text-white tracking-tight leading-[1.1]">Terms of <span class="text-primary">Service.</span></h1>
+                <p class="mt-6 text-base sm:text-lg text-slate-600 dark:text-slate-400 max-w-2xl leading-relaxed">Plainly written. If anything outlined here is unclear, contact our team and we will be happy to explain it to you.</p>
+            </header>
+            
+            <div class="space-y-16 text-slate-600 dark:text-slate-400 text-sm sm:text-base leading-relaxed">
+                <section id="acceptance" class="scroll-mt-32">
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-5 tracking-tight">01. Acceptance</h2>
+                    <p>By accessing or using the DeepGuard platform ("Service"), you agree to be bound by these Terms of Service. If you do not agree with any part of these terms, you may not access or use the platform. "You" means the person or organization utilizing the service. "We" means the developers of DeepGuard operating under the German-Malaysian Institute (GMI).</p>
+                </section>
+
+                <section id="service" class="scroll-mt-32">
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-5 tracking-tight">02. The Service</h2>
+                    <p class="mb-4">DeepGuard provides an AI-powered audio forensics and deepfake detection web application. The platform analyzes uploaded audio files and returns a mathematical probability indicating whether the speech patterns were generated by a synthetic model.</p>
+                    <p><strong>Disclaimer of Liability:</strong> You acknowledge that the Service provides analytical estimations based on a trained Convolutional Neural Network (CNN), not definitive legal or factual guarantees. DeepGuard and its developers do not guarantee any specific outcome and are not responsible for any actions taken, or not taken, based on the confidence scores or verdicts provided by our platform.</p>
+                </section>
+
+                <section id="economy" class="scroll-mt-32 border-l-2 border-primary/30 pl-6 my-10 py-2">
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-5 tracking-tight">03. Credit Economy & Payments</h2>
+                    <p class="mb-4">To perform audio analysis, users must maintain a balance of digital credits. Payments are securely processed via Stripe. By initiating a purchase, you agree to the following economic rules:</p>
+                    <ul class="list-disc pl-5 space-y-2 marker:text-primary">
+                        <li>All purchases are final and non-refundable under any circumstance.</li>
+                        <li>Credits hold no real-world monetary value and cannot be exchanged for cash or transferred between accounts.</li>
+                        <li>Purchased credits will not expire as long as your account remains active and unbanned.</li>
+                    </ul>
+                </section>
+
+                <section id="acceptable-use" class="scroll-mt-32">
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-5 tracking-tight">04. Acceptable Use</h2>
+                    <p class="mb-4">You agree not to use the Service in any way that violates applicable laws or regulations. Specifically, you agree not to:</p>
+                    <ul class="list-disc pl-5 space-y-2 marker:text-slate-400">
+                        <li>Upload audio files that contain illegal content, malware, or that explicitly violate third-party privacy rights.</li>
+                        <li>Attempt to reverse engineer, decompile, or extract the underlying AI models (including but not limited to <code>best_model.pt</code>).</li>
+                        <li>Overload our infrastructure, manipulate the credit API, or bypass the built-in rate limiters.</li>
+                    </ul>
+                </section>
+
+                <section id="termination" class="scroll-mt-32">
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-5 tracking-tight">05. Termination</h2>
+                    <p>We reserve the right to suspend or terminate your account—and forfeit any remaining digital credits—immediately, without prior notice or liability, if we determine that you have breached these Terms of Service or engaged in abusive platform behavior.</p>
+                </section>
+
+                <section id="contact" class="scroll-mt-32">
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-5 tracking-tight">06. Contact</h2>
+                    <p>Questions regarding these terms should be directed to the DeepGuard administration team at <a href="mailto:deepguard.my@gmail.com" class="text-primary hover:underline underline-offset-4 font-medium">deepguard.my@gmail.com</a>.</p>
+                </section>
+            </div>
+
+            <!-- Bottom CTA Box -->
+            <div class="mt-24 bg-white dark:bg-darkcard border border-slate-200 dark:border-border rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-sm">
+                 <p class="text-sm text-slate-600 dark:text-slate-400 text-center sm:text-left">
+                    See also our <a href="/privacy" class="text-slate-900 dark:text-white hover:text-primary dark:hover:text-primary font-semibold transition-colors underline underline-offset-4 decoration-slate-300 dark:decoration-slate-700 hover:decoration-primary">Privacy Policy</a> for how we handle your uploaded data.
+                 </p>
+                 <a href="/login" class="shrink-0 w-full sm:w-auto bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-primary dark:hover:bg-slate-200 px-6 py-3 rounded-xl text-sm font-bold transition-colors text-center shadow-sm">
+                    Open Terminal
+                 </a>
+            </div>
+        </article>
+    </main>
+
+    <!-- Professional Footer -->
+    <footer class="bg-white dark:bg-[#0b0b0f] border-t border-slate-200 dark:border-border pt-24 pb-12 px-4 sm:px-6 mt-auto">
+        <div class="max-w-[1200px] mx-auto">
+            <div class="flex flex-col lg:flex-row justify-between gap-12 lg:gap-8 mb-24">
+                <div class="w-full lg:w-2/5 lg:pr-12">
+                    <div class="flex items-center gap-2 mb-6">
+                        <span class="text-lg font-bold text-slate-900 dark:text-white tracking-widest uppercase font-sans">DeepGuard</span>
+                    </div>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed max-w-sm">
+                        Defending against synthetic audio threats through advanced deep learning. A German-Malaysian Institute (GMI) student project dedicated to combating next-generation vishing attacks.
+                    </p>
+                </div>
+                <div class="w-full lg:w-3/5 grid grid-cols-2 sm:grid-cols-3 gap-10 sm:gap-8">
+                    <div>
+                        <h4 class="text-sm font-semibold text-slate-900 dark:text-white mb-6">Product</h4>
+                        <ul class="space-y-4 text-sm text-slate-500 dark:text-slate-400">
+                            <li><a href="/#how-it-works" class="hover:text-primary transition-colors">How It Works</a></li>
+                            <li><a href="/#features" class="hover:text-primary transition-colors">Features</a></li>
+                            <li><a href="/#pricing" class="hover:text-primary transition-colors">Pricing</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-semibold text-slate-900 dark:text-white mb-6">Project</h4>
+                        <ul class="space-y-4 text-sm text-slate-500 dark:text-slate-400">
+                            <li><a href="/#about" class="hover:text-primary transition-colors">About</a></li>
+                            <li><a href="/#team" class="hover:text-primary transition-colors">Team</a></li>
+                            <li><a href="/login" class="hover:text-primary transition-colors">Log In</a></li>
+                            <li><a href="/signup" class="hover:text-primary transition-colors">Get Started</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-semibold text-slate-900 dark:text-white mb-6">Reach</h4>
+                        <div class="flex space-x-4">
+                            <a href="mailto:deepguard.my@gmail.com" class="w-11 h-11 rounded-full border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all">
+                                <i class="fa-regular fa-envelope"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-slate-200 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-500">
+                <p class="mb-4 md:mb-0">&copy; 2026 DeepGuard · GMI FYP demonstration build</p>
+                <div class="space-x-8">
+                    <a href="/terms" class="hover:text-slate-800 dark:hover:text-slate-300 transition-colors font-medium">Terms of Service</a>
+                    <a href="/privacy" class="hover:text-slate-800 dark:hover:text-slate-300 transition-colors font-medium">Privacy Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- INTERACTIVE SCRIPTS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Theme Toggle
+            const themeBtns = document.querySelectorAll('.theme-toggle-btn');
+            function updateIcon() {
+                const isDark = document.documentElement.classList.contains('dark');
+                document.querySelectorAll('.theme-icon').forEach(icon => {
+                    if (isDark) icon.classList.replace('fa-moon', 'fa-sun');
+                    else icon.classList.replace('fa-sun', 'fa-moon');
+                });
+            }
+            updateIcon(); 
+            themeBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.documentElement.classList.toggle('dark');
+                    localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+                    updateIcon();
+                });
+            });
+
+            // Mobile Menu
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const mobileMenuIcon = document.getElementById('mobileMenuIcon');
+            mobileMenuBtn.addEventListener('click', () => {
+                if (mobileMenu.classList.contains('hidden')) {
+                    mobileMenu.classList.remove('hidden');
+                    setTimeout(() => { mobileMenu.classList.remove('opacity-0', 'scale-95'); mobileMenu.classList.add('opacity-100', 'scale-100'); }, 10);
+                    mobileMenuIcon.classList.replace('fa-bars', 'fa-xmark');
+                } else {
+                    mobileMenu.classList.remove('opacity-100', 'scale-100'); mobileMenu.classList.add('opacity-0', 'scale-95');
+                    setTimeout(() => { mobileMenu.classList.add('hidden'); }, 300);
+                    mobileMenuIcon.classList.replace('fa-xmark', 'fa-bars');
+                }
+            });
+
+            // ScrollSpy for TOC
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.toc-link');
+            
+            function onScroll() {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (scrollY >= sectionTop - 250) {
+                        current = section.getAttribute('id');
+                    }
+                });
+                
+                navLinks.forEach(link => {
+                    link.classList.remove('text-slate-900', 'dark:text-white');
+                    link.querySelector('.toc-num').classList.remove('text-primary', 'opacity-100');
+                    if (link.getAttribute('href').substring(1) === current) {
+                        link.classList.add('text-slate-900', 'dark:text-white');
+                        link.querySelector('.toc-num').classList.add('text-primary', 'opacity-100');
+                    }
+                });
+            }
+            window.addEventListener('scroll', onScroll);
+            onScroll(); // trigger initially
+        });
+    </script>
+</body>
+</html>
