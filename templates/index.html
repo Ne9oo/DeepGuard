@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DeepGuard | Prevent Vishing Scams</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='deepguard_logo.PNG') }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -140,7 +141,8 @@
         <!-- Main Navbar Pill -->
         <div class="bg-white/80 dark:bg-[#1e1e1e]/80 backdrop-blur-xl border border-slate-200 dark:border-border rounded-full shadow-sm px-5 sm:px-6 py-3 sm:py-3.5 flex items-center justify-between relative z-50">
             <!-- Logo -->
-            <div class="flex items-center cursor-pointer" onclick="window.scrollTo(0,0)">
+            <div class="flex items-center cursor-pointer gap-2 sm:gap-3" onclick="window.location.href='/'">
+                <img src="{{ url_for('static', filename='deepguard_logo.PNG') }}" alt="DeepGuard Logo" class="h-6 sm:h-8 w-auto object-contain drop-shadow-md">
                 <span class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white tracking-widest uppercase font-sans">DeepGuard</span>
             </div>
             
@@ -949,7 +951,8 @@
                 
                 <!-- Left: Logo & Desc -->
                 <div class="w-full lg:w-2/5 lg:pr-12">
-                    <div class="flex items-center gap-2 mb-6">
+                    <div class="flex items-center gap-3 mb-6">
+                        <img src="{{ url_for('static', filename='deepguard_logo.PNG') }}" alt="DeepGuard Logo" class="h-8 sm:h-10 w-auto object-contain drop-shadow-lg">
                         <span class="text-lg font-bold text-slate-900 dark:text-white tracking-widest uppercase font-sans">DeepGuard</span>
                     </div>
                     <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed max-w-sm">
